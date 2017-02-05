@@ -1,0 +1,36 @@
+{
+    "name": "kreait/firebase-tokens",
+    "description": "A library to work with Firebase tokens",
+    "type": "library",
+    "keywords": ["firebase", "google", "token", "authentication", "auth"],
+    "homepage": "https://github.com/kreait/firebase-token-php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jérôme Gamez",
+            "homepage": "https://github.com/jeromegamez"
+        }
+    ],
+    "require": {
+        "lcobucci/jwt": "^3.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0",
+        "friendsofphp/php-cs-fixer": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Firebase\\Auth\\Token\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Firebase\\Auth\\Token\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "7.0"
+        }
+    }
+}
