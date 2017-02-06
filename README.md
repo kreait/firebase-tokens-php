@@ -3,9 +3,9 @@
 [![Latest Stable Version](https://poser.pugx.org/kreait/firebase-tokens/v/stable)](https://packagist.org/packages/kreait/firebase-tokens)
 [![Total Downloads](https://poser.pugx.org/kreait/firebase-tokens/downloads)](https://packagist.org/packages/kreait/firebase-tokens)
 
-A library to work with [Google Firebase](https://firebase.google.com>) tokens. You can use it to
-- [create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens)
-- [verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens)  
+A library to work with [Google Firebase](https://firebase.google.com>) tokens. You can use it to 
+[create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens) and 
+[verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens).  
 
 ## Installation
 
