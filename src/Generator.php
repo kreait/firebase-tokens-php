@@ -61,7 +61,6 @@ final class Generator implements Domain\Generator
         $now = time();
 
         return $this->builder
-            ->setHeader('debug', true)
             ->setIssuedAt($now)
             ->setExpiration($now + (60 * 60))
             ->sign($this->signer, $this->privateKey)
