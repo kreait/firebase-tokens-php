@@ -37,9 +37,22 @@ $verifier = new Verifier($projectId);
 
 $idTokenString = 'eyJhbGciOiJSUzI1...';
 
-$token = $verifier->verifyIdToken($idTokenString);
+$verifiedIdToken = $verifier->verifyIdToken($idTokenString);
 
-$uid = $token->getClaim('sub');
+$uid = $verifiedIdToken->getClaim('sub');
 
 echo $uid; // "a-uid"
+```
+
+## Firebase Token Handler
+
+`Firebase\Auth\Token\Handler` combines the Generator and the Verifier:
+
+```php
+use Firebase\Auth\Token\Handler;
+
+$handler = new Handler($projectId, $clientEmail, $privateKey);
+
+$customToken = $handler->createCustomToken($uid, $claims);
+$verifiedIdToken = $handler->verifyIdToken($idTokenString);
 ```
