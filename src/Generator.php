@@ -47,6 +47,8 @@ final class Generator implements Domain\Generator
      * @param mixed $uid
      * @param array $claims
      *
+     * @throws \BadMethodCallException when a claim is invalid
+     *
      * @return Token
      */
     public function createCustomToken($uid, array $claims = []): Token
@@ -54,6 +56,7 @@ final class Generator implements Domain\Generator
         foreach ($claims as $key => $value) {
             $this->builder->set($key, $value);
         }
+
         $this->builder->set('claims', $claims);
 
         $this->builder->set('uid', (string) $uid);
