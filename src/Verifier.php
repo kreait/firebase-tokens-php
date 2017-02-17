@@ -30,7 +30,7 @@ final class Verifier implements Domain\Verifier
     public function __construct(string $projectId, KeyStore $keys = null, Signer $signer = null)
     {
         $this->projectId = $projectId;
-        $this->keys = $keys ?? new StaticKeyStore();
+        $this->keys = $keys ?? new HttpKeyStore();
         $this->signer = $signer ?? new Sha256();
     }
 

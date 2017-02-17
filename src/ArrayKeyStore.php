@@ -9,7 +9,7 @@ use Firebase\Auth\Token\Domain\KeyStore;
  */
 class ArrayKeyStore implements KeyStore
 {
-    private $keys = [];
+    private $keys;
 
     public function __construct(array $keys)
     {
