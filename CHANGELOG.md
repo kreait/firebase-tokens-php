@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.1.0 - 2017-02-18
 
 - Replaced `StaticKeyStore` with `HttpKeyStore`, which fetches frech Google Public Keys
   each time its `get()` method is invoked. Caching can be implemented by injecting
