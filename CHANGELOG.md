@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.1.1 - 2017-02-19
 
 - Fixed [https://github.com/kreait/firebase-php/issues/65](kreait/firebase-php#65):
   invalid custom token when no claims are given. 
