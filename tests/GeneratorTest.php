@@ -24,4 +24,11 @@ class GeneratorTest extends TestCase
 
         $this->assertInstanceOf(Token::class, $token);
     }
+
+    public function testCreateCustomTokenWithEmptyClaims()
+    {
+        $token = $this->generator->createCustomToken('some-uid');
+
+        $this->assertInstanceOf(Token::class, $token);
+    }
 }

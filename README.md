@@ -5,7 +5,7 @@
 
 A library to work with [Google Firebase](https://firebase.google.com>) tokens. You can use it to 
 [create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens) and 
-[verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens).  
+[verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
 
 ## Installation
 

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Unreleased
+
+- Fixed [https://github.com/kreait/firebase-php/issues/65](kreait/firebase-php#65):
+  invalid custom token when no claims are given. 
+
 ## 1.1.0 - 2017-02-18
 
 - Replaced `StaticKeyStore` with `HttpKeyStore`, which fetches frech Google Public Keys

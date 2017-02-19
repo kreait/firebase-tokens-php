@@ -53,11 +53,9 @@ final class Generator implements Domain\Generator
      */
     public function createCustomToken($uid, array $claims = []): Token
     {
-        foreach ($claims as $key => $value) {
-            $this->builder->set($key, $value);
+        if (count($claims)) {
+            $this->builder->set('claims', $claims);
         }
-
-        $this->builder->set('claims', $claims);
 
         $this->builder->set('uid', (string) $uid);
 
