@@ -5,7 +5,7 @@ namespace Firebase\Auth\Token\Exception;
 use Exception;
 use Lcobucci\JWT\Token;
 
-class InvalidToken extends \Exception
+class InvalidToken extends \InvalidArgumentException
 {
     /**
      * @var Token
