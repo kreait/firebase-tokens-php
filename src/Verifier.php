@@ -3,6 +3,7 @@
 namespace Firebase\Auth\Token;
 
 use Firebase\Auth\Token\Domain\KeyStore;
+use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Exception\UnknownKey;
 use Lcobucci\JWT\Parser;
@@ -43,7 +44,7 @@ final class Verifier implements Domain\Verifier
         $now = time();
 
         if ($token->isExpired()) {
-            throw new InvalidToken($token, 'This token is expired.');
+            throw new ExpiredToken($token);
         }
 
         if ($token->getClaim('iat') > $now) {

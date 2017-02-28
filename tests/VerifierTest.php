@@ -4,6 +4,7 @@ namespace Firebase\Auth\Token\Tests;
 
 use Firebase\Auth\Token\ArrayKeyStore;
 use Firebase\Auth\Token\Domain\KeyStore;
+use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Exception\UnknownKey;
 use Firebase\Auth\Token\Verifier;
@@ -81,12 +82,12 @@ class VerifierTest extends TestCase
 
     /**
      * @param Token $token
-     *
+     * @param string $exception
      * @dataProvider invalidTokenProvider
      */
-    public function testInvalidTokenResultsInException(Token $token)
+    public function testInvalidTokenResultsInException(Token $token, $exception)
     {
-        $this->expectException(InvalidToken::class);
+        $this->expectException($exception);
 
         $this->verifier->verifyIdToken($token);
     }
@@ -100,8 +101,8 @@ class VerifierTest extends TestCase
                 ->setIssuer('https://securetoken.google.com/project-id')
                 ->setHeader('kid', 'valid_key_id')
                 ->sign($this->createMockSigner(), 'valid_key')
-                ->getToken()
-            ]
+                ->getToken(),
+            ],
         ];
     }
 
@@ -114,8 +115,8 @@ class VerifierTest extends TestCase
                 ->setIssuer('https://securetoken.google.com/project-id')
                 ->setHeader('kid', 'valid_key_id')
                 ->sign($this->createMockSigner(), 'valid_key')
-                ->getToken()
-            ]
+                ->getToken(),
+            ],
         ];
     }
 
@@ -128,12 +129,14 @@ class VerifierTest extends TestCase
                 $builder
                     ->setExpiration(time() - 10)
                     ->getToken(),
+                ExpiredToken::class,
             ],
             'not_yet_issued' => [
                 $builder
                     ->setExpiration(time() + 1800)
                     ->setIssuedAt(time() + 1800)
                     ->getToken(),
+                InvalidToken::class,
             ],
             'invalid_issuer' => [
                 $builder
@@ -141,6 +144,7 @@ class VerifierTest extends TestCase
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('invalid_issuer')
                     ->getToken(),
+                InvalidToken::class,
             ],
             'missing_key_id' => [
                 $builder
@@ -148,6 +152,7 @@ class VerifierTest extends TestCase
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('https://securetoken.google.com/project-id')
                     ->getToken(),
+                InvalidToken::class,
             ],
             'unsigned' => [
                 $builder
@@ -156,6 +161,7 @@ class VerifierTest extends TestCase
                     ->setIssuer('https://securetoken.google.com/project-id')
                     ->setHeader('kid', 'valid_key_id')
                     ->getToken(),
+                InvalidToken::class,
             ],
             'invalid_signature' => [
                 $builder
@@ -165,6 +171,7 @@ class VerifierTest extends TestCase
                     ->setHeader('kid', 'valid_key_id')
                     ->sign($this->createMockSigner(), 'invalid_key')
                     ->getToken(),
+                InvalidToken::class,
             ],
         ];
     }
