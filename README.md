@@ -37,11 +37,15 @@ $verifier = new Verifier($projectId);
 
 $idTokenString = 'eyJhbGciOiJSUzI1...';
 
-$verifiedIdToken = $verifier->verifyIdToken($idTokenString);
-
-$uid = $verifiedIdToken->getClaim('sub');
-
-echo $uid; // "a-uid"
+try {
+    $verifiedIdToken = $verifier->verifyIdToken($idTokenString);
+    
+    echo $verifiedIdToken->getClaim('sub'); // "a-uid"
+} catch (\Firebase\Auth\Token\Exception\ExpiredToken $e) {
+    echo "Expired token: ".$e->getMessage();
+} catch (\Firebase\Auth\Token\Exception\ExpiredToken $e) {
+    echo "Invalid token: ".$e->getMessage();
+}
 ```
 
 ## Firebase Token Handler
