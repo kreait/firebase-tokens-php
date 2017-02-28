@@ -3,7 +3,6 @@
 namespace Firebase\Auth\Token\Tests;
 
 use Firebase\Auth\Token\Generator;
-use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Token;
 
 class GeneratorTest extends TestCase
