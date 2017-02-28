@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased
+
+- Expired tokens now throw a `Firebase\Auth\Token\Exception\ExpiredToken` exception. It
+  extends the previously thrown `Firebase\Auth\Token\Exception\InvalidToken`, so
+  existing behaviour doesn't change.
+
 ## 1.1.1 - 2017-02-19
 
 - Fixed [https://github.com/kreait/firebase-php/issues/65](kreait/firebase-php#65):
