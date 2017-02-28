@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.2.0 - 2017-02-28
 
 - Expired tokens now throw a `Firebase\Auth\Token\Exception\ExpiredToken` exception. It
   extends the previously thrown `Firebase\Auth\Token\Exception\InvalidToken`, so
