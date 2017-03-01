@@ -66,7 +66,7 @@ final class Verifier implements Domain\Verifier
         try {
             $key = $this->keys->get($keyId);
         } catch (\OutOfBoundsException $e) {
-            throw new UnknownKey('The token with ID "%s" is unknown.');
+            throw new UnknownKey($keyId);
         }
 
         try {

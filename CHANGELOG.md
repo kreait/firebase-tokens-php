@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Fixed message on UnknownKey exceptions.
+
 ## 1.2.0 - 2017-02-28
 
 - Expired tokens now throw a `Firebase\Auth\Token\Exception\ExpiredToken` exception. It
