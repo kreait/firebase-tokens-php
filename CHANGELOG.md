@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.2.1 - 2017-03-01
 
 - Fixed message on UnknownKey exceptions.
 
