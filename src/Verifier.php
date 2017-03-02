@@ -42,22 +42,37 @@ final class Verifier implements Domain\Verifier
             $token = (new Parser())->parse($token);
         }
 
-        $now = time();
+        $this->verifyExpiry($token);
+        $this->verifyIssuedAt($token);
+        $this->verifyIssuer($token);
+        $this->verifySignature($token, $this->getKey($token));
 
+        return $token;
+    }
+
+    private function verifyExpiry(Token $token)
+    {
         if ($token->isExpired()) {
             throw new ExpiredToken($token);
         }
+    }
 
-        if ($token->getClaim('iat') > $now) {
+    private function verifyIssuedAt(Token $token)
+    {
+        if ($token->getClaim('iat') > time()) {
             throw new IssuedInTheFuture($token);
         }
+    }
 
-        $validIssuer = sprintf('https://securetoken.google.com/%s', $this->projectId);
-
-        if ($token->getClaim('iss') !== $validIssuer) {
+    private function verifyIssuer(Token $token)
+    {
+        if ($token->getClaim('iss') !== sprintf('https://securetoken.google.com/%s', $this->projectId)) {
             throw new InvalidToken($token, 'This token has an invalid issuer.');
         }
+    }
 
+    private function getKey(Token $token): string
+    {
         try {
             $keyId = $token->getHeader('kid');
         } catch (\OutOfBoundsException $e) {
@@ -65,11 +80,14 @@ final class Verifier implements Domain\Verifier
         }
 
         try {
-            $key = $this->keys->get($keyId);
+            return $this->keys->get($keyId);
         } catch (\OutOfBoundsException $e) {
             throw new UnknownKey($keyId);
         }
+    }
 
+    private function verifySignature(Token $token, string $key)
+    {
         try {
             $isVerified = $token->verify($this->signer, $key);
         } catch (\Throwable $e) {
@@ -79,7 +97,5 @@ final class Verifier implements Domain\Verifier
         if (!$isVerified) {
             throw new InvalidToken($token, 'This token has an invalid signature.');
         }
-
-        return $token;
     }
 }
