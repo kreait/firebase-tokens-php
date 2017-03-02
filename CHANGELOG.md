@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.3.0 - 2017-03-02
 
 - Tokens that seem to be issued in the future now cause a `Firebase\Auth\Token\Exception\IssuedInTheFuture`
   exception. It includes the hint that the system time might not be correct.
