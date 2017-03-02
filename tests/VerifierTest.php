@@ -6,6 +6,7 @@ use Firebase\Auth\Token\ArrayKeyStore;
 use Firebase\Auth\Token\Domain\KeyStore;
 use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidToken;
+use Firebase\Auth\Token\Exception\IssuedInTheFuture;
 use Firebase\Auth\Token\Exception\UnknownKey;
 use Firebase\Auth\Token\Verifier;
 use Lcobucci\JWT\Builder;
@@ -136,7 +137,7 @@ class VerifierTest extends TestCase
                     ->setExpiration(time() + 1800)
                     ->setIssuedAt(time() + 1800)
                     ->getToken(),
-                InvalidToken::class,
+                IssuedInTheFuture::class,
             ],
             'invalid_issuer' => [
                 $builder

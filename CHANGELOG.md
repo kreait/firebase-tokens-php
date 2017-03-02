@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Unreleased
+
+- Tokens that seem to be issued in the future now cause a `Firebase\Auth\Token\Exception\IssuedInTheFuture`
+  exception. It includes the hint that the system time might not be correct.
+
 ## 1.2.1 - 2017-03-01
 
 - Fixed message on UnknownKey exceptions.

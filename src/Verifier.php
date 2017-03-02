@@ -5,6 +5,7 @@ namespace Firebase\Auth\Token;
 use Firebase\Auth\Token\Domain\KeyStore;
 use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidToken;
+use Firebase\Auth\Token\Exception\IssuedInTheFuture;
 use Firebase\Auth\Token\Exception\UnknownKey;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -48,7 +49,7 @@ final class Verifier implements Domain\Verifier
         }
 
         if ($token->getClaim('iat') > $now) {
-            throw new InvalidToken($token, 'This token has been issued in the future.');
+            throw new IssuedInTheFuture($token);
         }
 
         $validIssuer = sprintf('https://securetoken.google.com/%s', $this->projectId);
