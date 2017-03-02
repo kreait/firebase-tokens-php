@@ -42,9 +42,11 @@ try {
     
     echo $verifiedIdToken->getClaim('sub'); // "a-uid"
 } catch (\Firebase\Auth\Token\Exception\ExpiredToken $e) {
-    echo "Expired token: ".$e->getMessage();
-} catch (\Firebase\Auth\Token\Exception\ExpiredToken $e) {
-    echo "Invalid token: ".$e->getMessage();
+    echo $e->getMessage();
+} catch (\Firebase\Auth\Token\Exception\IssuedInTheFuture $e) {
+    echo $e->getMessage();
+} catch (\Firebase\Auth\Token\Exception\InvalidToken $e) {
+    echo $e->getMessage();
 }
 ```
 
