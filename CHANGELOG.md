@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.4.0 - 2017-03-15
 
 - Token verification now includes existence checks for claims (follow up to [kreait/firebase-php#70](https://github.com/kreait/firebase-php/issues/70))
 
