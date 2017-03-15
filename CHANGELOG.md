@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Token verification now includes existence checks for claims (follow up to [kreait/firebase-php#70](https://github.com/kreait/firebase-php/issues/70))
+
 ## 1.3.0 - 2017-03-02
 
 - Tokens that seem to be issued in the future now cause a `Firebase\Auth\Token\Exception\IssuedInTheFuture`

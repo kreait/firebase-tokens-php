@@ -126,11 +126,21 @@ class VerifierTest extends TestCase
         $builder = new Builder();
 
         return [
+            'no_exp_claim' => [
+                $builder->getToken(),
+                InvalidToken::class,
+            ],
             'expired' => [
                 $builder
                     ->setExpiration(time() - 10)
                     ->getToken(),
                 ExpiredToken::class,
+            ],
+            'no_iat_claim' => [
+                $builder
+                    ->setExpiration(time() + 1800)
+                    ->getToken(),
+                InvalidToken::class,
             ],
             'not_yet_issued' => [
                 $builder
@@ -138,6 +148,13 @@ class VerifierTest extends TestCase
                     ->setIssuedAt(time() + 1800)
                     ->getToken(),
                 IssuedInTheFuture::class,
+            ],
+            'no_iss_claim' => [
+                $builder
+                    ->setExpiration(time() + 1800)
+                    ->setIssuedAt(time() - 10)
+                    ->getToken(),
+                InvalidToken::class,
             ],
             'invalid_issuer' => [
                 $builder

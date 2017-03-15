@@ -52,6 +52,10 @@ final class Verifier implements Domain\Verifier
 
     private function verifyExpiry(Token $token)
     {
+        if (!$token->hasClaim('exp')) {
+            throw new InvalidToken($token, 'The claim "exp" is missing.');
+        }
+
         if ($token->isExpired()) {
             throw new ExpiredToken($token);
         }
@@ -59,6 +63,10 @@ final class Verifier implements Domain\Verifier
 
     private function verifyIssuedAt(Token $token)
     {
+        if (!$token->hasClaim('iat')) {
+            throw new InvalidToken($token, 'The claim "iat" is missing.');
+        }
+
         if ($token->getClaim('iat') > time()) {
             throw new IssuedInTheFuture($token);
         }
@@ -66,6 +74,10 @@ final class Verifier implements Domain\Verifier
 
     private function verifyIssuer(Token $token)
     {
+        if (!$token->hasClaim('iss')) {
+            throw new InvalidToken($token, 'The claim "iss" is missing.');
+        }
+
         if ($token->getClaim('iss') !== sprintf('https://securetoken.google.com/%s', $this->projectId)) {
             throw new InvalidToken($token, 'This token has an invalid issuer.');
         }
@@ -73,11 +85,11 @@ final class Verifier implements Domain\Verifier
 
     private function getKey(Token $token): string
     {
-        try {
-            $keyId = $token->getHeader('kid');
-        } catch (\OutOfBoundsException $e) {
-            throw new InvalidToken($token, 'This token misses the "kid" header.');
+        if (!$token->hasHeader('kid')) {
+            throw new InvalidToken($token, 'The header "kid" is missing.');
         }
+
+        $keyId = $token->getHeader('kid');
 
         try {
             return $this->keys->get($keyId);
