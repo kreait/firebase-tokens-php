@@ -2,6 +2,7 @@
 
 namespace Firebase\Auth\Token;
 
+use Firebase\Auth\Token\Domain\KeyStore;
 use Lcobucci\JWT\Token;
 
 final class Handler implements Domain\Generator, Domain\Verifier
@@ -16,10 +17,10 @@ final class Handler implements Domain\Generator, Domain\Verifier
      */
     private $verifier;
 
-    public function __construct(string $projectId, string $clientEmail, string $privateKey)
+    public function __construct(string $projectId, string $clientEmail, string $privateKey, KeyStore $keyStore = null)
     {
         $this->generator = new Generator($clientEmail, $privateKey);
-        $this->verifier = new Verifier($projectId);
+        $this->verifier = new Verifier($projectId, $keyStore ?? new HttpKeyStore());
     }
 
     public function createCustomToken($uid, array $claims = []): Token
