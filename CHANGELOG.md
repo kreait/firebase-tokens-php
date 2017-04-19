@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.5.0 - 2017-04-03
 
 - Allow the usage of a custom key store when using the Handler.
 
