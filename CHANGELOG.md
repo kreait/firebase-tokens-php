@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Add missing `$expiresAt` parameter when creating a custom token with the Handler.
+
 ## 1.6.0 - 2017-07-12
 
 - Allow a custom expiration time for custom tokens. 

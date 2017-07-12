@@ -25,7 +25,7 @@ final class Handler implements Domain\Generator, Domain\Verifier
 
     public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
     {
-        return $this->generator->createCustomToken($uid, $claims);
+        return $this->generator->createCustomToken($uid, $claims, $expiresAt);
     }
 
     public function verifyIdToken($token): Token
