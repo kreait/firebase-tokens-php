@@ -46,12 +46,13 @@ final class Generator implements Domain\Generator
      *
      * @param mixed $uid
      * @param array $claims
+     * @param \DateTimeInterface $expiresAt
      *
      * @throws \BadMethodCallException when a claim is invalid
      *
      * @return Token
      */
-    public function createCustomToken($uid, array $claims = []): Token
+    public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
     {
         if (count($claims)) {
             $this->builder->set('claims', $claims);
@@ -60,10 +61,11 @@ final class Generator implements Domain\Generator
         $this->builder->set('uid', (string) $uid);
 
         $now = time();
+        $expiration = $expiresAt ? $expiresAt->getTimestamp() : $now + (60 * 60);
 
         return $this->builder
             ->setIssuedAt($now)
-            ->setExpiration($now + (60 * 60))
+            ->setExpiration($expiration)
             ->sign($this->signer, $this->privateKey)
             ->getToken();
     }

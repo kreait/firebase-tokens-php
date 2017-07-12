@@ -30,4 +30,13 @@ class GeneratorTest extends TestCase
 
         $this->assertInstanceOf(Token::class, $token);
     }
+
+    public function testCreateCustomTokenWithCustomExpiration()
+    {
+        $expiresAt = (new \DateTimeImmutable())->modify(random_int(1, 3600).' minutes');
+
+        $token = $this->generator->createCustomToken('some-uid', [], $expiresAt);
+
+        $this->assertSame($expiresAt->getTimestamp(), $token->getClaim('exp'));
+    }
 }

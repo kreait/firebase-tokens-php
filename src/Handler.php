@@ -23,7 +23,7 @@ final class Handler implements Domain\Generator, Domain\Verifier
         $this->verifier = new Verifier($projectId, $keyStore ?? new HttpKeyStore());
     }
 
-    public function createCustomToken($uid, array $claims = []): Token
+    public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
     {
         return $this->generator->createCustomToken($uid, $claims);
     }
