@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.6.0 - 2017-07-12
 
 - Allow a custom expiration time for custom tokens. 
 
