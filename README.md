@@ -53,8 +53,7 @@ try {
 ### Cache results from the Google Secure Token Store
 
 In order to verify ID tokens, the verifier makes a call to fetch Firebase's currently available public
-keys. The keys are cached in memory, so that two verifications in the same PHP process result in 
-only one HTTP call to the .
+keys. The keys are cached in memory by default.
 
 If you want to cache the public keys more effectively, you can use any [implementation of 
 psr/simple-cache](https://packagist.org/providers/psr/simple-cache-implementation).
