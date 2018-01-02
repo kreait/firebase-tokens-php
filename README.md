@@ -5,7 +5,7 @@
 
 A library to work with [Google Firebase](https://firebase.google.com) tokens. You can use it to 
 [create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens) and 
-[verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
+[verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens). 
 
 ## Installation
 
@@ -48,6 +48,28 @@ try {
 } catch (\Firebase\Auth\Token\Exception\InvalidToken $e) {
     echo $e->getMessage();
 }
+```
+
+### Cache results from the Google Secure Token Store
+
+In order to verify ID tokens, the verifier makes a call to fetch Firebase's currently available public
+keys. The keys are cached in memory, so that two verifications in the same PHP process result in 
+only one HTTP call to the .
+
+If you want to cache the public keys more effectively, you can use any [implementation of 
+psr/simple-cache](https://packagist.org/providers/psr/simple-cache-implementation).
+
+Example using the [Symfony Cache Component](https://symfony.com/doc/current/components/cache.html)
+
+```php
+use Firebase\Auth\Token\HttpKeyStore;
+use Firebase\Auth\Token\Verifier;
+use Symfony\Component\Cache\Simple\FilesystemCache;
+
+$cache = new FilesystemCache();
+$keyStore = new HttpKeyStore(null, $cache);
+
+$verifier = new Verifier($projectId, $keyStore); 
 ```
 
 ## Firebase Token Handler
