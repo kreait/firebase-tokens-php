@@ -2,12 +2,12 @@
 
 namespace Firebase\Auth\Token\Tests;
 
-use Firebase\Auth\Token\ArrayKeyStore;
 use Firebase\Auth\Token\Domain\KeyStore;
 use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Exception\IssuedInTheFuture;
 use Firebase\Auth\Token\Exception\UnknownKey;
+use Firebase\Auth\Token\Tests\Util\ArrayKeyStore;
 use Firebase\Auth\Token\Verifier;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer;
@@ -33,6 +33,7 @@ class VerifierTest extends TestCase
     protected function setUp()
     {
         $this->keyStore = new ArrayKeyStore(['valid_key_id' => 'valid_key']);
+
         $this->signer = $this->createMockSigner();
 
         $this->verifier = new Verifier('project-id', $this->keyStore, $this->signer);
