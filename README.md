@@ -71,16 +71,3 @@ $keyStore = new HttpKeyStore(null, $cache);
 
 $verifier = new Verifier($projectId, $keyStore); 
 ```
-
-## Firebase Token Handler
-
-`Firebase\Auth\Token\Handler` combines the Generator and the Verifier:
-
-```php
-use Firebase\Auth\Token\Handler;
-
-$handler = new Handler($projectId, $clientEmail, $privateKey);
-
-$customToken = $handler->createCustomToken($uid, $claims);
-$verifiedIdToken = $handler->verifyIdToken($idTokenString);
-```
