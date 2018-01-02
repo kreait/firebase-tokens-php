@@ -18,8 +18,9 @@
         "guzzlehttp/guzzle": "^6.2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0",
-        "friendsofphp/php-cs-fixer": "^2.0"
+        "friendsofphp/php-cs-fixer": "^2.0",
+        "phpstan/phpstan-phpunit": "^0.9.3",
+        "phpunit/phpunit": "^6.0"
     },
     "autoload": {
         "psr-4": {
