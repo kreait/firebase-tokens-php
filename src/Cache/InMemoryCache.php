@@ -23,7 +23,7 @@ final class InMemoryCache implements CacheInterface
     public function get($key, $default = null)
     {
         if ($item = $this->items[$key] ?? null) {
-            list($expiresAt, $value) = $this->items[$key];
+            list($expiresAt, $value) = $item;
 
             if (!$expiresAt || (new \DateTime() < $expiresAt)) {
                 return $value;
@@ -98,7 +98,7 @@ final class InMemoryCache implements CacheInterface
     public function has($key)
     {
         if ($item = $this->items[$key] ?? null) {
-            $expiresAt = $this->items[$key][0];
+            $expiresAt = $item[0];
 
             if (!$expiresAt || (new \DateTime() < $expiresAt)) {
                 return true;
