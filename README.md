@@ -2,6 +2,9 @@
 
 [![Latest Stable Version](https://poser.pugx.org/kreait/firebase-tokens/v/stable)](https://packagist.org/packages/kreait/firebase-tokens)
 [![Total Downloads](https://poser.pugx.org/kreait/firebase-tokens/downloads)](https://packagist.org/packages/kreait/firebase-tokens)
+[![Build Status](https://travis-ci.org/kreait/firebase-tokens-php.svg?branch=master)](https://travis-ci.org/kreait/firebase-tokens-php)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/?branch=master)
 
 A library to work with [Google Firebase](https://firebase.google.com) tokens. You can use it to 
 [create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens) and 
