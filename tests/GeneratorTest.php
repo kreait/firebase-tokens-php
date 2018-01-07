@@ -39,4 +39,12 @@ class GeneratorTest extends TestCase
 
         $this->assertSame($expiresAt->getTimestamp(), $token->getClaim('exp'));
     }
+
+    public function testCreateMultipleCustomTokens()
+    {
+        $this->generator->createCustomToken('first');
+        $this->generator->createCustomToken('second');
+
+        $this->assertTrue($noExceptionWasThrown = true);
+    }
 }
