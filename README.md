@@ -8,7 +8,9 @@
 
 A library to work with [Google Firebase](https://firebase.google.com) tokens. You can use it to 
 [create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens) and 
-[verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens). 
+[verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
+
+Achieve more with the [Firebase Admin SDK](https://github.com/kreait/firebase-php) for PHP (which uses this library). 
 
 ## Installation
 
@@ -28,7 +30,7 @@ $claims = ['foo' => 'bar'];
 
 $token = $generator->createCustomToken($uid, $claims); // Returns a Lcobucci\JWT\Token instance
 
-echo $token; // "eyJ0eXAiOiJKV1..."
+echo $token;
 ```
 
 ## Verify an ID token
@@ -38,10 +40,8 @@ use Firebase\Auth\Token\Verifier;
 
 $verifier = new Verifier($projectId);
 
-$idTokenString = 'eyJhbGciOiJSUzI1...';
-
 try {
-    $verifiedIdToken = $verifier->verifyIdToken($idTokenString);
+    $verifiedIdToken = $verifier->verifyIdToken($idToken);
     
     echo $verifiedIdToken->getClaim('sub'); // "a-uid"
 } catch (\Firebase\Auth\Token\Exception\ExpiredToken $e) {
