@@ -43,6 +43,7 @@ final class Verifier implements Domain\Verifier
         }
 
         $this->verifyExpiry($token);
+        $this->verifyAuthTime($token);
         $this->verifyIssuedAt($token);
         $this->verifyIssuer($token);
         $this->verifySignature($token, $this->getKey($token));
@@ -58,6 +59,17 @@ final class Verifier implements Domain\Verifier
 
         if ($token->isExpired()) {
             throw new ExpiredToken($token);
+        }
+    }
+
+    private function verifyAuthTime(Token $token)
+    {
+        if (!$token->hasClaim('auth_time')) {
+            throw new InvalidToken($token, 'The claim "auth_time" is missing.');
+        }
+
+        if ($token->getClaim('auth_time') > time()) {
+            throw new InvalidToken($token, "The user's authentication time must be in the past");
         }
     }
 

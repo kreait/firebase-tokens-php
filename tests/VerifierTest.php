@@ -73,6 +73,7 @@ class VerifierTest extends TestCase
     {
         $token = (new Builder())
             ->setExpiration(time() + 1800)
+            ->set('auth_time', time() - 1800)
             ->setIssuedAt(time() - 10)
             ->setIssuer('https://securetoken.google.com/project-id')
             ->setHeader('kid', 'invalid_key_id')
@@ -99,6 +100,7 @@ class VerifierTest extends TestCase
         return [
             [(new Builder())
                 ->setExpiration(time() + 1800)
+                ->set('auth_time', time() - 1800)
                 ->setIssuedAt(time() - 10)
                 ->setIssuer('https://securetoken.google.com/project-id')
                 ->setHeader('kid', 'valid_key_id')
@@ -113,6 +115,7 @@ class VerifierTest extends TestCase
         return [
             [(string) (new Builder())
                 ->setExpiration(time() + 1800)
+                ->set('auth_time', time() - 1800)
                 ->setIssuedAt(time() - 10)
                 ->setIssuer('https://securetoken.google.com/project-id')
                 ->setHeader('kid', 'valid_key_id')
@@ -137,15 +140,24 @@ class VerifierTest extends TestCase
                     ->getToken(),
                 ExpiredToken::class,
             ],
+            'not_issued_in_the_past' => [
+                $builder
+                    ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() + 1800)
+                    ->getToken(),
+                InvalidToken::class,
+            ],
             'no_iat_claim' => [
                 $builder
                     ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
                     ->getToken(),
                 InvalidToken::class,
             ],
             'not_yet_issued' => [
                 $builder
                     ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() + 1800)
                     ->getToken(),
                 IssuedInTheFuture::class,
@@ -153,6 +165,7 @@ class VerifierTest extends TestCase
             'no_iss_claim' => [
                 $builder
                     ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
                     ->getToken(),
                 InvalidToken::class,
@@ -160,6 +173,7 @@ class VerifierTest extends TestCase
             'invalid_issuer' => [
                 $builder
                     ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('invalid_issuer')
                     ->getToken(),
@@ -168,6 +182,7 @@ class VerifierTest extends TestCase
             'missing_key_id' => [
                 $builder
                     ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('https://securetoken.google.com/project-id')
                     ->getToken(),
@@ -176,6 +191,7 @@ class VerifierTest extends TestCase
             'unsigned' => [
                 $builder
                     ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('https://securetoken.google.com/project-id')
                     ->setHeader('kid', 'valid_key_id')
@@ -185,6 +201,7 @@ class VerifierTest extends TestCase
             'invalid_signature' => [
                 $builder
                     ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('https://securetoken.google.com/project-id')
                     ->setHeader('kid', 'valid_key_id')

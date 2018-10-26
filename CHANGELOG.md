@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- ID Tokens must have a valid "auth_time" claim.
+
 ## 1.7.1 - 2018-01-07
 
 - Fix bug that not more than one custom token could be created at a time.
