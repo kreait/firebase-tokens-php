@@ -4,6 +4,7 @@ namespace Firebase\Auth\Token\Tests;
 
 use Firebase\Auth\Token\Domain\KeyStore;
 use Firebase\Auth\Token\Exception\ExpiredToken;
+use Firebase\Auth\Token\Exception\InvalidSignature;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Exception\IssuedInTheFuture;
 use Firebase\Auth\Token\Exception\UnknownKey;
@@ -83,6 +84,21 @@ class VerifierTest extends TestCase
         $this->verifier->verifyIdToken($token);
     }
 
+    public function testItVerifiesTheSignatureNoMatterWhat()
+    {
+        $token = (new Builder())
+            ->setExpiration(time() + 1800)
+            ->set('auth_time', time() - 1800)
+            ->setIssuedAt(time() - 10)
+            ->setIssuer('invalid') // Should not trigger
+            ->setHeader('kid', 'valid_key_id')
+            ->sign($this->createMockSigner(), 'invalid_key')
+            ->getToken();
+
+        $this->expectException(InvalidSignature::class);
+        $this->verifier->verifyIdToken($token);
+    }
+
     /**
      * @param Token $token
      * @param string $exception
@@ -127,69 +143,80 @@ class VerifierTest extends TestCase
 
     public function invalidTokenProvider()
     {
-        $builder = new Builder();
-
         return [
             'no_exp_claim' => [
-                $builder->getToken(),
+                (new Builder())->getToken(),
                 InvalidToken::class,
             ],
             'expired' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() - 10)
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
                     ->getToken(),
                 ExpiredToken::class,
             ],
             'not_issued_in_the_past' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() + 1800)
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
                     ->getToken(),
                 InvalidToken::class,
             ],
             'no_iat_claim' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() - 1800)
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
                     ->getToken(),
                 InvalidToken::class,
             ],
             'not_yet_issued' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() + 1800)
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
                     ->getToken(),
                 IssuedInTheFuture::class,
             ],
             'no_iss_claim' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
                     ->getToken(),
                 InvalidToken::class,
             ],
             'invalid_issuer' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('invalid_issuer')
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
                     ->getToken(),
                 InvalidToken::class,
             ],
             'missing_key_id' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
                     ->setIssuer('https://securetoken.google.com/project-id')
+                    ->sign($this->createMockSigner(), 'invalid_key')
                     ->getToken(),
                 InvalidToken::class,
             ],
             'unsigned' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
@@ -199,7 +226,7 @@ class VerifierTest extends TestCase
                 InvalidToken::class,
             ],
             'invalid_signature' => [
-                $builder
+                (new Builder())
                     ->setExpiration(time() + 1800)
                     ->set('auth_time', time() - 1800)
                     ->setIssuedAt(time() - 10)
@@ -207,7 +234,7 @@ class VerifierTest extends TestCase
                     ->setHeader('kid', 'valid_key_id')
                     ->sign($this->createMockSigner(), 'invalid_key')
                     ->getToken(),
-                InvalidToken::class,
+                InvalidSignature::class,
             ],
         ];
     }
