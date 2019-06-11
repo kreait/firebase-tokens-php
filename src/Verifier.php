@@ -30,6 +30,8 @@ final class Verifier implements Domain\Verifier
      */
     private $signer;
 
+    private $clockSkewSeconds = 5 * 60;
+
     public function __construct(string $projectId, KeyStore $keys = null, Signer $signer = null)
     {
         $this->projectId = $projectId;
@@ -80,7 +82,7 @@ final class Verifier implements Domain\Verifier
             throw new InvalidToken($token, 'The claim "auth_time" is missing.');
         }
 
-        if ($token->getClaim('auth_time') > time()) {
+        if ($token->getClaim('auth_time') - $this->clockSkewSeconds > time()) {
             throw new InvalidToken($token, "The user's authentication time must be in the past");
         }
     }
@@ -91,7 +93,7 @@ final class Verifier implements Domain\Verifier
             throw new InvalidToken($token, 'The claim "iat" is missing.');
         }
 
-        if ($token->getClaim('iat') > time()) {
+        if ($token->getClaim('iat') - $this->clockSkewSeconds > time()) {
             throw new IssuedInTheFuture($token);
         }
     }
