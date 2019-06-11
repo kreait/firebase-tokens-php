@@ -30,6 +30,13 @@ final class Verifier implements Domain\Verifier
      */
     private $signer;
 
+    /**
+     * @see https://github.com/firebase/firebase-admin-dotnet/pull/29
+     *
+     * @var int
+     */
+    private $leewayInSeconds = 300;
+
     public function __construct(string $projectId, KeyStore $keys = null, Signer $signer = null)
     {
         $this->projectId = $projectId;
@@ -80,7 +87,9 @@ final class Verifier implements Domain\Verifier
             throw new InvalidToken($token, 'The claim "auth_time" is missing.');
         }
 
-        if ($token->getClaim('auth_time') > time()) {
+        $authTimeWithLeeway = $token->getClaim('auth_time') - $this->leewayInSeconds;
+
+        if ($authTimeWithLeeway > time()) {
             throw new InvalidToken($token, "The user's authentication time must be in the past");
         }
     }
@@ -91,7 +100,9 @@ final class Verifier implements Domain\Verifier
             throw new InvalidToken($token, 'The claim "iat" is missing.');
         }
 
-        if ($token->getClaim('iat') > time()) {
+        $iatWithLeeway = $token->getClaim('iat') - $this->leewayInSeconds;
+
+        if ($iatWithLeeway > time()) {
             throw new IssuedInTheFuture($token);
         }
     }
