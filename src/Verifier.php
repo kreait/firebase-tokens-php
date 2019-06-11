@@ -1,7 +1,7 @@
 <?php
 
 namespace Firebase\Auth\Token;
-
+// test
 use Firebase\Auth\Token\Domain\KeyStore;
 use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidSignature;
