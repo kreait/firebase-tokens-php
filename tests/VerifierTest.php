@@ -156,6 +156,14 @@ class VerifierTest extends TestCase
                     ->getToken(),
                 ExpiredToken::class,
             ],
+            'no_auth_time_claim' => [
+                (new Builder())
+                    ->setExpiration(time() + 1800)
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
+                    ->getToken(),
+                InvalidToken::class,
+            ],
             'not_issued_in_the_past' => [
                 (new Builder())
                     ->setExpiration(time() + 1800)
