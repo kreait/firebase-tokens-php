@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased
+
+- The "auth_time" and "iat" claims are now verified with a 5 minute leeway, 
+  this is the [same behaviour as in the Firebase Admin .NET SDK](https://github.com/firebase/firebase-admin-dotnet/pull/29) 
+  (thanks [@navee85](https://github.com/navee85))
+
 ## 1.7.2 - 2018-10-27
 
 - ID Tokens must have a valid "auth_time" claim.
