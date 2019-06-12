@@ -11,6 +11,7 @@ use Firebase\Auth\Token\Exception\UnknownKey;
 use Firebase\Auth\Token\Tests\Util\ArrayKeyStore;
 use Firebase\Auth\Token\Verifier;
 use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 
@@ -43,10 +44,12 @@ class VerifierTest extends TestCase
     /**
      * @param Token $token
      *
-     * @dataProvider validTokenProvider
+     * @dataProvider validTokenStringProvider
      */
     public function testItSucceedsWithAValidToken($token)
     {
+        $token = (new Parser())->parse($token);
+
         $this->signer
             ->expects($this->once())
             ->method('verify')
@@ -111,10 +114,10 @@ class VerifierTest extends TestCase
         $this->verifier->verifyIdToken($token);
     }
 
-    public function validTokenProvider()
+    public function validTokenStringProvider()
     {
         return [
-            [(new Builder())
+            'fully_valid' => [(string) (new Builder())
                 ->setExpiration(time() + 1800)
                 ->set('auth_time', time() - 1800)
                 ->setIssuedAt(time() - 10)
@@ -123,20 +126,25 @@ class VerifierTest extends TestCase
                 ->sign($this->createMockSigner(), 'valid_key')
                 ->getToken(),
             ],
-        ];
-    }
-
-    public function validTokenStringProvider()
-    {
-        return [
-            [(string) (new Builder())
-                ->setExpiration(time() + 1800)
-                ->set('auth_time', time() - 1800)
-                ->setIssuedAt(time() - 10)
-                ->setIssuer('https://securetoken.google.com/project-id')
-                ->setHeader('kid', 'valid_key_id')
-                ->sign($this->createMockSigner(), 'valid_key')
-                ->getToken(),
+            'needing_leeway_for_iat' => [
+                (string) (new Builder())
+                    ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
+                    ->setIssuedAt(time() + 299)
+                    ->setIssuer('https://securetoken.google.com/project-id')
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
+                    ->getToken(),
+            ],
+            'needing_leeway_for_auth_time' => [
+                (string) (new Builder())
+                    ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() + 299)
+                    ->setIssuedAt(time() - 10)
+                    ->setIssuer('https://securetoken.google.com/project-id')
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
+                    ->getToken(),
             ],
         ];
     }
