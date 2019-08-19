@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- `Firebase\Auth\Token\Exception\InvalidToken` can now have any `Throwable` as the `$previous` parameter.
+
 ## 1.8.0 - 2019-06-12
 
 - The "auth_time" and "iat" claims are now verified with a 5 minute leeway, 
