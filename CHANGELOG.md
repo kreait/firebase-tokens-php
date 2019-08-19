@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.8.1 - 2019-08-20
 
 - `Firebase\Auth\Token\Exception\InvalidToken` can now have any `Throwable` as the `$previous` parameter.
 
