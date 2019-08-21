@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Firebase\\Auth\\Token\\": "src"
+            "Firebase\\Auth\\Token\\": "src/Firebase/Auth/Token"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Firebase\\Auth\\Token\\Tests\\": "tests"
+            "Firebase\\Auth\\Token\\Tests\\": "tests/Firebase/Auth/Token"
         }
     },
     "config": {

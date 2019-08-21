@@ -2,8 +2,8 @@
 
 namespace Firebase\Auth\Token\Exception;
 
-use Throwable;
 use Lcobucci\JWT\Token;
+use Throwable;
 
 class InvalidToken extends \InvalidArgumentException
 {

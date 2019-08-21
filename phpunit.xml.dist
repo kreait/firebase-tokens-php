@@ -7,7 +7,7 @@
          verbose="true"
          colors="true">
     <testsuite name="Firebase Token Tests">
-        <directory suffix="Test.php">tests</directory>
+        <directory>tests/Firebase/Auth/Token</directory>
     </testsuite>
 
     <filter>

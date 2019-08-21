@@ -3,7 +3,7 @@
 
 tests: ## Executes the test suite
 	vendor/bin/phpunit
-	vendor/bin/phpstan analyse src -c phpstan.neon --level=6 --no-progress -vvv
+	vendor/bin/phpstan analyse src -c phpstan.neon --level=max --no-progress -vvv
 
 coverage: ## Executes the test suite and generates code coverage reports
 	@vendor/bin/phpunit --coverage-html=build/coverage
@@ -13,12 +13,6 @@ view-coverage: ## Shows the code coverage report
 
 cs: ## Fixes coding standard problems
 	@vendor/bin/php-cs-fixer fix || true
-
-docs: ## Builds the documentation
-	$(MAKE) -C docs html
-
-view-docs: ## Shows the documentation
-	open docs/_build/html/index.html
 
 tag: ## Creates a new signed git tag
 	$(if $(TAG),,$(error TAG is not defined. Pass via "make tag TAG=2.0.1"))
