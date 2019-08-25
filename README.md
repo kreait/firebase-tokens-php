@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/kreait/firebase-tokens-php.svg?branch=master)](https://travis-ci.org/kreait/firebase-tokens-php)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kreait/firebase-tokens-php/?branch=master)
+[![Discord](https://img.shields.io/discord/523866370778333184.svg?color=7289da&logo=discord)](https://discord.gg/nbgVfty)
 
 A library to work with [Google Firebase](https://firebase.google.com) tokens. You can use it to 
 [create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens) and 
@@ -14,43 +15,62 @@ Achieve more with the [Firebase Admin SDK](https://github.com/kreait/firebase-ph
 
 ## Installation
 
-```
+```bash
 composer require kreait/firebase-tokens
 ```
 
-## Create a custom token
+## Simple usage
+
+### Create a custom token
 
 ```php
-use Firebase\Auth\Token\Generator;
+<?php
 
-$generator = new Generator($clientEmail, $privateKey);
+use Kreait\Firebase\JWT\CustomTokenGenerator;
 
-$uid = 'a-uid';
-$claims = ['foo' => 'bar'];
+$clientEmail = '...';
+$privateKey = '...';
 
-$token = $generator->createCustomToken($uid, $claims); // Returns a Lcobucci\JWT\Token instance
+$generator = CustomTokenGenerator::withClientEmailAndPrivateKey($clientEmail, $privateKey);
+$customToken = $generator->createCustomToken('uid', ['first_claim' => 'first_value' /* ... */]);
 
-echo $token;
+echo $customToken;
+// Output: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.e...
 ```
 
-## Verify an ID token
+### Verify an ID token
 
 ```php
-use Firebase\Auth\Token\Verifier;
+<?php
 
-$verifier = new Verifier($projectId);
+use Kreait\Firebase\JWT\Action\VerifyIdToken\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\IdTokenVerifier;
+
+$projectId = '...';
+$idToken = '...';
+
+$verifier = IdTokenVerifier::createWithProjectId($projectId);
 
 try {
-    $verifiedIdToken = $verifier->verifyIdToken($idToken);
-    
-    echo $verifiedIdToken->getClaim('sub'); // "a-uid"
-} catch (\Firebase\Auth\Token\Exception\ExpiredToken $e) {
+    $token = $verifier->verifyIdToken($idToken);
+} catch (IdTokenVerificationFailed $e) {
     echo $e->getMessage();
-} catch (\Firebase\Auth\Token\Exception\IssuedInTheFuture $e) {
-    echo $e->getMessage();
-} catch (\Firebase\Auth\Token\Exception\InvalidToken $e) {
-    echo $e->getMessage();
+    // Example Output:
+    // The value 'eyJhbGciOiJSUzI...' is not a verified ID token:
+    // - The token is expired.
+    exit;
 }
+
+try {
+    $token = $verifier->verifyIdTokenWithLeeway($idToken, $leewayInSeconds = 10000000);
+} catch (IdTokenVerificationFailed $e) {
+    print $e->getMessage();
+    exit;
+}
+
+print_r($token->headers());
+print_r($token->payload());
+
 ```
 
 ### Cache results from the Google Secure Token Store
@@ -58,18 +78,21 @@ try {
 In order to verify ID tokens, the verifier makes a call to fetch Firebase's currently available public
 keys. The keys are cached in memory by default.
 
-If you want to cache the public keys more effectively, you can use any [implementation of 
-psr/simple-cache](https://packagist.org/providers/psr/simple-cache-implementation).
+If you want to cache the public keys more effectively, you can use an implementation of 
+[psr/simple-cache](https://packagist.org/providers/psr/simple-cache-implementation) or
+[psr/cache](https://packagist.org/providers/psr/cache-implementation) to wrap the 
 
 Example using the [Symfony Cache Component](https://symfony.com/doc/current/components/cache.html)
 
 ```php
-use Firebase\Auth\Token\HttpKeyStore;
-use Firebase\Auth\Token\Verifier;
+use Kreait\Firebase\JWT\IdTokenVerifier;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 
 $cache = new FilesystemCache();
-$keyStore = new HttpKeyStore(null, $cache);
 
-$verifier = new Verifier($projectId, $keyStore); 
+$verifier = IdTokenVerifier::createWithProjectIdAndCache($projectId, $cache);
 ```
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE) for more information.

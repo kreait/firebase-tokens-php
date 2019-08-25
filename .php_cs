@@ -13,5 +13,6 @@ return PhpCsFixer\Config::create()
         'phpdoc_order' => true,
         'ordered_imports' => true,
         'array_syntax' => ['syntax' => 'short'],
+        'yoda_style' => false,
     ])
     ->setFinder($finder);

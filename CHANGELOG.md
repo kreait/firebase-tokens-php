@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Unreleased
+
+- Re-implemented the functionality in the `Kreait\Firebase\JWT` namespace.
+- Added `Kreait\Firebase\JWT\CustomTokenGenerator` as the recommended replacement for `Firebase\Auth\Token\Generator`
+- Added `Kreait\Firebase\JWT\IdTokenVerifier` as the recommended replacement for `Firebase\Auth\Token\Verifier`
+- After updating, please refer to the [Migration Documentation](MIGRATE-1.x-to-2.0.md) to be ready for the 2.0 release of this library.
+
 ## 1.8.1 - 2019-08-20
 
 - `Firebase\Auth\Token\Exception\InvalidToken` can now have any `Throwable` as the `$previous` parameter.

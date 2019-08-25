@@ -6,9 +6,16 @@
          beStrictAboutTodoAnnotatedTests="true"
          verbose="true"
          colors="true">
-    <testsuite name="Firebase Token Tests">
-        <directory>tests/Firebase/Auth/Token</directory>
-    </testsuite>
+
+    <testsuites>
+        <testsuite name="Firebase Token Tests">
+            <directory>tests/Firebase/Auth/Token</directory>
+        </testsuite>
+
+        <testsuite name="Firebase JWT Tests">
+            <directory>tests/JWT</directory>
+        </testsuite>
+    </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
