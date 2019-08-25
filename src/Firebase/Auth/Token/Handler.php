@@ -6,7 +6,10 @@ use Firebase\Auth\Token\Domain\KeyStore;
 use Lcobucci\JWT\Token;
 
 /**
- * @deprecated 1.7.0 Use the Generator and Verifier directly instead
+ * @deprecated 1.9.0
+ * @see \Kreait\Firebase\JWT\IdTokenVerifier
+ * @see \Kreait\Firebase\JWT\CustomTokenGenerator
+ *
  * @codeCoverageIgnore
  */
 final class Handler implements Domain\Generator, Domain\Verifier

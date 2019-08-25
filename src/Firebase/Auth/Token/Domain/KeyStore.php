@@ -2,6 +2,9 @@
 
 namespace Firebase\Auth\Token\Domain;
 
+/**
+ * @deprecated 1.9.0
+ */
 interface KeyStore
 {
     /**

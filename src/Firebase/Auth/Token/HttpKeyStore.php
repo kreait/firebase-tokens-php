@@ -26,6 +26,9 @@ final class HttpKeyStore implements KeyStore
      */
     private $cache;
 
+    /**
+     * @deprecated 1.9.0
+     */
     public function __construct(ClientInterface $client = null, CacheInterface $cache = null)
     {
         $this->client = $client ?? new Client();

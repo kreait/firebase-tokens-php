@@ -29,6 +29,10 @@ final class Generator implements Domain\Generator
      */
     private $signer;
 
+    /**
+     * @deprecated 1.9.0
+     * @see \Kreait\Firebase\JWT\CustomTokenGenerator
+     */
     public function __construct(
         string $clientEmail,
         string $privateKey,
