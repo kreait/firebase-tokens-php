@@ -57,7 +57,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->keys = StaticKeys::empty();
 
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->expectExceptionMessageRegExp('/keys/i');
         $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->build()));
     }
 
@@ -65,7 +64,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function it_rejects_a_malformed_token()
     {
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->expectExceptionMessageRegExp('/malformed/i');
         $this->createHandler()->handle(VerifyIdToken::withToken('x'.$this->idToken->build()));
     }
 
@@ -140,7 +138,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             ->build();
 
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->expectExceptionMessageRegExp('/future/i');
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
 
@@ -152,7 +149,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             ->build();
 
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->expectExceptionMessageRegExp('/auth.*time/i');
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
 
@@ -162,7 +158,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $idToken = $this->idToken->withChangedClaim('aud', 'wrong-project-id')->build();
 
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->expectExceptionMessageRegExp('/audience/i');
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
 
@@ -172,7 +167,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $idToken = $this->idToken->withChangedClaim('iss', 'wrong')->build();
 
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->expectExceptionMessageRegExp('/issue/i');
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
 
@@ -182,7 +176,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $idToken = $this->idToken->withoutClaim('sub')->build();
 
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->expectExceptionMessageRegExp('/sub/i');
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
 }

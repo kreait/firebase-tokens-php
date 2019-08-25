@@ -14,7 +14,7 @@ use Lcobucci\JWT\Builder;
 
 final class WithHandlerDiscovery implements Handler
 {
-    /** @var Handler|null */
+    /** @var Handler */
     private $handler;
 
     public function __construct(string $projectId, Keys $keys, Clock $clock)

@@ -31,10 +31,9 @@ final class GooglePublicKeys implements Keys
 
     public function all(): array
     {
-        $keysAreNotThere = $this->keys === null;
         $keysAreThereButExpired = $this->keys instanceof Expirable && $this->keys->isExpiredAt($this->clock->now());
 
-        if ($keysAreNotThere || $keysAreThereButExpired) {
+        if (!$this->keys || $keysAreThereButExpired) {
             $this->keys = $this->handler->handle(FetchGooglePublicKeys::fromGoogle());
             // There is a small chance that we get keys that are already expired, but at this point we're happy
             // that we got keys at all. The next time this method gets called, we will re-fetch.
