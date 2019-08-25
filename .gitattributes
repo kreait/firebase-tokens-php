@@ -9,3 +9,5 @@
 /phpstan.neon export-ignore
 /phpunit.xml.dist export-ignore
 /tests export-ignore
+
+/sonar-project.properties export-ignore

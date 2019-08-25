@@ -51,7 +51,7 @@ final class WithLcobucciV3JWT implements Handler
         ;
 
         if (!empty($customClaims = $action->customClaims())) {
-            $builder = $builder->set('claims', $action->customClaims());
+            $builder = $builder->set('claims', $customClaims);
         }
 
         try {
