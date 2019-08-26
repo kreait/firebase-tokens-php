@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Bumped `kreait/clock` to `^1.0.1` (1.0.0 had PHPUnit required as a non-dev dependency)
+
 ## 1.9.0 - 2019-08-26
 
 - Re-implemented the functionality in the `Kreait\Firebase\JWT` namespace.
