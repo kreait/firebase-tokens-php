@@ -58,9 +58,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @test */
     public function it_creates_a_custom_token_with_a_default_expiration_time_of_one_hour()
     {
-        $token = $this->handler->handle(CreateCustomToken::forUid('uid'));
-
-        $payload = $token->payload();
+        $payload = $this->handler->handle(CreateCustomToken::forUid('uid'))->payload();
 
         $this->assertSame(self::$clock->now()->getTimestamp(), $payload['iat']);
         $this->assertSame(self::$clock->now()->modify('+1 hour')->getTimestamp(), $payload['exp']);
@@ -69,9 +67,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @test */
     public function it_does_not_add_custom_claims_when_none_are_given()
     {
-        $token = $this->handler->handle(CreateCustomToken::forUid('uid'));
-
-        $payload = $token->payload();
+        $payload = $this->handler->handle(CreateCustomToken::forUid('uid'))->payload();
 
         $this->assertArrayNotHasKey('claims', $payload);
     }

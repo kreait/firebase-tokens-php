@@ -13,8 +13,6 @@ use Psr\SimpleCache\CacheInterface;
 
 final class WithPsr16SimpleCache implements Handler
 {
-    const DEFAULT_TTL_IN_SECONDS = 3600;
-
     /** @var Handler */
     private $handler;
 
@@ -37,6 +35,7 @@ final class WithPsr16SimpleCache implements Handler
 
         $cacheKey = md5(get_class($action));
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         /** @var Keys|null $keys */
         $keys = $this->cache->get($cacheKey);
 
@@ -63,6 +62,7 @@ final class WithPsr16SimpleCache implements Handler
             ? $keys->expiresAt()->getTimestamp() - $now->getTimestamp()
             : $now->add($action->getFallbackCacheDuration())->getTimestamp() - $now->getTimestamp();
 
+        /* @noinspection PhpUnhandledExceptionInspection */
         $this->cache->set($cacheKey, $keys, $ttl);
 
         return $keys;

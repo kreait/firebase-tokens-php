@@ -13,8 +13,6 @@ use Psr\Cache\CacheItemPoolInterface;
 
 final class WithPsr6Cache implements Handler
 {
-    const DEFAULT_TTL_IN_SECONDS = 3600;
-
     /** @var Handler */
     private $handler;
 
@@ -36,6 +34,7 @@ final class WithPsr6Cache implements Handler
         $now = $this->clock->now();
         $cacheKey = md5(get_class($action));
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $cacheItem = $this->cache->getItem($cacheKey);
         /** @var Keys|null $keys */
         $keys = $cacheItem->get();

@@ -20,7 +20,7 @@ final class GooglePublicKeysTest extends TestCase
     /** @var FrozenClock */
     private $clock;
 
-    /** @var \Kreait\Firebase\JWT\GooglePublicKeys */
+    /** @var GooglePublicKeys */
     private $keys;
 
     /** @var ExpiringKeys */
