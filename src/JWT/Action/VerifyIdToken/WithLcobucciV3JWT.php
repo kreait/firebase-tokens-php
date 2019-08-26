@@ -6,9 +6,9 @@ namespace Kreait\Firebase\JWT\Action\VerifyIdToken;
 
 use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
-use Kreait\Firebase\JWT\Action\VerifyIdToken\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
+use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
 use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Parser;

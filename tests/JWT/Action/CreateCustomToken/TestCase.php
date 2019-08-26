@@ -7,8 +7,8 @@ namespace Kreait\Firebase\JWT\Tests\Action\CreateCustomToken;
 use DateTimeImmutable;
 use Kreait\Clock\FrozenClock;
 use Kreait\Firebase\JWT\Action\CreateCustomToken;
-use Kreait\Firebase\JWT\Action\CreateCustomToken\Error\CustomTokenCreationFailed;
 use Kreait\Firebase\JWT\Action\CreateCustomToken\Handler;
+use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
 
 /**
  * @internal

@@ -56,8 +56,8 @@ In 1.x, specialized exceptions types were thrown for different kind of errors.
 
 In 2.x, only one exception per action is thrown.
 
-- `Kreait\Firebase\JWT\Action\CreateCustomToken\Error\CustomTokenCreationFailed`
-- `Kreait\Firebase\JWT\Action\VerifyIdToken\Error\IdTokenVerificationFailed`
+- `Kreait\Firebase\JWT\Error\CustomTokenCreationFailed`
+- `Kreait\Firebase\JWT\Error\IdTokenVerificationFailed`
 
 ## Changed usage
 
@@ -121,7 +121,7 @@ try {
 ```php
 <?php
 
-use Kreait\Firebase\JWT\Action\VerifyIdToken\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\IdTokenVerifier;
 
 $verifier = IdTokenVerifier::createWithProjectId($projectId);

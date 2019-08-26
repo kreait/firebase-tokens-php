@@ -6,8 +6,8 @@ namespace Kreait\Firebase\JWT\Action\CreateCustomToken;
 
 use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\CreateCustomToken;
-use Kreait\Firebase\JWT\Action\CreateCustomToken\Error\CustomTokenCreationFailed;
 use Kreait\Firebase\JWT\Contract\Token;
+use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Claim;

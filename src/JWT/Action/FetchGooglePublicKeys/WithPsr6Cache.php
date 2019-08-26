@@ -6,9 +6,9 @@ namespace Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 
 use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
-use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Contract\Expirable;
 use Kreait\Firebase\JWT\Contract\Keys;
+use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Psr\Cache\CacheItemPoolInterface;
 
 final class WithPsr6Cache implements Handler

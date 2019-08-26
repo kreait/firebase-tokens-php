@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kreait\Firebase\JWT\Action\VerifyIdToken\Error;
+namespace Kreait\Firebase\JWT\Error;
 
 use RuntimeException;
 

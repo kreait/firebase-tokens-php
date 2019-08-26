@@ -8,8 +8,9 @@ use InvalidArgumentException;
 use Kreait\Clock\SystemClock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
-use Kreait\Firebase\JWT\Action\VerifyIdToken\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\Cache\InMemoryCache;
 use Kreait\Firebase\JWT\Contract\Token;
+use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Keys\GooglePublicKeys;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -26,11 +27,7 @@ final class IdTokenVerifier
 
     public static function createWithProjectId(string $projectId): self
     {
-        $clock = new SystemClock();
-        $keys = new GooglePublicKeys(new FetchGooglePublicKeys\WithHandlerDiscovery($clock), $clock);
-        $handler = new VerifyIdToken\WithHandlerDiscovery($projectId, $keys, $clock);
-
-        return new self($handler);
+        return self::createWithProjectIdAndCache($projectId, InMemoryCache::createEmpty());
     }
 
     public static function createWithProjectIdAndCache(string $projectId, $cache): self

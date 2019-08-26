@@ -17,6 +17,14 @@ Achieve more with the [Firebase Admin SDK](https://github.com/kreait/firebase-ph
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=kreait_firebase-tokens-php&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=kreait_firebase-tokens-php)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kreait_firebase-tokens-php&metric=coverage)](https://sonarcloud.io/dashboard?id=kreait_firebase-tokens-php) 
 
+- [Installation](#installation)
+- [Simple Usage](#simple-usage)
+  - [Create a custom token](#create-a-custom-token)
+  - [Verify an ID token](#verify-an-id-token)
+  - [Tokens](#tokens)
+- [Advanced Usage](#advanced-usage)
+  - [Cache results from the Google Secure Token Store](#cache-results-from-the-google-secure-token-store)
+
 ## Installation
 
 ```bash
@@ -36,9 +44,9 @@ $clientEmail = '...';
 $privateKey = '...';
 
 $generator = CustomTokenGenerator::withClientEmailAndPrivateKey($clientEmail, $privateKey);
-$customToken = $generator->createCustomToken('uid', ['first_claim' => 'first_value' /* ... */]);
+$token = $generator->createCustomToken('uid', ['first_claim' => 'first_value' /* ... */]);
 
-echo $customToken;
+echo $token;
 // Output: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.e...
 ```
 
@@ -47,7 +55,7 @@ echo $customToken;
 ```php
 <?php
 
-use Kreait\Firebase\JWT\Action\VerifyIdToken\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\IdTokenVerifier;
 
 $projectId = '...';
@@ -71,11 +79,20 @@ try {
     print $e->getMessage();
     exit;
 }
-
-print_r($token->headers());
-print_r($token->payload());
-
 ```
+
+### Tokens
+
+Tokens returned from the Generator and Verifier are instances of `Kreait\Firebase\JWT\Token`.
+
+```php
+$tokenHeaders = $token->getHeaders(); // array
+$tokenPayload = token->getPayload(); // array
+$tokenString = $token->toString();
+$tokenString = (string) $token;
+```
+
+## Advanced usage
 
 ### Cache results from the Google Secure Token Store
 
