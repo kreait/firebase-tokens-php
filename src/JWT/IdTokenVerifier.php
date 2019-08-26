@@ -11,7 +11,6 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Cache\InMemoryCache;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
-use Kreait\Firebase\JWT\Keys\GooglePublicKeys;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
 

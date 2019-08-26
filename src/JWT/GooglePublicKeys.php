@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kreait\Firebase\JWT\Keys;
+namespace Kreait\Firebase\JWT;
 
 use Kreait\Clock;
 use Kreait\Clock\SystemClock;
