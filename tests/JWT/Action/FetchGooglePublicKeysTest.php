@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests\Action;
 
-use DateInterval;
 use DateTimeImmutable;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
+use Kreait\Firebase\JWT\Value\Duration;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -38,21 +38,15 @@ final class FetchGooglePublicKeysTest extends TestCase
         $now = new DateTimeImmutable();
 
         $fallbackCacheDuration = FetchGooglePublicKeys::fromGoogle()->getFallbackCacheDuration();
-        $expectedDuration = new DateInterval('PT1H');
-
-        // Date intervals cannot reliably be compared themselves, e.g. PT60M != PT1H
-        $this->assertSame(
-            $now->add($expectedDuration)->getTimestamp(),
-            $now->add($fallbackCacheDuration)->getTimestamp()
-        );
+        $this->assertTrue(Duration::make('PT1H')->equals($fallbackCacheDuration));
     }
 
     /** @test */
     public function its_fallback_cache_duration_can_be_changed()
     {
-        $duration = new DateInterval('PT13H37M');
+        $duration = 'PT13H37M';
         $action = FetchGooglePublicKeys::fromGoogle()->ifKeysDoNotExpireCacheFor($duration);
 
-        $this->assertSame($duration, $action->getFallbackCacheDuration());
+        $this->assertTrue(Duration::make($duration)->equals($action->getFallbackCacheDuration()));
     }
 }

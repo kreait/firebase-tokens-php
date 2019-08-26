@@ -39,7 +39,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $action = CreateCustomToken::forUid($uid = 'uid')
             ->withCustomClaims($claims = ['first_claim' => 'first_value', 'second_claim' => 'second_value'])
-            ->withExpirationTimeInSeconds($expirationTime = 13);
+            ->withTimeToLive($expirationTime = 13);
 
         $token = $this->handler->handle($action);
 

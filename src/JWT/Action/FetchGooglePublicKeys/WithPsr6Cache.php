@@ -70,7 +70,7 @@ final class WithPsr6Cache implements Handler
         if ($keys instanceof Expirable) {
             $cacheItem->expiresAt($keys->expiresAt());
         } else {
-            $cacheItem->expiresAfter($action->getFallbackCacheDuration());
+            $cacheItem->expiresAfter($action->getFallbackCacheDuration()->value());
         }
 
         $this->cache->save($cacheItem);

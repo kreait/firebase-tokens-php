@@ -9,6 +9,7 @@ use Kreait\Firebase\JWT\Action\CreateCustomToken\Handler;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\CustomTokenGenerator;
 use Kreait\Firebase\JWT\Token as TokenInstance;
+use Kreait\Firebase\JWT\Value\Duration;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -50,7 +51,7 @@ final class CustomTokenGeneratorTest extends TestCase
         $this->generator->createCustomToken('uid');
         $this->assertSame('uid', $this->handler->action->uid());
         $this->assertEmpty($this->handler->action->customClaims());
-        $this->assertSame(CreateCustomToken::DEFAULT_EXPIRATION_TIME_IN_SECONDS, $this->handler->action->expirationTimeInSeconds());
+        $this->assertTrue(Duration::fromDateIntervalSpec(CreateCustomToken::DEFAULT_TTL)->equals($this->handler->action->timeToLive()));
     }
 
     /** @test */
@@ -67,6 +68,6 @@ final class CustomTokenGeneratorTest extends TestCase
     {
         $this->generator->createCustomToken('uid', [], 1337);
 
-        $this->assertSame(1337, $this->handler->action->expirationTimeInSeconds());
+        $this->assertTrue(Duration::inSeconds(1337)->equals($this->handler->action->timeToLive()));
     }
 }

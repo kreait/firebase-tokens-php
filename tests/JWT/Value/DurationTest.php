@@ -60,7 +60,6 @@ class DurationTest extends TestCase
             'negative seconds' => [-1],
             'invalid spec' => ['P1H'], // should be PT1H
             'negative interval' => [$negativeInterval],
-            'invalid date string' => ['x seconds'],
         ];
     }
 

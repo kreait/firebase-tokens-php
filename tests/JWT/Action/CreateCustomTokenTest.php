@@ -20,7 +20,7 @@ final class CreateCustomTokenTest extends TestCase
     public function it_rejects_an_invalid_expiration_time_in_seconds(int $seconds)
     {
         $this->expectException(InvalidArgumentException::class);
-        CreateCustomToken::forUid('uid')->withExpirationTimeInSeconds($seconds);
+        CreateCustomToken::forUid('uid')->withTimeToLive($seconds);
     }
 
     public function invalidExpirationTimesInSeconds(): array
@@ -34,7 +34,7 @@ final class CreateCustomTokenTest extends TestCase
     /** @test */
     public function the_uid_can_be_changed()
     {
-        $action = CreateCustomToken::forUid('old')->withDifferentUid('new');
+        $action = CreateCustomToken::forUid('old')->withChangedUid('new');
 
         $this->assertSame('new', $action->uid());
     }

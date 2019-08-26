@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kreait\Firebase\JWT\Action;
 
 use DateInterval;
+use Kreait\Firebase\JWT\Value\Duration;
 
 final class FetchGooglePublicKeys
 {
@@ -12,11 +13,13 @@ final class FetchGooglePublicKeys
     const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
 
     private $url = self::DEFAULT_URL;
+
+    /** @var Duration */
     private $fallbackCacheDuration;
 
     private function __construct()
     {
-        $this->fallbackCacheDuration = new DateInterval(self::DEFAULT_FALLBACK_CACHE_DURATION);
+        $this->fallbackCacheDuration = Duration::fromDateIntervalSpec(self::DEFAULT_FALLBACK_CACHE_DURATION);
     }
 
     public static function fromGoogle(): self
@@ -35,8 +38,16 @@ final class FetchGooglePublicKeys
         return $action;
     }
 
-    public function ifKeysDoNotExpireCacheFor(DateInterval $duration): self
+    /**
+     * A response from the Google APIs should have a cache control header that determines when the keys expire.
+     * If it doesn't have one, fall back to this value.
+     *
+     * @param Duration|DateInterval|string| int $duration
+     */
+    public function ifKeysDoNotExpireCacheFor($duration): self
     {
+        $duration = Duration::make($duration);
+
         $action = new self();
         $action->fallbackCacheDuration = $duration;
 
@@ -48,7 +59,7 @@ final class FetchGooglePublicKeys
         return $this->url;
     }
 
-    public function getFallbackCacheDuration(): DateInterval
+    public function getFallbackCacheDuration(): Duration
     {
         return $this->fallbackCacheDuration;
     }

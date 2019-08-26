@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Action;
 
+use DateInterval;
 use InvalidArgumentException;
+use Kreait\Firebase\JWT\Value\Duration;
 
 final class CreateCustomToken
 {
-    const DEFAULT_EXPIRATION_TIME_IN_SECONDS = 3600;
+    const MINIMUM_TTL = 'PT1S';
+    const MAXIMUM_TTL = 'PT1H';
+    const DEFAULT_TTL = self::MAXIMUM_TTL;
 
     /** @var string */
     private $uid;
@@ -16,11 +20,12 @@ final class CreateCustomToken
     /** @var array */
     private $customClaims = [];
 
-    /** @var int */
-    private $expirationTimeInSeconds = self::DEFAULT_EXPIRATION_TIME_IN_SECONDS;
+    /** @var Duration */
+    private $ttl;
 
     private function __construct()
     {
+        $this->ttl = Duration::fromDateIntervalSpec(self::DEFAULT_TTL);
     }
 
     public static function forUid(string $uid): self
@@ -31,7 +36,7 @@ final class CreateCustomToken
         return $action;
     }
 
-    public function withDifferentUid(string $uid): self
+    public function withChangedUid(string $uid): self
     {
         $action = clone $this;
         $action->uid = $uid;
@@ -64,16 +69,22 @@ final class CreateCustomToken
     }
 
     /**
-     * @throws InvalidArgumentException if the amount of seconds is invalid
+     * @param Duration|DateInterval|string|int $ttl
      */
-    public function withExpirationTimeInSeconds(int $seconds): self
+    public function withTimeToLive($ttl): self
     {
-        if ($seconds < 1 || $seconds > 3600) {
-            throw new InvalidArgumentException('A custom token\'s must expire after between 1 second and 1 hour');
+        $ttl = Duration::make($ttl);
+
+        $minTtl = Duration::fromDateIntervalSpec(self::MINIMUM_TTL);
+        $maxTtl = Duration::fromDateIntervalSpec(self::MAXIMUM_TTL);
+
+        if ($ttl->isSmallerThan($minTtl) || $ttl->isLargerThan($maxTtl)) {
+            $message = 'The expiration time of a custom token must be between %s and %s, but got %s';
+            throw new InvalidArgumentException(sprintf($message, $minTtl, $maxTtl, $ttl));
         }
 
         $action = clone $this;
-        $action->expirationTimeInSeconds = $seconds;
+        $action->ttl = $ttl;
 
         return $action;
     }
@@ -88,8 +99,8 @@ final class CreateCustomToken
         return $this->customClaims;
     }
 
-    public function expirationTimeInSeconds(): int
+    public function timeToLive(): Duration
     {
-        return $this->expirationTimeInSeconds;
+        return $this->ttl;
     }
 }

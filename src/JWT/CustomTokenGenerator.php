@@ -36,7 +36,7 @@ final class CustomTokenGenerator
     /**
      * @throws CustomTokenCreationFailed
      */
-    public function createCustomToken(string $uid, array $claims = null, int $expirationTimeInSeconds = null): Token
+    public function createCustomToken(string $uid, array $claims = null, $timeToLive = null): Token
     {
         $action = CreateCustomToken::forUid($uid);
 
@@ -44,8 +44,8 @@ final class CustomTokenGenerator
             $action = $action->withCustomClaims($claims);
         }
 
-        if ($expirationTimeInSeconds !== null) {
-            $action = $action->withExpirationTimeInSeconds($expirationTimeInSeconds);
+        if ($timeToLive !== null) {
+            $action = $action->withTimeToLive($timeToLive);
         }
 
         return $this->execute($action);

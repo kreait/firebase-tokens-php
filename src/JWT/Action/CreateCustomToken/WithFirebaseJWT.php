@@ -39,7 +39,7 @@ final class WithFirebaseJWT implements Handler
             'sub' => $this->clientEmail,
             'aud' => 'https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit',
             'iat' => $now->getTimestamp(),
-            'exp' => $now->modify('+'.$action->expirationTimeInSeconds().' seconds')->getTimestamp(),
+            'exp' => $now->add($action->timeToLive()->value())->getTimestamp(),
             'uid' => $action->uid(),
         ];
 

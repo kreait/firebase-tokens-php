@@ -44,7 +44,7 @@ final class WithLcobucciV3JWT implements Handler
         $builder = (new Builder())
             ->setIssuedAt($now->getTimestamp())
             ->setIssuer($this->clientEmail)
-            ->setExpiration($now->modify('+'.$action->expirationTimeInSeconds().' seconds')->getTimestamp())
+            ->setExpiration($now->add($action->timeToLive()->value())->getTimestamp())
             ->setSubject($this->clientEmail)
             ->setAudience('https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit')
             ->set('uid', $action->uid())
