@@ -1,9 +1,11 @@
 .DEFAULT_GOAL:= help
-.PHONY: tests coverage view-coverage cs docs view-docs tag
+.PHONY: phpstan tests coverage view-coverage cs docs view-docs tag
 
-tests: ## Executes the test suite
+phpstan: ## Performs a static analysis
+	vendor/bin/phpstan analyse src tests/JWT -c phpstan.neon --level=max --no-progress -vvv
+
+tests: phpstan ## Executes the test suite
 	vendor/bin/phpunit
-	vendor/bin/phpstan analyse src -c phpstan.neon --level=max --no-progress -vvv
 
 coverage: ## Executes the test suite and generates code coverage reports
 	@vendor/bin/phpunit --coverage-html=build/coverage
