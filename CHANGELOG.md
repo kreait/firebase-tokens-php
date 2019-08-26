@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.9.0 - 2019-08-26
 
 - Re-implemented the functionality in the `Kreait\Firebase\JWT` namespace.
 - Added `Kreait\Firebase\JWT\CustomTokenGenerator` as the recommended replacement for `Firebase\Auth\Token\Generator`
