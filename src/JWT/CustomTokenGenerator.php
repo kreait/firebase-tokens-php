@@ -28,6 +28,11 @@ final class CustomTokenGenerator
         return new self($handler);
     }
 
+    public function execute(CreateCustomToken $action): Token
+    {
+        return $this->handler->handle($action);
+    }
+
     /**
      * @throws CustomTokenCreationFailed
      */
@@ -43,6 +48,6 @@ final class CustomTokenGenerator
             $action = $action->withExpirationTimeInSeconds($expirationTimeInSeconds);
         }
 
-        return $this->handler->handle($action);
+        return $this->execute($action);
     }
 }

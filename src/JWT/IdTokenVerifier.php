@@ -48,12 +48,17 @@ final class IdTokenVerifier
         return new self($handler);
     }
 
+    public function execute(VerifyIdToken $action): Token
+    {
+        return $this->handler->handle($action);
+    }
+
     /**
      * @throws IdTokenVerificationFailed
      */
     public function verifyIdToken(string $token): Token
     {
-        return $this->handler->handle(VerifyIdToken::withToken($token));
+        return $this->execute(VerifyIdToken::withToken($token));
     }
 
     /**
@@ -62,6 +67,6 @@ final class IdTokenVerifier
      */
     public function verifyIdTokenWithLeeway(string $token, int $leewayInSeconds): Token
     {
-        return $this->handler->handle(VerifyIdToken::withToken($token)->withLeewayInSeconds($leewayInSeconds));
+        return $this->execute(VerifyIdToken::withToken($token)->withLeewayInSeconds($leewayInSeconds));
     }
 }
