@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.9.2 - 2019-10-16
+
+- Fixed an issue that the Custom Token Generator was carrying state between consecutive calls (Thanks [@danizord](https://github.com/danizord) for finding and fixing the issue) 
+
 ## 1.9.1 - 2019-08-26
 
 - Bumped `kreait/clock` to `^1.0.1` (1.0.0 had PHPUnit required as a non-dev dependency)
