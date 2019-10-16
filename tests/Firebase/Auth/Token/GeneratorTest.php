@@ -47,4 +47,13 @@ class GeneratorTest extends TestCase
 
         $this->assertTrue($noExceptionWasThrown = true);
     }
+
+    public function testDontCarryStateBetweenCalls()
+    {
+        $token1 = $this->generator->createCustomToken('first', ['admin' => true]);
+        $token2 = $this->generator->createCustomToken('second');
+
+        $this->assertSame(['admin' => true], $token1->getClaim('claims'));
+        $this->assertSame([], $token2->getClaim('claims', []));
+    }
 }

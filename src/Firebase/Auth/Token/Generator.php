@@ -20,11 +20,6 @@ final class Generator implements Domain\Generator
     private $privateKey;
 
     /**
-     * @var Builder
-     */
-    private $builder;
-
-    /**
      * @var Signer
      */
     private $signer;
@@ -40,8 +35,6 @@ final class Generator implements Domain\Generator
     ) {
         $this->clientEmail = $clientEmail;
         $this->privateKey = $privateKey;
-
-        $this->builder = $this->createBuilder();
         $this->signer = $signer ?: new Sha256();
     }
 
@@ -58,22 +51,24 @@ final class Generator implements Domain\Generator
      */
     public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
     {
+        $builder = $this->createBuilder();
+
         if (count($claims)) {
-            $this->builder->set('claims', $claims);
+            $builder->set('claims', $claims);
         }
 
-        $this->builder->set('uid', (string) $uid);
+        $builder->set('uid', (string) $uid);
 
         $now = time();
         $expiration = $expiresAt ? $expiresAt->getTimestamp() : $now + (60 * 60);
 
-        $token = $this->builder
+        $token = $builder
             ->setIssuedAt($now)
             ->setExpiration($expiration)
             ->sign($this->signer, $this->privateKey)
             ->getToken();
 
-        $this->builder->unsign();
+        $builder->unsign();
 
         return $token;
     }
