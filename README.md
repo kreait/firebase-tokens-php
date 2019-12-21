@@ -86,8 +86,8 @@ try {
 Tokens returned from the Generator and Verifier are instances of `Kreait\Firebase\JWT\Token`.
 
 ```php
-$tokenHeaders = $token->getHeaders(); // array
-$tokenPayload = token->getPayload(); // array
+$tokenHeaders = $token->headers(); // array
+$tokenPayload = $token->payload(); // array
 $tokenString = $token->toString();
 $tokenString = (string) $token;
 ```
