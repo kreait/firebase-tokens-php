@@ -88,6 +88,7 @@ Tokens returned from the Generator and Verifier are instances of `Kreait\Firebas
 ```php
 $tokenHeaders = $token->headers(); // array
 $tokenPayload = $token->payload(); // array
+$uid = $token->sub(); // string
 $tokenString = $token->toString();
 $tokenString = (string) $token;
 ```
