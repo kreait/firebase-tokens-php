@@ -39,6 +39,11 @@ final class Token implements Contract\Token
     {
         return $this->payload;
     }
+    
+    public function sub(): string
+    {
+        return $this->payload['sub'];
+    }
 
     public function toString(): string
     {
