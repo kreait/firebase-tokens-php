@@ -60,9 +60,8 @@ final class WithPsr16SimpleCache implements Handler
 
         $ttl = ($keys instanceof Expirable)
             ? $keys->expiresAt()->getTimestamp() - $now->getTimestamp()
-            : $now->add($action->getFallbackCacheDuration()->value());
+            : $action->getFallbackCacheDuration()->value();
 
-        /* @noinspection PhpUnhandledExceptionInspection */
         $this->cache->set($cacheKey, $keys, $ttl);
 
         return $keys;

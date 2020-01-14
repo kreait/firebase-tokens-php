@@ -62,7 +62,12 @@ final class InMemoryCache implements CacheInterface
         }
 
         if (is_int($ttl) && $ttl > 0) {
-            $expires = $now->setTimestamp($now->getTimestamp() + $ttl);
+            $expires = $now->modify("+{$ttl} seconds");
+        }
+
+        if (!$expires) {
+            $this->delete($key);
+            return true;
         }
 
         $this->items[$key] = [$expires, $value];
@@ -120,7 +125,7 @@ final class InMemoryCache implements CacheInterface
         if ($item = $this->items[$key] ?? null) {
             $expiresAt = $item[0];
 
-            if (!$expiresAt || $now < $expiresAt) {
+            if ($now < $expiresAt) {
                 return true;
             }
         }

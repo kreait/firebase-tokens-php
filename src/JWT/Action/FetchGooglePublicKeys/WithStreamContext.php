@@ -7,6 +7,7 @@ namespace Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Contract\Keys;
+use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
 
@@ -31,6 +32,10 @@ final class WithStreamContext implements Handler
 
         $stream = fopen($action->url(), 'rb', false, $context);
 
+        if (!is_resource($stream)) {
+            throw FetchingGooglePublicKeysFailed::because("{$action->url()} could not be opened");
+        }
+
         $metadata = stream_get_meta_data($stream);
         $headers = $metadata['wrapper_data'] ?? [];
 
@@ -52,6 +57,10 @@ final class WithStreamContext implements Handler
         $contents = stream_get_contents($stream);
 
         fclose($stream);
+
+        if (!is_string($contents)) {
+            throw FetchingGooglePublicKeysFailed::because("{$action->url()} returned no contents.");
+        }
 
         $keys = json_decode($contents, true);
 

@@ -22,10 +22,12 @@ final class InMemoryCache implements CacheInterface
 
     public function get($key, $default = null)
     {
+        $now = new DateTimeImmutable();
+
         if ($item = $this->items[$key] ?? null) {
             list($expiresAt, $value) = $item;
 
-            if (!$expiresAt || (new \DateTime() < $expiresAt)) {
+            if ($now < $expiresAt) {
                 return $value;
             }
 
@@ -37,14 +39,18 @@ final class InMemoryCache implements CacheInterface
 
     public function set($key, $value, $ttl = null)
     {
+        $now = new DateTimeImmutable();
         $expires = null;
 
-        if (ctype_digit((string) $ttl)) {
-            $ttl = new DateInterval(sprintf('PT%dS', $ttl));
+        if (is_int($ttl) && $ttl > 0) {
+            $expires = $now->modify("+{$ttl} seconds");
+        } elseif ($ttl instanceof DateInterval) {
+            $expires = $now->add($ttl);
         }
 
-        if ($ttl) {
-            $expires = (new DateTimeImmutable())->add($ttl);
+        if (!$expires) {
+            $this->delete($key);
+            return true;
         }
 
         $this->items[$key] = [$expires, $value];
@@ -100,7 +106,7 @@ final class InMemoryCache implements CacheInterface
         if ($item = $this->items[$key] ?? null) {
             $expiresAt = $item[0];
 
-            if (!$expiresAt || (new \DateTime() < $expiresAt)) {
+            if (new \DateTimeImmutable() < $expiresAt) {
                 return true;
             }
         }

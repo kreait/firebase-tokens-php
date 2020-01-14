@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Added support for Guzzle 7
+- Improved error handling and error messages
 
 ## 1.9.1 - 2019-08-26
 

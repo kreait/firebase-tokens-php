@@ -8,9 +8,11 @@ class ExpiredToken extends InvalidToken
 {
     public function __construct(Token $token)
     {
-        $expiredSince = \DateTimeImmutable::createFromFormat('U', $token->getClaim('exp'));
-
-        $message = sprintf('This token is expired since %s', $expiredSince->format(\DateTime::ATOM));
+        if ($expiredSince = \DateTimeImmutable::createFromFormat('U', $token->getClaim('exp'))) {
+            $message = "This token is expired since{$expiredSince->format(\DateTime::ATOM)}.";
+        } else {
+            $message = 'This token is expired.';
+        }
 
         parent::__construct($token, $message);
     }

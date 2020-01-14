@@ -18,10 +18,14 @@ final class InMemoryCacheTest extends TestCase
     /** @var InMemoryCache */
     private $cache;
 
+    /** @var int */
+    private $ttl;
+
     protected function setUp()
     {
         $this->clock = new FrozenClock(new DateTimeImmutable());
         $this->cache = InMemoryCache::createEmpty()->withClock($this->clock);
+        $this->ttl = 10;
     }
 
     /** @test */
@@ -29,7 +33,7 @@ final class InMemoryCacheTest extends TestCase
     {
         $this->assertFalse($this->cache->has('foo'));
         $this->assertNull($this->cache->get('foo'));
-        $this->cache->set('foo', 'bar', 60);
+        $this->cache->set('foo', 'bar', $this->ttl);
         $this->assertTrue($this->cache->has('foo'));
         $this->assertSame('bar', $this->cache->get('foo'));
         $this->cache->delete('foo');
@@ -46,11 +50,30 @@ final class InMemoryCacheTest extends TestCase
         $this->assertSame('default', $this->cache->get('expired', 'default'));
     }
 
+    /**
+     * @test
+     * @dataProvider nullValues
+     */
+    public function it_deletes_keys_when_no_ttl_is_given()
+    {
+        $this->cache->set('foo', 'bar');
+        $this->assertFalse($this->cache->has('foo'));
+    }
+
+    public function nullValues(): array
+    {
+        return [
+            'null' => [null],
+            'zero' => [0],
+            'negative' => [-1],
+        ];
+    }
+
     /** @test */
     public function it_can_be_cleared()
     {
-        $this->cache->set('foo', 'foo');
-        $this->cache->set('bar', 'bar');
+        $this->cache->set('foo', 'foo', $this->ttl);
+        $this->cache->set('bar', 'bar', $this->ttl);
 
         $this->cache->clear();
 
@@ -65,7 +88,7 @@ final class InMemoryCacheTest extends TestCase
         $expected = $values + ['default' => 'default'];
 
         foreach ($values as $key => $value) {
-            $this->cache->set($key, $value);
+            $this->cache->set($key, $value, $this->ttl);
         }
 
         $this->assertEquals(
@@ -79,7 +102,7 @@ final class InMemoryCacheTest extends TestCase
     {
         $values = ['foo' => 'foo', 'bar' => 'bar'];
 
-        $this->cache->setMultiple($values);
+        $this->cache->setMultiple($values, $this->ttl);
 
         $this->assertEquals($values, $this->cache->getMultiple(array_keys($values)));
     }
@@ -87,9 +110,9 @@ final class InMemoryCacheTest extends TestCase
     /** @test */
     public function it_can_delete_multiple_items()
     {
-        $this->cache->set('first', 'first');
-        $this->cache->set('second', 'second');
-        $this->cache->set('third', 'third');
+        $this->cache->set('first', 'first', $this->ttl);
+        $this->cache->set('second', 'second', $this->ttl);
+        $this->cache->set('third', 'third', $this->ttl);
 
         $this->cache->deleteMultiple(['first', 'second']);
 

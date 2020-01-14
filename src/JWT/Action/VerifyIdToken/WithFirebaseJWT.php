@@ -85,27 +85,25 @@ final class WithFirebaseJWT implements Handler
         $errors = [];
 
         $audience = $token->aud ?? null;
-        if (!$audience || $audience !== $this->projectId) {
+        if ($audience !== $this->projectId) {
             $errors[] = "The token's audience doesn't match the current Firebase project. Expected '{$this->projectId}', got '{$audience}'.";
         }
 
         $issuer = $token->iss ?? null;
         $expectedIssuer = 'https://securetoken.google.com/'.$this->projectId;
-        if (!$issuer || $issuer !== $expectedIssuer) {
+        if ($issuer !== $expectedIssuer) {
             $errors[] = "The token was issued by the wrong principal. Expected '{$expectedIssuer}', got '{$issuer}'";
         }
 
-        $subject = $token->sub ?? null;
-        if (!$subject || !is_string($subject) || trim($subject) === '') {
+        $subject = $token->sub ?? '';
+        if (trim($subject) === '') {
             $errors[] = "The token's 'sub' claim must be a non-empty string. Got: '{$subject}' (".gettype($subject).')';
         }
 
-        $authTime = $token->auth_time ?? null;
-        if (!$authTime || ($authTime > ($now->getTimestamp() + $leeway))) {
+        $authTime = (int) ($token->auth_time ?? PHP_INT_MAX);
+        if ($authTime > ($now->getTimestamp() + $leeway)) {
             $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and be in the past.";
         }
-
-        $this->restoreJWTStaticVariables($timestampBackup, $leewayBackup);
 
         if (!empty($errors)) {
             throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, $errors);
@@ -114,10 +112,8 @@ final class WithFirebaseJWT implements Handler
         // We replicate what's done in JWT::decode(), but have to re-encode/decode it
         // to get an array instead of an object
         list($headb64, $bodyb64) = explode('.', $tokenString);
-        $headers = JWT::jsonDecode(JWT::urlsafeB64Decode($headb64));
-        $headers = json_decode(json_encode($headers), true, 512, JSON_BIGINT_AS_STRING);
-        $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64));
-        $payload = json_decode(json_encode($payload), true, 512, JSON_BIGINT_AS_STRING);
+        $headers = (array) JWT::jsonDecode(JWT::urlsafeB64Decode($headb64));
+        $payload = (array) JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64));
 
         return TokenInstance::withValues($tokenString, $headers, $payload);
     }

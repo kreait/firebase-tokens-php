@@ -133,7 +133,7 @@ final class Verifier implements Domain\Verifier
         try {
             return $this->keys->get($keyId);
         } catch (\OutOfBoundsException $e) {
-            throw new UnknownKey($keyId);
+            throw new UnknownKey($token, $keyId);
         }
     }
 

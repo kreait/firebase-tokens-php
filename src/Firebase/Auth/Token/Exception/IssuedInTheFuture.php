@@ -8,12 +8,11 @@ class IssuedInTheFuture extends InvalidToken
 {
     public function __construct(Token $token)
     {
-        $iat = \DateTimeImmutable::createFromFormat('U', $token->getClaim('iat'));
-
-        $message = sprintf(
-            'This token has been issued in the future at %s, is your system time correct?',
-            $iat->format(\DateTime::ATOM)
-        );
+        if ($iat = \DateTimeImmutable::createFromFormat('U', $token->getClaim('iat'))) {
+            $message = "This token has been issued in the future at {$iat->format(\DateTime::ATOM)}, is your system time correct?";
+        } else {
+            $message = 'This token has been issued in the future, is your system time correct?';
+        }
 
         parent::__construct($token, $message);
     }

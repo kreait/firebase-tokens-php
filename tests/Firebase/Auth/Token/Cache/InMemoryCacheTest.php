@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Firebase\Auth\Token\Tests\Cache;
 
+use DateInterval;
 use Firebase\Auth\Token\Cache\InMemoryCache;
 use PHPUnit\Framework\TestCase;
 
@@ -14,6 +15,11 @@ class InMemoryCacheTest extends TestCase
      */
     private $cache;
 
+    /**
+     * @var int
+     */
+    private $ttl = 10;
+
     protected function setUp()
     {
         $this->cache = new InMemoryCache();
@@ -22,7 +28,7 @@ class InMemoryCacheTest extends TestCase
     public function testSetAndGetAndDelete()
     {
         $this->assertNull($this->cache->get('foo'));
-        $this->cache->set('foo', 'bar');
+        $this->cache->set('foo', 'bar', $this->ttl);
         $this->assertSame('bar', $this->cache->get('foo'));
         $this->cache->delete('foo');
         $this->assertNull($this->cache->get('foo'));
@@ -32,13 +38,32 @@ class InMemoryCacheTest extends TestCase
     {
         $this->cache->set('expired', 'value', 0);
 
-        $this->assertNull($this->cache->get('expired'));
+        $this->assertSame('default', $this->cache->get('expired', 'default'));
+    }
+
+    public function testSetWithDateInterval()
+    {
+        $this->cache->set('foo', 'bar', new DateInterval('PT10S'));
+
+        $this->assertSame('bar', $this->cache->get('foo'));
+    }
+
+    public function setWithTtlBeingNull()
+    {
+        $this->cache->set('foo', 'bar');
+        $this->assertFalse($this->cache->has('foo'));
+    }
+
+    public function setWithTtlBeingZero()
+    {
+        $this->cache->set('foo', 'bar', 0);
+        $this->assertFalse($this->cache->has('foo'));
     }
 
     public function testClear()
     {
-        $this->cache->set('foo', 'foo');
-        $this->cache->set('bar', 'bar');
+        $this->cache->set('foo', 'foo', $this->ttl);
+        $this->cache->set('bar', 'bar', $this->ttl);
 
         $this->cache->clear();
 
@@ -52,7 +77,7 @@ class InMemoryCacheTest extends TestCase
         $expected = $values + ['default' => 'default'];
 
         foreach ($values as $key => $value) {
-            $this->cache->set($key, $value);
+            $this->cache->set($key, $value, $this->ttl);
         }
 
         $this->assertEquals(
@@ -65,16 +90,16 @@ class InMemoryCacheTest extends TestCase
     {
         $values = ['foo' => 'foo', 'bar' => 'bar'];
 
-        $this->cache->setMultiple($values);
+        $this->cache->setMultiple($values, $this->ttl);
 
         $this->assertEquals($values, $this->cache->getMultiple(array_keys($values)));
     }
 
     public function testDeleteMultiple()
     {
-        $this->cache->set('first', 'first');
-        $this->cache->set('second', 'second');
-        $this->cache->set('third', 'third');
+        $this->cache->set('first', 'first', $this->ttl);
+        $this->cache->set('second', 'second', $this->ttl);
+        $this->cache->set('third', 'third', $this->ttl);
 
         $this->cache->deleteMultiple(['first', 'second']);
 
@@ -87,7 +112,7 @@ class InMemoryCacheTest extends TestCase
     {
         $this->assertFalse($this->cache->has('key'));
 
-        $this->cache->set('key', 'value');
+        $this->cache->set('key', 'value', $this->ttl);
 
         $this->assertTrue($this->cache->has('key'));
     }
