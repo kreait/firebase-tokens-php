@@ -103,7 +103,6 @@ class VerifierTest extends TestCase
     }
 
     /**
-     * @param Token $token
      * @param string $exception
      * @dataProvider invalidTokenProvider
      */

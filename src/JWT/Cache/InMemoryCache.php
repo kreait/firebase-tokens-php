@@ -67,6 +67,7 @@ final class InMemoryCache implements CacheInterface
 
         if (!$expires) {
             $this->delete($key);
+
             return true;
         }
 

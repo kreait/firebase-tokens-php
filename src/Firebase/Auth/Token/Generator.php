@@ -42,12 +42,9 @@ final class Generator implements Domain\Generator
      * Returns a token for the given user and claims.
      *
      * @param mixed $uid
-     * @param array $claims
      * @param \DateTimeInterface $expiresAt
      *
      * @throws \BadMethodCallException when a claim is invalid
-     *
-     * @return Token
      */
     public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
     {

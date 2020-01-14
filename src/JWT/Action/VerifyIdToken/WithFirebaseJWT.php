@@ -55,29 +55,15 @@ final class WithFirebaseJWT implements Handler
             // This will check kid, nbf, iat, exp and the signature
             $token = JWT::decode($tokenString, $this->keys->all(), ['RS256']);
         } catch (DomainException $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, [
-                'The token could not be decoded.',
-                $e->getMessage(),
-            ]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token could not be decoded.', $e->getMessage()]);
         } catch (BeforeValidException $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, [
-                'The token has been issued for future use.',
-                $e->getMessage(),
-            ]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token has been issued for future use.', $e->getMessage()]);
         } catch (ExpiredException $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, [
-                'The token is expired.',
-            ]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is expired.']);
         } catch (UnexpectedValueException $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, [
-                'The token is invalid.',
-                $e->getMessage(),
-            ]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid.', $e->getMessage()]);
         } catch (Throwable $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, [
-                'The token is invalid.',
-                $e->getMessage(),
-            ]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid.', $e->getMessage()]);
         } finally {
             $this->restoreJWTStaticVariables($timestampBackup, $leewayBackup);
         }

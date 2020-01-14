@@ -50,10 +50,7 @@ final class WithLcobucciV3JWT implements Handler
         try {
             $token = (new Parser())->parse($tokenString);
         } catch (Throwable $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, [
-                'The token is invalid',
-                $e->getMessage(),
-            ]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid', $e->getMessage()]);
         }
 
         $timestamp = $this->clock->now()->getTimestamp();

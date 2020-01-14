@@ -6,7 +6,6 @@ namespace Kreait\Firebase\JWT\Contract;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use LogicException;
 
 trait ExpirableTrait
 {

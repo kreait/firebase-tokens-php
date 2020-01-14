@@ -26,11 +26,6 @@ final class Handler implements Domain\Generator, Domain\Verifier
 
     /**
      * @deprecated 1.7.0 Use the Generator and Verifier directly instead
-     *
-     * @param string $projectId
-     * @param string $clientEmail
-     * @param string $privateKey
-     * @param KeyStore|null $keyStore
      */
     public function __construct(string $projectId, string $clientEmail, string $privateKey, KeyStore $keyStore = null)
     {

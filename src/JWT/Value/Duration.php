@@ -57,8 +57,6 @@ final class Duration
     }
 
     /**
-     * @param int $seconds
-     *
      * @throws InvalidArgumentException
      */
     public static function inSeconds(int $seconds): self
