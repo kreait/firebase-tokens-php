@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.10.0 - 2020-01-14
 
 - Added support for Guzzle 7
 - Improved error handling and error messages
