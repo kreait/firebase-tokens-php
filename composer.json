@@ -16,7 +16,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "fig/http-message-util": "^1.1",
-        "guzzlehttp/guzzle": "^6.2.1",
+        "guzzlehttp/guzzle": "^6.2.1|^7.0@beta",
         "kreait/clock": "^1.0.1",
         "lcobucci/jwt": "^3.2",
         "psr/cache": "^1.0",
@@ -24,7 +24,7 @@
     },
     "suggest": {
         "firebase/php-jwt": "^5.0 can be used to create and parse tokens",
-        "guzzlehttp/guzzle": "^6.2.1 can be used as an HTTP handler",
+        "guzzlehttp/guzzle": "^6.2.1|^7.0 can be used as an HTTP handler",
         "lcobucci/jwt": "^3.2 can be used to create and parse tokens",
         "psr/cache-implementation": "to cache fetched remote public keys",
         "psr/simple-cache-implementation": "to cache fetched remote public keys"

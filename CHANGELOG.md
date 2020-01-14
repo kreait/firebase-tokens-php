@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Added support for Guzzle 7
+
 ## 1.9.1 - 2019-08-26
 
 - Bumped `kreait/clock` to `^1.0.1` (1.0.0 had PHPUnit required as a non-dev dependency)
