@@ -35,6 +35,9 @@ composer require kreait/firebase-tokens
 
 ### Create a custom token
 
+More information on what a custom token is and how it can be used can be found in 
+[Google's official documentation](https://firebase.google.com/docs/auth/admin/create-custom-tokens).
+
 ```php
 <?php
 
@@ -52,6 +55,10 @@ echo $token;
 
 ### Verify an ID token
 
+The ID token verification methods included in the Firebase Admin SDKs are meant to verify 
+ID tokens that come from the client SDKs, not the custom tokens that you create with the Admin SDKs. 
+See [Auth tokens](https://firebase.google.com/docs/auth/users/#auth_tokens) for more information.
+
 ```php
 <?php
 
@@ -59,7 +66,7 @@ use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\IdTokenVerifier;
 
 $projectId = '...';
-$idToken = '...';
+$idToken = 'eyJhb...'; // An ID token given to your backend by a Client application
 
 $verifier = IdTokenVerifier::createWithProjectId($projectId);
 
@@ -68,7 +75,7 @@ try {
 } catch (IdTokenVerificationFailed $e) {
     echo $e->getMessage();
     // Example Output:
-    // The value 'eyJhbGciOiJSUzI...' is not a verified ID token:
+    // The value 'eyJhb...' is not a verified ID token:
     // - The token is expired.
     exit;
 }
@@ -83,13 +90,57 @@ try {
 
 ### Tokens
 
-Tokens returned from the Generator and Verifier are instances of `Kreait\Firebase\JWT\Token`.
+Tokens returned from the Generator and Verifier are instances of `Kreait\Firebase\JWT\Token` and
+represent a [JWT](https://jwt.io/). The displayed outputs are examples and vary depending on
+the information associated with the given user in your project's auth database.
+
+According to the JWT specification, you can expect the following payload fields to be always 
+available: `iss`, `aud`, `auth_time`, `sub`, `iat`, `exp`. Other fields depend on the
+authentication method of the given account and the information stored in your project's
+Auth database.
 
 ```php
-$tokenHeaders = $token->headers(); // array
-$tokenPayload = $token->payload(); // array
-$tokenString = $token->toString();
-$tokenString = (string) $token;
+$token = $verifier->verifyIdToken('eyJhb...'); // An ID token given to your backend by a Client application
+
+echo json_encode($token->headers(), JSON_PRETTY_PRINT);
+// {
+//     "alg": "RS256",
+//     "kid": "e5a91d9f39fa4de254a1e89df00f05b7e248b985",
+//     "typ": "JWT"
+// }                                                   
+
+echo json_encode($token->payload(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+// {
+//     "name": "Jane Doe",
+//     "picture": "https://domain.tld/picture.jpg",
+//     "iss": "https://securetoken.google.com/your-project-id",
+//     "aud": "your-project-id",
+//     "auth_time": 1580063945,
+//     "user_id": "W0IturDwy4TYTmX6ilkd2ZbAXRp2",
+//     "sub": "W0IturDwy4TYTmX6ilkd2ZbAXRp2",
+//     "iat": 1580063945,
+//     "exp": 1580067545,
+//     "email": "jane@doe.tld",
+//     "email_verified": true,
+//     "phone_number": "+1234567890",
+//     "firebase": {
+//         "identities": {
+//             "phone": [
+//                 "+1234567890"
+//             ],
+//             "email": [
+//                 "jane@doe.tld"
+//             ]
+//         },
+//         "sign_in_provider": "custom"
+//     }
+// }
+
+echo $token->toString();
+// eyJhb...
+
+$tokenString = (string) $token; // string
+// eyJhb...
 ```
 
 ## Advanced usage
@@ -99,11 +150,12 @@ $tokenString = (string) $token;
 In order to verify ID tokens, the verifier makes a call to fetch Firebase's currently available public
 keys. The keys are cached in memory by default.
 
-If you want to cache the public keys more effectively, you can use an implementation of 
-[psr/simple-cache](https://packagist.org/providers/psr/simple-cache-implementation) or
-[psr/cache](https://packagist.org/providers/psr/cache-implementation) to wrap the 
+If you want to cache the public keys more effectively, you can initialize the verifier with an 
+implementation of [psr/simple-cache](https://packagist.org/providers/psr/simple-cache-implementation)
+or [psr/cache](https://packagist.org/providers/psr/cache-implementation) to reduce the amount
+of HTTP requests to Google's servers. 
 
-Example using the [Symfony Cache Component](https://symfony.com/doc/current/components/cache.html)
+Here's an example using the [Symfony Cache Component](https://symfony.com/doc/current/components/cache.html):
 
 ```php
 use Kreait\Firebase\JWT\IdTokenVerifier;
