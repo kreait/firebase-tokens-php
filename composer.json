@@ -34,7 +34,7 @@
         "friendsofphp/php-cs-fixer": "^2.16",
         "phpstan/phpstan-phpunit": "^0.9.4|^0.11.2",
         "phpunit/phpunit": "^6.5.14|^7.5.17",
-        "symfony/cache": "^3.4|^4.4|^5.0",
+        "symfony/cache": "^3.4.26|^4.4|^5.0",
         "symfony/var-dumper": "^3.4|^4.4|^5.0"
     },
     "autoload": {

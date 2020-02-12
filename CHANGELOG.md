@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Update dev-dependency on `symfony/cache` to address [CVE-2019-10912](https://github.com/advisories/GHSA-w2fr-65vp-mxw3) 
+
 ## 1.10.0 - 2020-01-14
 
 - Added support for Guzzle 7
