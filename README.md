@@ -10,12 +10,10 @@ Achieve more with the [Firebase Admin SDK](https://github.com/kreait/firebase-ph
 [![Supported PHP version](https://img.shields.io/packagist/php-v/kreait/firebase-tokens.svg)]()
 [![Monthly Downloads](https://img.shields.io/packagist/dm/kreait/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens/stats)
 [![Total Downloads](https://img.shields.io/packagist/dt/kreait/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens/stats)
-[![Discord](https://img.shields.io/discord/523866370778333184.svg?color=7289da&logo=discord)](https://discord.gg/nbgVfty)
-
 [![Build Status](https://travis-ci.org/kreait/firebase-tokens-php.svg?branch=master)](https://travis-ci.org/kreait/firebase-tokens-php)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=kreait_firebase-tokens-php&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=kreait_firebase-tokens-php)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=kreait_firebase-tokens-php&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=kreait_firebase-tokens-php)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kreait_firebase-tokens-php&metric=coverage)](https://sonarcloud.io/dashboard?id=kreait_firebase-tokens-php) 
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kreait_firebase-tokens-php&metric=coverage)](https://sonarcloud.io/dashboard?id=kreait_firebase-tokens-php)
+[![Discord](https://img.shields.io/discord/523866370778333184.svg?color=7289da&logo=discord)](https://discord.gg/nbgVfty)
+[![Sponsor](https://img.shields.io/static/v1?logo=GitHub&label=Sponsor&message=%E2%9D%A4&color=ff69b4)](https://github.com/sponsors/jeromegamez)
 
 - [Installation](#installation)
 - [Simple Usage](#simple-usage)

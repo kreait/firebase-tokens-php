@@ -51,5 +51,11 @@
     },
     "config": {
         "sort-packages": true
-    }
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/jeromegamez"
+        }
+    ]
 }
