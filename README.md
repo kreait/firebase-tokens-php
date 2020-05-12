@@ -164,6 +164,20 @@ $cache = new FilesystemCache();
 $verifier = IdTokenVerifier::createWithProjectIdAndCache($projectId, $cache);
 ```
 
+Here's an example using the [Laravel Cache](https://laravel.com/docs/7.x/cache):
+
+```php
+use Cache;
+use Kreait\Firebase\JWT\IdTokenVerifier;
+
+$cache = Cache::store();
+
+// or using a helper
+$cache = cache()->store();
+
+$verifier = IdTokenVerifier::createWithProjectIdAndCache($projectId, $cache);
+```
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
