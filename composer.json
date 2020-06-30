@@ -16,7 +16,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "fig/http-message-util": "^1.1",
-        "guzzlehttp/guzzle": "^6.2.1|^7.0@beta",
+        "guzzlehttp/guzzle": "^6.2.1|^7.0",
         "kreait/clock": "^1.0.1",
         "lcobucci/jwt": "^3.2",
         "psr/cache": "^1.0",
