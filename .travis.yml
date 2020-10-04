@@ -10,17 +10,9 @@ php:
 git:
   depth: false
 
-addons:
-  sonarcloud:
-    organization: "kreait"
-    token:
-      secure: "WS3dW0mWKi7T5/fQrn33JSUDNzX0oXPhcREzx8Ney5T/e1jjVpdY1U5iDW7WGcehChSvgO/S4KsFMtby+e5/lFZYm5sC2KOsSuSOcTBaq0e1kDcokclnRUwtsCKu38qulQaALsM1LlotEe1vTDmREA1Ps2M30oZLf2FvOzRknFdp+iwU+DDQc8hUTkdkcbIFwfcpgdIyUN5BxAUCk+LR1X/iw7GhICBFEgdx+IDNap4cTrSnZlVBtIM1lBvYkyvausG804a8oqXvE1N6aqQoo/KKLAGRq+EtV1/Ql8UCH02KPpTfnL6BknLwvRF2gtA5LCeqOothFjR6mp7XQeUdvhMTM7U7Kidz0HSg+jfreF3NCTUxb+0FCma6C3y2/62NwRyXqaD2LwGYcEm+vz81uf8WoWA11lC5nm3BjyzhBCfbxLOYu/TSGnfRnaoWAbPAJkhVOdSn2zZC7qvzcEetiMFAVYxeLzbiOU7WRV9tVb6zGNyF3v/K9ZeabAmy8EDi65UA8+sDCLKEMrmJaGHDmwV/AWpNSOFI3i1e3hpoyI7NM/+mhEGLASF/Qzvgg42sqzn/lTY4dTpOqlop0JKbptuFjDJ6XSgNj32qI5yJpO8zfAkWieOwz4rZ5Qvggzi8dLIxONEhN3iqqhJMMP2+KYmdOhF4ftxVjbvPzxgxwi0="
-
 install:
   - composer update --no-interaction --no-suggest --no-progress
 
 script:
   - vendor/bin/phpstan analyse src -c phpstan.neon --level=max --no-progress -vvv
   - vendor/bin/phpunit --coverage-clover=coverage-report.clover --log-junit=test-report.xml
-  - sonar-scanner
-
