@@ -2,10 +2,11 @@
 
 ## Unreleased
 
-- Update dev-dependency on `symfony/cache` to address [CVE-2019-10912](https://github.com/advisories/GHSA-w2fr-65vp-mxw3)
+- Updated dev-dependency on `symfony/cache` to address [CVE-2019-10912](https://github.com/advisories/GHSA-w2fr-65vp-mxw3)
 - The default branch of the GitHub repository has been renamed from `master` to `main` - 
   if you're using `dev-master` as a version constraint in your `composer.json`, please 
-  update it to `dev-main`. 
+  update it to `dev-main`.
+- This library can now be used with PHP 8. 
 
 ## 1.10.0 - 2020-01-14
 
