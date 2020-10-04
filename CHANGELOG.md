@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.11.0 - 2020-10-04
 
 - Updated dev-dependency on `symfony/cache` to address [CVE-2019-10912](https://github.com/advisories/GHSA-w2fr-65vp-mxw3)
 - The default branch of the GitHub repository has been renamed from `master` to `main` - 
