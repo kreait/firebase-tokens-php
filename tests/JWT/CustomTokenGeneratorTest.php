@@ -70,4 +70,12 @@ final class CustomTokenGeneratorTest extends TestCase
 
         $this->assertTrue(Duration::inSeconds(1337)->equals($this->handler->action->timeToLive()));
     }
+
+    /** @test */
+    public function it_uses_a_tenant_id_when_given()
+    {
+        $this->generator->withTenantId('my-tenant')->createCustomToken('uid');
+
+        $this->assertSame('my-tenant', $this->handler->action->tenantId());
+    }
 }

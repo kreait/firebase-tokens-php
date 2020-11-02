@@ -19,6 +19,7 @@ Achieve more with the [Firebase Admin SDK](https://github.com/kreait/firebase-ph
   - [Create a custom token](#create-a-custom-token)
   - [Verify an ID token](#verify-an-id-token)
   - [Tokens](#tokens)
+  - [Tenant Awareness](#tenant-awareness) 
 - [Advanced Usage](#advanced-usage)
   - [Cache results from the Google Secure Token Store](#cache-results-from-the-google-secure-token-store)
 
@@ -139,6 +140,33 @@ echo $token->toString();
 $tokenString = (string) $token; // string
 // eyJhb...
 ```
+
+### Tenant Awareness
+
+You can create custom tokens that are scoped to a given tenant:
+
+```php
+<?php
+
+use Kreait\Firebase\JWT\CustomTokenGenerator;
+
+$generator = CustomTokenGenerator::withClientEmailAndPrivateKey('...', '...');
+
+$tenantAwareGenerator = $generator->withTenantId('my-tenant-id');
+```
+
+Similarly, you can verify that ID tokens were issued in the scope of a given tenant:
+
+```php
+<?php
+
+use Kreait\Firebase\JWT\IdTokenVerifier;
+
+$verifier = IdTokenVerifier::createWithProjectId('my-project-id');
+
+$tenantAwareVerifier = $verifier->withExpectedTenantId('my-tenant-id');
+```
+
 
 ## Advanced usage
 

@@ -76,4 +76,11 @@ final class IdTokenVerifierTest extends TestCase
         $this->assertSame('token', $this->handler->action->token());
         $this->assertSame(1337, $this->handler->action->leewayInSeconds());
     }
+
+    /** @test */
+    public function it_verifies_a_token_with_an_expected_tenant_id()
+    {
+        $this->verifier->withExpectedTenantId('my-tenant')->verifyIdToken('token');
+        $this->assertSame('my-tenant', $this->handler->action->expectedTenantId());
+    }
 }

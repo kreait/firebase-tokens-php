@@ -14,6 +14,7 @@ use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
+use stdClass;
 use Throwable;
 
 final class WithLcobucciV3JWT implements Handler
@@ -90,6 +91,18 @@ final class WithLcobucciV3JWT implements Handler
         $subject = $token->getClaim('sub', false);
         if (!$subject || !is_string($subject) || trim($subject) === '') {
             $errors[] = "The token's 'sub' claim must be a non-empty string. Got: '{$subject}' (".gettype($subject).')';
+        }
+
+        $expectedTenantId = $action->expectedTenantId();
+        $firebaseClaims = $token->getClaim('firebase', new stdClass());
+        $tenantId = $firebaseClaims->tenant ?? null;
+
+        if ($expectedTenantId && !$tenantId) {
+            $errors[] = 'The token was expected to have a firebase.tenant claim, but did not have it.';
+        } elseif (!$expectedTenantId && $tenantId) {
+            $errors[] = 'The token contains a firebase.tenant claim, but was not expected to have one';
+        } elseif ($expectedTenantId && $tenantId && $expectedTenantId !== $tenantId) {
+            $errors[] = "The token's tenant ID did not match with the expected tenant ID";
         }
 
         $kid = $token->getHeader('kid', false);

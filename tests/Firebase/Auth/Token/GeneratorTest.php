@@ -10,7 +10,7 @@ class GeneratorTest extends TestCase
     /**
      * @var Generator
      */
-    private $generator;
+    protected $generator;
 
     protected function setUp()
     {

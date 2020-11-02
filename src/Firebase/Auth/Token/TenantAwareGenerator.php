@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token;
 
 use Lcobucci\JWT\Builder;
@@ -7,8 +9,13 @@ use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 
-final class Generator implements Domain\Generator
+final class TenantAwareGenerator implements Domain\Generator
 {
+    /**
+     * @var string
+     */
+    private $tenantId;
+
     /**
      * @var string
      */
@@ -25,14 +32,16 @@ final class Generator implements Domain\Generator
     private $signer;
 
     /**
-     * @deprecated 1.9.0
+     * @deprecated 1.12.0
      * @see \Kreait\Firebase\JWT\CustomTokenGenerator
      */
     public function __construct(
+        string $tenantId,
         string $clientEmail,
         string $privateKey,
         Signer $signer = null
     ) {
+        $this->tenantId = $tenantId;
         $this->clientEmail = $clientEmail;
         $this->privateKey = new Signer\Key($privateKey);
         $this->signer = $signer ?: new Sha256();
@@ -55,6 +64,7 @@ final class Generator implements Domain\Generator
             ->relatedTo($this->clientEmail)
             ->permittedFor('https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit')
             ->withClaim('uid', (string) $uid)
+            ->withClaim('tenant_id', $this->tenantId)
             ->issuedAt($now)
             ->expiresAt($expiresAt ? $expiresAt->getTimestamp() : $now + (60 * 60));
 

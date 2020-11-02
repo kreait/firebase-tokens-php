@@ -42,16 +42,20 @@ final class WithLcobucciV3JWT implements Handler
         $now = $this->clock->now();
 
         $builder = (new Builder())
-            ->setIssuedAt($now->getTimestamp())
-            ->setIssuer($this->clientEmail)
-            ->setExpiration($now->add($action->timeToLive()->value())->getTimestamp())
-            ->setSubject($this->clientEmail)
-            ->setAudience('https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit')
-            ->set('uid', $action->uid())
+            ->issuedAt($now->getTimestamp())
+            ->issuedBy($this->clientEmail)
+            ->expiresAt($now->add($action->timeToLive()->value())->getTimestamp())
+            ->relatedTo($this->clientEmail)
+            ->permittedFor('https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit')
+            ->withClaim('uid', $action->uid())
         ;
 
+        if ($tenantId = $action->tenantId()) {
+            $builder = $builder->withClaim('tenant_id', $tenantId);
+        }
+
         if (!empty($customClaims = $action->customClaims())) {
-            $builder = $builder->set('claims', $customClaims);
+            $builder = $builder->withClaim('claims', $customClaims);
         }
 
         try {

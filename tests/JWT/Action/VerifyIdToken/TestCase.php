@@ -178,4 +178,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
+
+    /** @test */
+    public function it_verifies_a_token_with_an_expected_tenant_id()
+    {
+        $idToken = $this->idToken->withChangedClaim('firebase', ['tenant' => $tenant = 'my-tenant'])->build();
+
+        $this->createHandler()->handle(VerifyIdToken::withToken($idToken)->withExpectedTenantId($tenant));
+        $this->addToAssertionCount(1);
+    }
 }

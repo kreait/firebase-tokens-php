@@ -19,6 +19,9 @@ final class IdTokenVerifier
     /** @var VerifyIdToken\Handler */
     private $handler;
 
+    /** @var string|null */
+    private $expectedTenantId;
+
     public function __construct(VerifyIdToken\Handler $handler)
     {
         $this->handler = $handler;
@@ -48,8 +51,20 @@ final class IdTokenVerifier
         return new self($handler);
     }
 
+    public function withExpectedTenantId(string $tenantId): self
+    {
+        $generator = clone $this;
+        $generator->expectedTenantId = $tenantId;
+
+        return $generator;
+    }
+
     public function execute(VerifyIdToken $action): Token
     {
+        if ($this->expectedTenantId) {
+            $action = $action->withExpectedTenantId($this->expectedTenantId);
+        }
+
         return $this->handler->handle($action);
     }
 
