@@ -73,6 +73,17 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /** @test */
+    public function it_uses_a_tenant_id_when_given()
+    {
+        $action = CreateCustomToken::forUid('uid')->withTenantId($tenantId = 'my-tenant');
+
+        $payload = $this->handler->handle($action)->payload();
+
+        $this->assertArrayHasKey('tenant_id', $payload);
+        $this->assertSame($payload['tenant_id'], $tenantId);
+    }
+
+    /** @test */
     public function it_fails_with_an_invalid_private_key()
     {
         $handler = static::createHandlerWithInvalidPrivateKey();

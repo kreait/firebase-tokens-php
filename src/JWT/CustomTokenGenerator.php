@@ -16,6 +16,9 @@ final class CustomTokenGenerator
     /** @var Handler */
     private $handler;
 
+    /** @var string|null */
+    private $tenantId;
+
     public function __construct(Handler $handler)
     {
         $this->handler = $handler;
@@ -28,8 +31,20 @@ final class CustomTokenGenerator
         return new self($handler);
     }
 
+    public function withTenantId(string $tenantId): self
+    {
+        $generator = clone $this;
+        $generator->tenantId = $tenantId;
+
+        return $generator;
+    }
+
     public function execute(CreateCustomToken $action): Token
     {
+        if ($this->tenantId) {
+            $action = $action->withTenantId($this->tenantId);
+        }
+
         return $this->handler->handle($action);
     }
 

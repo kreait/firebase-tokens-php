@@ -14,6 +14,7 @@ use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
+use stdClass;
 use Throwable;
 use UnexpectedValueException;
 
@@ -89,6 +90,18 @@ final class WithFirebaseJWT implements Handler
         $authTime = (int) ($token->auth_time ?? PHP_INT_MAX);
         if ($authTime > ($now->getTimestamp() + $leeway)) {
             $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and be in the past.";
+        }
+
+        $expectedTenantId = $action->expectedTenantId();
+        $firebaseClaims = $token->firebase ?? new stdClass();
+        $tenantId = $firebaseClaims->tenant ?? null;
+
+        if ($expectedTenantId && !$tenantId) {
+            $errors[] = 'The token was expected to have a firebase.tenant claim, but did not have it.';
+        } elseif (!$expectedTenantId && $tenantId) {
+            $errors[] = 'The token contains a firebase.tenant claim, but was not expected to have one';
+        } elseif ($expectedTenantId && $tenantId && $expectedTenantId !== $tenantId) {
+            $errors[] = "The token's tenant ID did not match with the expected tenant ID";
         }
 
         if (!empty($errors)) {

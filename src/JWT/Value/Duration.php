@@ -47,10 +47,18 @@ final class Duration
             try {
                 $interval = DateInterval::createFromDateString($value);
             } catch (Throwable $e) {
-                throw new InvalidArgumentException("Unable to determine a duration from the value '{$value}'");
+                throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
             }
 
-            return self::fromDateInterval($interval);
+            $duration = self::fromDateInterval($interval);
+
+            // If the string doesn't contain a zero, but the result equals to zero
+            // the value must be invalid.
+            if (strpos($value, '0') === false && $duration->equals(self::none())) {
+                throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
+            }
+
+            return $duration;
         }
 
         throw new InvalidArgumentException('Unable to determine a duration from the given value');

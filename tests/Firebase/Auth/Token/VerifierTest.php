@@ -116,14 +116,15 @@ class VerifierTest extends TestCase
     public function validTokenStringProvider()
     {
         return [
-            'fully_valid' => [(string) (new Builder())
-                ->setExpiration(time() + 1800)
-                ->set('auth_time', time() - 1800)
-                ->setIssuedAt(time() - 10)
-                ->setIssuer('https://securetoken.google.com/project-id')
-                ->setHeader('kid', 'valid_key_id')
-                ->sign($this->createMockSigner(), 'valid_key')
-                ->getToken(),
+            'fully_valid' => [
+                (string) (new Builder())
+                    ->setExpiration(time() + 1800)
+                    ->set('auth_time', time() - 1800)
+                    ->setIssuedAt(time() - 10)
+                    ->setIssuer('https://securetoken.google.com/project-id')
+                    ->setHeader('kid', 'valid_key_id')
+                    ->sign($this->createMockSigner(), 'valid_key')
+                    ->getToken(),
             ],
             'needing_leeway_for_iat' => [
                 (string) (new Builder())

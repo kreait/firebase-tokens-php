@@ -17,6 +17,9 @@ final class CreateCustomToken
     /** @var string */
     private $uid;
 
+    /** @var string|null */
+    private $tenantId;
+
     /** @var array */
     private $customClaims = [];
 
@@ -32,6 +35,14 @@ final class CreateCustomToken
     {
         $action = new self();
         $action->uid = $uid;
+
+        return $action;
+    }
+
+    public function withTenantId(string $tenantId): self
+    {
+        $action = clone $this;
+        $action->tenantId = $tenantId;
 
         return $action;
     }
@@ -92,6 +103,14 @@ final class CreateCustomToken
     public function uid(): string
     {
         return $this->uid;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function tenantId()
+    {
+        return $this->tenantId;
     }
 
     public function customClaims(): array

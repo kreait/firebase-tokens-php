@@ -43,6 +43,10 @@ final class WithFirebaseJWT implements Handler
             'uid' => $action->uid(),
         ];
 
+        if ($tenantId = $action->tenantId()) {
+            $payload['tenant_id'] = $tenantId;
+        }
+
         if (!empty($customClaims = $action->customClaims())) {
             $payload['claims'] = $customClaims;
         }
