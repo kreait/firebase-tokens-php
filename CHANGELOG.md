@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.12.0 - 2020-11-27
 
 - Added Tenant Awareness
 - Fixed usage of deprecated functionality from `lcobucci/jwt`
