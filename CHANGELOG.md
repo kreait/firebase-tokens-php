@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Added Tenant Awareness
+- Fixed usage of deprecated functionality from `lcobucci/jwt`
 
 ## 1.11.0 - 2020-10-04
 

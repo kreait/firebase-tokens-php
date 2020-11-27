@@ -48,7 +48,11 @@ final class Generator implements Domain\Generator
      */
     public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
     {
-        $now = time();
+        $now = new \DateTimeImmutable();
+
+        if (!$expiresAt) {
+            $expiresAt = $now->add(new \DateInterval('PT1H'));
+        }
 
         $builder = (new Builder())
             ->issuedBy($this->clientEmail)
@@ -56,7 +60,7 @@ final class Generator implements Domain\Generator
             ->permittedFor('https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit')
             ->withClaim('uid', (string) $uid)
             ->issuedAt($now)
-            ->expiresAt($expiresAt ? $expiresAt->getTimestamp() : $now + (60 * 60));
+            ->expiresAt($expiresAt);
 
         if (!empty($claims)) {
             $builder->withClaim('claims', $claims);

@@ -90,9 +90,9 @@ final class IdToken
 
         $payload = $this->payload;
         $payload['iat'] = $payload['iat'] ?? $now->getTimestamp();
-        $payload['auth_time'] = $payload['auth_time'] ?? $now->getTimestamp() - 1;
-        $payload['exp'] = $payload['exp'] ?? $now->getTimestamp() + 3600; // 1 hour
-        $payload['nbf'] = $payload['nbf'] ?? $now->getTimestamp();
+        $payload['auth_time'] = $payload['auth_time'] ?? ($now->getTimestamp() - 1);
+        $payload['exp'] = $payload['exp'] ?? ($now->getTimestamp() + 3600); // 1 hour
+        $payload['nbf'] = $payload['nbf'] ?? ($now->getTimestamp() - 10);
 
         foreach ($this->claimsToDelete as $claim) {
             unset($payload[$claim]);

@@ -6,6 +6,7 @@ use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Exception\IssuedInTheFuture;
 use Firebase\Auth\Token\Tests\TestCase;
 use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
 
 class IssuedInTheFutureTest extends TestCase
@@ -25,8 +26,8 @@ class IssuedInTheFutureTest extends TestCase
         $this->expiryDate = (new \DateTimeImmutable())->modify('+1 hour');
 
         $this->token = (new Builder())
-            ->setIssuedAt($this->expiryDate->getTimestamp())
-            ->getToken();
+            ->issuedAt($this->expiryDate)
+            ->getToken($this->createMockSigner(), InMemory::plainText('valid_key'));
     }
 
     /** @test */

@@ -10,7 +10,6 @@ use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
-use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -54,47 +53,39 @@ final class WithLcobucciV3JWT implements Handler
             throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid', $e->getMessage()]);
         }
 
-        $timestamp = $this->clock->now()->getTimestamp();
+        $now = $this->clock->now();
+        $nowWithAddedLeeway = $now->add(new \DateInterval('PT'.$leeway.'S'));
+        $nowWithSubtractedLeeway = $now->sub(new \DateInterval('PT'.$leeway.'S'));
         $errors = [];
+        $claims = $token->claims();
 
-        $exp = $token->getClaim('exp', false);
-        if ($exp && ($exp < ($timestamp - $leeway))) {
+        if ($token->isExpired($nowWithSubtractedLeeway)) {
             $errors[] = 'The token is expired.';
         }
 
-        $iat = $token->getClaim('iat', false);
-        if ($iat && ($iat > ($timestamp + $leeway))) {
+        if (!$token->hasBeenIssuedBefore($nowWithAddedLeeway)) {
             $errors[] = 'The token has apparently been issued in the future.';
         }
 
-        $nbf = $token->getClaim('nbf', false);
-        if ($nbf && ($nbf > ($timestamp + $leeway))) {
+        if (!$token->isMinimumTimeBefore($nowWithAddedLeeway)) {
             $errors[] = 'The token has been issued for future use.';
         }
 
-        $authTime = $token->getClaim('auth_time', false);
-        if ($authTime && ($authTime > ($timestamp + $leeway))) {
-            $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and be in the past.";
+        $authTime = $claims->get('auth_time', false);
+        if ($authTime && ($authTime > $nowWithAddedLeeway->getTimestamp())) {
+            $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and in the past [sic!].";
         }
 
-        $audience = $token->getClaim('aud', false);
-        if (!$audience || ($audience !== $this->projectId)) {
-            $errors[] = "The token's audience doesn't match the current Firebase project. Expected '{$this->projectId}', got '{$audience}'.";
+        if (!$token->isPermittedFor($this->projectId)) {
+            $errors[] = "The token's audience doesn't match the current Firebase project.";
         }
 
-        $issuer = $token->getClaim('iss', false);
-        $expectedIssuer = 'https://securetoken.google.com/'.$this->projectId;
-        if (!$issuer || ($issuer !== $expectedIssuer)) {
-            $errors[] = "The token was issued by the wrong principal. Expected '{$expectedIssuer}', got '{$issuer}'";
-        }
-
-        $subject = $token->getClaim('sub', false);
-        if (!$subject || !is_string($subject) || trim($subject) === '') {
-            $errors[] = "The token's 'sub' claim must be a non-empty string. Got: '{$subject}' (".gettype($subject).')';
+        if (!$token->hasBeenIssuedBy($issuer = 'https://securetoken.google.com/'.$this->projectId)) {
+            $errors[] = "The token has not been issued by {$issuer}.";
         }
 
         $expectedTenantId = $action->expectedTenantId();
-        $firebaseClaims = $token->getClaim('firebase', new stdClass());
+        $firebaseClaims = $claims->get('firebase', new stdClass());
         $tenantId = $firebaseClaims->tenant ?? null;
 
         if ($expectedTenantId && !$tenantId) {
@@ -105,7 +96,7 @@ final class WithLcobucciV3JWT implements Handler
             $errors[] = "The token's tenant ID did not match with the expected tenant ID";
         }
 
-        $kid = $token->getHeader('kid', false);
+        $kid = $token->headers()->get('kid', false);
         $key = null;
         if (!$kid) {
             $errors[] = "The token has no 'kid' header.";
@@ -115,26 +106,30 @@ final class WithLcobucciV3JWT implements Handler
             $errors[] = "No public key matching the key ID '{$kid}' was found to verify the signature of this token.";
         }
 
-        if ($key) {
-            try {
-                $token->verify($this->signer, $key);
-            } catch (Throwable $e) {
-                $errors[] = $e->getMessage();
-            }
+        if ($key && !$token->signature()->verify($this->signer, $token->payload(), Signer\Key\InMemory::plainText($key))) {
+            $errors[] = 'The token has an invalid signature';
         }
 
         if (!empty($errors)) {
             throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, $errors);
         }
 
-        /** @var Claim[] $claims */
-        $claims = $token->getClaims();
-
-        $payload = [];
-        foreach ($claims as $claim) {
-            $payload[$claim->getName()] = $claim->getValue();
+        $claims = $token->claims()->all();
+        foreach ($claims as &$claim) {
+            if ($claim instanceof \DateTimeInterface) {
+                $claim = $claim->getTimestamp();
+            }
         }
+        unset($claim);
 
-        return TokenInstance::withValues((string) $token, $token->getHeaders(), $payload);
+        $headers = $token->headers()->all();
+        foreach ($headers as &$header) {
+            if ($header instanceof \DateTimeInterface) {
+                $header = $header->getTimestamp();
+            }
+        }
+        unset($header);
+
+        return TokenInstance::withValues((string) $token, $headers, $claims);
     }
 }

@@ -57,7 +57,11 @@ final class TenantAwareGenerator implements Domain\Generator
      */
     public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
     {
-        $now = time();
+        $now = new \DateTimeImmutable();
+
+        if (!$expiresAt) {
+            $expiresAt = $now->add(new \DateInterval('PT1H'));
+        }
 
         $builder = (new Builder())
             ->issuedBy($this->clientEmail)
@@ -66,7 +70,7 @@ final class TenantAwareGenerator implements Domain\Generator
             ->withClaim('uid', (string) $uid)
             ->withClaim('tenant_id', $this->tenantId)
             ->issuedAt($now)
-            ->expiresAt($expiresAt ? $expiresAt->getTimestamp() : $now + (60 * 60));
+            ->expiresAt($expiresAt);
 
         if (!empty($claims)) {
             $builder->withClaim('claims', $claims);
