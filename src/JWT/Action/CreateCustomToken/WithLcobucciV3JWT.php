@@ -10,7 +10,6 @@ use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
 use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Throwable;
@@ -42,9 +41,9 @@ final class WithLcobucciV3JWT implements Handler
         $now = $this->clock->now();
 
         $builder = (new Builder())
-            ->issuedAt($now->getTimestamp())
+            ->issuedAt($now)
             ->issuedBy($this->clientEmail)
-            ->expiresAt($now->add($action->timeToLive()->value())->getTimestamp())
+            ->expiresAt($now->add($action->timeToLive()->value()))
             ->relatedTo($this->clientEmail)
             ->permittedFor('https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit')
             ->withClaim('uid', $action->uid())
@@ -64,14 +63,22 @@ final class WithLcobucciV3JWT implements Handler
             throw CustomTokenCreationFailed::because($e->getMessage(), $e->getCode(), $e);
         }
 
-        /** @var Claim[] $claims */
-        $claims = $token->getClaims();
-
-        $payload = [];
-        foreach ($claims as $claim) {
-            $payload[$claim->getName()] = $claim->getValue();
+        $claims = $token->claims()->all();
+        foreach ($claims as &$claim) {
+            if ($claim instanceof \DateTimeInterface) {
+                $claim = $claim->getTimestamp();
+            }
         }
+        unset($claim);
 
-        return TokenInstance::withValues((string) $token, $token->getHeaders(), $payload);
+        $headers = $token->headers()->all();
+        foreach ($headers as &$header) {
+            if ($header instanceof \DateTimeInterface) {
+                $header = $header->getTimestamp();
+            }
+        }
+        unset($header);
+
+        return TokenInstance::withValues((string) $token, $headers, $claims);
     }
 }

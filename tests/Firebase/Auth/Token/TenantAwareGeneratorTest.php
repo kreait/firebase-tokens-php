@@ -26,6 +26,6 @@ class TenantAwareGeneratorTest extends GeneratorTest
     {
         $token = $this->generator->createCustomToken('uid');
 
-        $this->assertSame($this->tenantId, $token->getClaim('tenant_id'));
+        $this->assertSame($this->tenantId, $token->claims()->get('tenant_id'));
     }
 }

@@ -8,6 +8,7 @@ use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Tests\TestCase;
 use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
 
 class ExpiredTokenTest extends TestCase
@@ -27,8 +28,8 @@ class ExpiredTokenTest extends TestCase
         $this->expiryDate = new DateTimeImmutable();
 
         $this->token = (new Builder())
-            ->set('exp', $this->expiryDate->getTimestamp())
-            ->getToken();
+            ->expiresAt($this->expiryDate)
+            ->getToken($this->createMockSigner(), InMemory::plainText('valid_key'));
     }
 
     /** @test */

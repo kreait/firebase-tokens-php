@@ -26,14 +26,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
             ->willReturnCallback(function ($payload, $key) {
                 $key = is_string($key) ? new Signer\Key($key) : $key;
 
-                return new Signature($payload.$key->getContent());
+                return new Signature($payload.$key->contents());
             });
 
         $signer->method('verify')
             ->willReturnCallback(function ($expected, $payload, $key) {
                 $key = is_string($key) ? new Signer\Key($key) : $key;
 
-                return $expected === $payload.$key->getContent();
+                return $expected === $payload.$key->contents();
             });
 
         return $signer;

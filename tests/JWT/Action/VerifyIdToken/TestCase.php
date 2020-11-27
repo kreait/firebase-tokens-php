@@ -89,13 +89,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    public function it_rejects_a_token_when_the_matching_key_is_invalid()
-    {
-        $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->withChangedHeader('kid', 'invalid')->build()));
-    }
-
-    /** @test */
     public function it_rejects_an_expired_token()
     {
         $idToken = $this->idToken
@@ -165,15 +158,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function it_rejects_a_token_with_the_wrong_issuer()
     {
         $idToken = $this->idToken->withChangedClaim('iss', 'wrong')->build();
-
-        $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
-    }
-
-    /** @test */
-    public function it_rejects_a_token_without_a_subject()
-    {
-        $idToken = $this->idToken->withoutClaim('sub')->build();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));

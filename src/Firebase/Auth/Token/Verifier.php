@@ -55,11 +55,12 @@ final class Verifier implements Domain\Verifier
         }
 
         $errorBeforeSignatureCheck = null;
+        $now = new \DateTimeImmutable();
 
         try {
-            $this->verifyExpiry($token);
-            $this->verifyAuthTime($token);
-            $this->verifyIssuedAt($token);
+            $this->verifyExpiry($token, $now);
+            $this->verifyAuthTime($token, $now);
+            $this->verifyIssuedAt($token, $now);
             $this->verifyIssuer($token);
         } catch (\Throwable $e) {
             $errorBeforeSignatureCheck = $e;
@@ -74,61 +75,47 @@ final class Verifier implements Domain\Verifier
         return $token;
     }
 
-    private function verifyExpiry(Token $token)
+    private function verifyExpiry(Token $token, \DateTimeImmutable $now)
     {
-        if (!$token->hasClaim('exp')) {
-            throw new InvalidToken($token, 'The claim "exp" is missing.');
-        }
-
-        if ($token->isExpired()) {
+        if ($token->isExpired($now)) {
             throw new ExpiredToken($token);
         }
     }
 
-    private function verifyAuthTime(Token $token)
+    private function verifyAuthTime(Token $token, \DateTimeImmutable $now)
     {
-        if (!$token->hasClaim('auth_time')) {
+        if (!$token->claims()->has('auth_time')) {
             throw new InvalidToken($token, 'The claim "auth_time" is missing.');
         }
 
-        $authTimeWithLeeway = $token->getClaim('auth_time') - $this->leewayInSeconds;
+        $authTimeWithLeeway = $token->claims()->get('auth_time') - $this->leewayInSeconds;
 
-        if ($authTimeWithLeeway > time()) {
+        if ($authTimeWithLeeway > $now->getTimestamp()) {
             throw new InvalidToken($token, "The user's authentication time must be in the past");
         }
     }
 
-    private function verifyIssuedAt(Token $token)
+    private function verifyIssuedAt(Token $token, \DateTimeImmutable $now)
     {
-        if (!$token->hasClaim('iat')) {
-            throw new InvalidToken($token, 'The claim "iat" is missing.');
-        }
-
-        $iatWithLeeway = $token->getClaim('iat') - $this->leewayInSeconds;
-
-        if ($iatWithLeeway > time()) {
+        if (!$token->hasBeenIssuedBefore($now->add(new \DateInterval('PT'.$this->leewayInSeconds.'S')))) {
             throw new IssuedInTheFuture($token);
         }
     }
 
     private function verifyIssuer(Token $token)
     {
-        if (!$token->hasClaim('iss')) {
-            throw new InvalidToken($token, 'The claim "iss" is missing.');
-        }
-
-        if ($token->getClaim('iss') !== sprintf('https://securetoken.google.com/%s', $this->projectId)) {
+        if (!$token->hasBeenIssuedBy("https://securetoken.google.com/{$this->projectId}")) {
             throw new InvalidToken($token, 'This token has an invalid issuer.');
         }
     }
 
     private function getKey(Token $token): string
     {
-        if (!$token->hasHeader('kid')) {
+        if (!$token->headers()->has('kid')) {
             throw new InvalidToken($token, 'The header "kid" is missing.');
         }
 
-        $keyId = $token->getHeader('kid');
+        $keyId = $token->headers()->get('kid');
 
         try {
             return $this->keys->get($keyId);
@@ -139,14 +126,14 @@ final class Verifier implements Domain\Verifier
 
     private function verifySignature(Token $token, string $key)
     {
-        try {
-            $isVerified = $token->verify($this->signer, $key);
-        } catch (\Throwable $e) {
-            throw new InvalidSignature($token, $e->getMessage());
+        if ($token->headers()->get('alg', false) !== $this->signer->getAlgorithmId()) {
+            throw new InvalidSignature($token, 'Unexpected algorithm');
         }
 
-        if (!$isVerified) {
-            throw new InvalidSignature($token);
+        if ($token->signature()->verify($this->signer, $token->payload(), Signer\Key\InMemory::plainText($key))) {
+            return;
         }
+
+        throw new InvalidSignature($token);
     }
 }

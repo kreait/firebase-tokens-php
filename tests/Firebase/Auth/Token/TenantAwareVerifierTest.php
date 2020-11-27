@@ -5,7 +5,10 @@ namespace Firebase\Auth\Token\Tests;
 use Firebase\Auth\Token\Domain\Verifier;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\TenantAwareVerifier;
+use Firebase\Auth\Token\Tests\Util\TestHelperClock;
+use Kreait\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
 
 class TenantAwareVerifierTest extends TestCase
@@ -66,26 +69,28 @@ class TenantAwareVerifierTest extends TestCase
 
     private function tokenWithTenantId($tenantId): Token
     {
+        $clock = new TestHelperClock(new SystemClock());
+
         return (new Builder())
-            ->setExpiration(time() + 1800)
-            ->set('auth_time', time() - 1800)
-            ->setIssuedAt(time() - 10)
-            ->setIssuer('https://securetoken.google.com/project-id')
-            ->setHeader('kid', 'valid_key_id')
-            ->set('firebase', (object) ['tenant' => $tenantId])
-            ->sign($this->createMockSigner(), 'valid_key')
-            ->getToken();
+            ->expiresAt($clock->minutesLater(30))
+            ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
+            ->issuedAt($clock->secondsEarlier(10))
+            ->issuedBy('https://securetoken.google.com/project-id')
+            ->withHeader('kid', 'valid_key_id')
+            ->withClaim('firebase', (object) ['tenant' => $tenantId])
+            ->getToken($this->createMockSigner(), InMemory::plainText('valid_key'));
     }
 
     private function tokenWithoutTenantId(): Token
     {
+        $clock = new TestHelperClock(new SystemClock());
+
         return (new Builder())
-            ->setExpiration(time() + 1800)
-            ->set('auth_time', time() - 1800)
-            ->setIssuedAt(time() - 10)
-            ->setIssuer('https://securetoken.google.com/project-id')
-            ->setHeader('kid', 'valid_key_id')
-            ->sign($this->createMockSigner(), 'valid_key')
-            ->getToken();
+            ->expiresAt($clock->minutesLater(30))
+            ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
+            ->issuedAt($clock->secondsEarlier(10))
+            ->issuedBy('https://securetoken.google.com/project-id')
+            ->withHeader('kid', 'valid_key_id')
+            ->getToken($this->createMockSigner(), InMemory::plainText('valid_key'));
     }
 }
