@@ -28,11 +28,11 @@ final class WithHandlerDiscovery implements Handler
 
     private static function discover(Clock $clock): Handler
     {
-        if (filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN)) {
+        if (\filter_var(\ini_get('allow_url_fopen'), \FILTER_VALIDATE_BOOLEAN)) {
             return new FetchGooglePublicKeys\WithStreamContext($clock);
         }
 
-        if (interface_exists(ClientInterface::class)) {
+        if (\interface_exists(ClientInterface::class)) {
             return new FetchGooglePublicKeys\WithGuzzle6(new Client(['http_errors' => false]), $clock);
         }
 

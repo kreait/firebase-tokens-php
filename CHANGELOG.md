@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Added support for PHP 8.0
+
 ## 1.12.0 - 2020-11-27
 
 - Added Tenant Awareness

@@ -4,16 +4,27 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Action\VerifyIdToken;
 
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
-use Lcobucci\JWT\Parser;
+use Lcobucci\Clock\FrozenClock;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
-use stdClass;
+use Lcobucci\JWT\Token as JWT;
+use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Lcobucci\JWT\Validation\Constraint\PermittedFor;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\Constraint\ValidAt;
+use Lcobucci\JWT\Validation\ConstraintViolation;
+use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 use Throwable;
 
 final class WithLcobucciV3JWT implements Handler
@@ -30,84 +41,52 @@ final class WithLcobucciV3JWT implements Handler
     /** @var Signer */
     private $signer;
 
+    /** @var Configuration */
+    private $config;
+
     public function __construct(string $projectId, Keys $keys, Clock $clock)
     {
         $this->projectId = $projectId;
         $this->keys = $keys;
         $this->clock = $clock;
-        $this->signer = new Sha256();
+
+        $this->config = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(''));
     }
 
     public function handle(VerifyIdToken $action): Token
     {
         $tokenString = $action->token();
-        $leeway = $action->leewayInSeconds();
-
-        if (empty($this->keys->all())) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ["No keys are available to verify the token's signature."]);
-        }
 
         try {
-            $token = (new Parser())->parse($tokenString);
+            $token = $this->config->parser()->parse($tokenString);
         } catch (Throwable $e) {
             throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid', $e->getMessage()]);
         }
 
-        $now = $this->clock->now();
-        $nowWithAddedLeeway = $now->add(new \DateInterval('PT'.$leeway.'S'));
-        $nowWithSubtractedLeeway = $now->sub(new \DateInterval('PT'.$leeway.'S'));
+        $key = $this->getKey($token);
+        $clock = new FrozenClock($this->clock->now());
+        $leeway = new DateInterval('PT'.$action->leewayInSeconds().'S');
         $errors = [];
-        $claims = $token->claims();
 
-        if ($token->isExpired($nowWithSubtractedLeeway)) {
-            $errors[] = 'The token is expired.';
-        }
+        try {
+            $this->config->validator()->assert($token, ...[
+                new ValidAt($clock, $leeway),
+                new IssuedBy(...["https://securetoken.google.com/{$this->projectId}"]),
+                new PermittedFor($this->projectId),
+                new SignedWith($this->config->signer(), InMemory::plainText($key)),
+            ]);
 
-        if (!$token->hasBeenIssuedBefore($nowWithAddedLeeway)) {
-            $errors[] = 'The token has apparently been issued in the future.';
-        }
-
-        if (!$token->isMinimumTimeBefore($nowWithAddedLeeway)) {
-            $errors[] = 'The token has been issued for future use.';
-        }
-
-        $authTime = $claims->get('auth_time', false);
-        if ($authTime && ($authTime > $nowWithAddedLeeway->getTimestamp())) {
-            $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and in the past [sic!].";
-        }
-
-        if (!$token->isPermittedFor($this->projectId)) {
-            $errors[] = "The token's audience doesn't match the current Firebase project.";
-        }
-
-        if (!$token->hasBeenIssuedBy($issuer = 'https://securetoken.google.com/'.$this->projectId)) {
-            $errors[] = "The token has not been issued by {$issuer}.";
-        }
-
-        $expectedTenantId = $action->expectedTenantId();
-        $firebaseClaims = $claims->get('firebase', new stdClass());
-        $tenantId = $firebaseClaims->tenant ?? null;
-
-        if ($expectedTenantId && !$tenantId) {
-            $errors[] = 'The token was expected to have a firebase.tenant claim, but did not have it.';
-        } elseif (!$expectedTenantId && $tenantId) {
-            $errors[] = 'The token contains a firebase.tenant claim, but was not expected to have one';
-        } elseif ($expectedTenantId && $tenantId && $expectedTenantId !== $tenantId) {
-            $errors[] = "The token's tenant ID did not match with the expected tenant ID";
-        }
-
-        $kid = $token->headers()->get('kid', false);
-        $key = null;
-        if (!$kid) {
-            $errors[] = "The token has no 'kid' header.";
-        }
-
-        if (!($key = $this->keys->all()[$kid] ?? null)) {
-            $errors[] = "No public key matching the key ID '{$kid}' was found to verify the signature of this token.";
-        }
-
-        if ($key && !$token->signature()->verify($this->signer, $token->payload(), Signer\Key\InMemory::plainText($key))) {
-            $errors[] = 'The token has an invalid signature';
+            $this->assertUserAuthedAt($token, $clock->now()->add($leeway));
+            if ($tenantId = $action->expectedTenantId()) {
+                $this->assertTenantId($token, $tenantId);
+            }
+        } catch (RequiredConstraintsViolated $e) {
+            $errors = \array_map(
+                static function (ConstraintViolation $violation): string {
+                    return '- '.$violation->getMessage();
+                },
+                $e->violations()
+            );
         }
 
         if (!empty($errors)) {
@@ -115,8 +94,9 @@ final class WithLcobucciV3JWT implements Handler
         }
 
         $claims = $token->claims()->all();
+
         foreach ($claims as &$claim) {
-            if ($claim instanceof \DateTimeInterface) {
+            if ($claim instanceof DateTimeInterface) {
                 $claim = $claim->getTimestamp();
             }
         }
@@ -124,12 +104,70 @@ final class WithLcobucciV3JWT implements Handler
 
         $headers = $token->headers()->all();
         foreach ($headers as &$header) {
-            if ($header instanceof \DateTimeInterface) {
+            if ($header instanceof DateTimeInterface) {
                 $header = $header->getTimestamp();
             }
         }
         unset($header);
 
-        return TokenInstance::withValues((string) $token, $headers, $claims);
+        return TokenInstance::withValues($tokenString, $headers, $claims);
+    }
+
+    private function getKey(JWT $token): string
+    {
+        if (empty($keys = $this->keys->all())) {
+            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No keys are available to verify the token's signature."]);
+        }
+
+        $keyId = $token->headers()->get('kid');
+
+        if ($key = $keys[$keyId] ?? null) {
+            return $key;
+        }
+
+        throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
+    }
+
+    private function assertUserAuthedAt(JWT $token, DateTimeInterface $now)
+    {
+        /** @var int|DateTimeImmutable $authTime */
+        $authTime = $token->claims()->get('auth_time');
+
+        if (!$authTime) {
+            throw RequiredConstraintsViolated::fromViolations(
+                new ConstraintViolation('The token is missing the "auth_time" claim.')
+            );
+        }
+
+        if (\is_numeric($authTime)) {
+            $authTime = new DateTimeImmutable('@'.((int) $authTime));
+        }
+
+        if ($now < $authTime) {
+            throw RequiredConstraintsViolated::fromViolations(
+                new ConstraintViolation("The token's user must have authenticated in the past")
+            );
+        }
+    }
+
+    private function assertTenantId(JWT $token, string $tenantId)
+    {
+        $claim = $token->claims()->get('firebase');
+
+        $tenant = \is_object($claim)
+            ? ($claim->tenant ?? null)
+            : ($claim['tenant'] ?? null);
+
+        if (!$tenant) {
+            throw RequiredConstraintsViolated::fromViolations(
+                new ConstraintViolation('The ID token does not contain a tenant identifier')
+            );
+        }
+
+        if ($tenant !== $tenantId) {
+            throw RequiredConstraintsViolated::fromViolations(
+                new ConstraintViolation("The token's tenant ID did not match with the expected tenant ID")
+            );
+        }
     }
 }

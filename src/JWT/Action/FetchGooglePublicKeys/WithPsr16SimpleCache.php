@@ -33,7 +33,7 @@ final class WithPsr16SimpleCache implements Handler
     {
         $now = $this->clock->now();
 
-        $cacheKey = md5(get_class($action));
+        $cacheKey = \md5(\get_class($action));
 
         /** @noinspection PhpUnhandledExceptionInspection */
         /** @var Keys|null $keys */
@@ -50,9 +50,9 @@ final class WithPsr16SimpleCache implements Handler
         try {
             $keys = $this->handler->handle($action);
         } catch (FetchingGooglePublicKeysFailed $e) {
-            $reason = sprintf(
+            $reason = \sprintf(
                 'The inner handler of %s (%s) failed in fetching keys: %s',
-                __CLASS__, get_class($this->handler), $e->getMessage()
+                __CLASS__, \get_class($this->handler), $e->getMessage()
             );
 
             throw FetchingGooglePublicKeysFailed::because($reason, $e->getCode(), $e);

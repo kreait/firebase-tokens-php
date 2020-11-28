@@ -10,16 +10,23 @@ use Psr\SimpleCache\CacheInterface;
 
 final class InMemoryCache implements CacheInterface
 {
-    /**
-     * @var array
-     */
+    /** @var array<string, mixed> */
     private $items;
 
+    /**
+     * @param array<string, mixed> $items
+     */
     public function __construct(array $items = [])
     {
         $this->items = $items;
     }
 
+    /**
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
     public function get($key, $default = null)
     {
         $now = new DateTimeImmutable();
@@ -42,7 +49,7 @@ final class InMemoryCache implements CacheInterface
         $now = new DateTimeImmutable();
         $expires = null;
 
-        if (is_int($ttl) && $ttl > 0) {
+        if (\is_int($ttl) && $ttl > 0) {
             $expires = $now->modify("+{$ttl} seconds");
         } elseif ($ttl instanceof DateInterval) {
             $expires = $now->add($ttl);
@@ -73,6 +80,12 @@ final class InMemoryCache implements CacheInterface
         return true;
     }
 
+    /**
+     * @param iterable<string> $keys
+     * @param mixed $default
+     *
+     * @return array<string, mixed>
+     */
     public function getMultiple($keys, $default = null)
     {
         $result = [];
@@ -84,6 +97,12 @@ final class InMemoryCache implements CacheInterface
         return $result;
     }
 
+    /**
+     * @param iterable<mixed> $values
+     * @param int|DateInterval|null $ttl
+     *
+     * @return bool
+     */
     public function setMultiple($values, $ttl = null)
     {
         foreach ($values as $key => $value) {
@@ -93,6 +112,11 @@ final class InMemoryCache implements CacheInterface
         return true;
     }
 
+    /**
+     * @param iterable<string> $keys
+     *
+     * @return bool
+     */
     public function deleteMultiple($keys)
     {
         foreach ($keys as $key) {
@@ -107,7 +131,7 @@ final class InMemoryCache implements CacheInterface
         if ($item = $this->items[$key] ?? null) {
             $expiresAt = $item[0];
 
-            if (new \DateTimeImmutable() < $expiresAt) {
+            if (new DateTimeImmutable() < $expiresAt) {
                 return true;
             }
         }

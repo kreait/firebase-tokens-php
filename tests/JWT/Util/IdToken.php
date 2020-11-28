@@ -38,7 +38,7 @@ final class IdToken
         $this->privateKey = KeyPair::privateKey();
     }
 
-    public function withChangedClaim(string $name, $value): self
+    public function withClaim(string $name, $value): self
     {
         $builder = clone $this;
         $builder->payload[$name] = $value;
@@ -115,13 +115,13 @@ final class IdToken
         $segments = [];
         $segments[] = JWT::urlsafeB64Encode(JWT::jsonEncode($headers));
         $segments[] = JWT::urlsafeB64Encode(JWT::jsonEncode($payload));
-        $signingInput = implode('.', $segments);
+        $signingInput = \implode('.', $segments);
 
         if ($this->privateKey) {
             $signature = JWT::sign($signingInput, $this->privateKey, $headers['alg']);
             $segments[] = JWT::urlsafeB64Encode($signature);
         }
 
-        return implode('.', $segments);
+        return \implode('.', $segments);
     }
 }

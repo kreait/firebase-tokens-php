@@ -11,7 +11,7 @@ use Psr\SimpleCache\CacheInterface;
 
 final class InMemoryCache implements CacheInterface
 {
-    /** @var array */
+    /** @var array<string, mixed> */
     private $items = [];
 
     /** @var Clock */
@@ -61,7 +61,7 @@ final class InMemoryCache implements CacheInterface
             $expires = $now->add($ttl);
         }
 
-        if (is_int($ttl) && $ttl > 0) {
+        if (\is_int($ttl) && $ttl > 0) {
             $expires = $now->modify("+{$ttl} seconds");
         }
 
@@ -90,6 +90,12 @@ final class InMemoryCache implements CacheInterface
         return true;
     }
 
+    /**
+     * @param iterable<string> $keys
+     * @param mixed $default
+     *
+     * @return array<string, mixed>
+     */
     public function getMultiple($keys, $default = null)
     {
         $result = [];
@@ -101,6 +107,10 @@ final class InMemoryCache implements CacheInterface
         return $result;
     }
 
+    /**
+     * @param iterable<mixed> $values
+     * @param int|DateInterval|null $ttl
+     */
     public function setMultiple($values, $ttl = null): bool
     {
         foreach ($values as $key => $value) {
@@ -110,6 +120,9 @@ final class InMemoryCache implements CacheInterface
         return true;
     }
 
+    /**
+     * @param iterable<string> $keys
+     */
     public function deleteMultiple($keys): bool
     {
         foreach ($keys as $key) {

@@ -14,7 +14,6 @@ use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
-use stdClass;
 use Throwable;
 use UnexpectedValueException;
 
@@ -83,23 +82,27 @@ final class WithFirebaseJWT implements Handler
         }
 
         $subject = $token->sub ?? '';
-        if (trim($subject) === '') {
-            $errors[] = "The token's 'sub' claim must be a non-empty string. Got: '{$subject}' (".gettype($subject).')';
+        if (\trim($subject) === '') {
+            $errors[] = "The token's 'sub' claim must be a non-empty string. Got: '{$subject}' (".\gettype($subject).')';
         }
 
-        $authTime = (int) ($token->auth_time ?? PHP_INT_MAX);
+        $authTime = (int) ($token->auth_time ?? \PHP_INT_MAX);
         if ($authTime > ($now->getTimestamp() + $leeway)) {
             $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and be in the past.";
         }
 
         $expectedTenantId = $action->expectedTenantId();
-        $firebaseClaims = $token->firebase ?? new stdClass();
-        $tenantId = $firebaseClaims->tenant ?? null;
+
+        $claim = $token->firebase ?? null;
+
+        $tenantId = \is_object($claim)
+            ? ($claim->tenant ?? null)
+            : ($claim['tenant'] ?? null);
 
         if ($expectedTenantId && !$tenantId) {
-            $errors[] = 'The token was expected to have a firebase.tenant claim, but did not have it.';
+            $errors[] = 'The ID token does not contain a tenant identifier';
         } elseif (!$expectedTenantId && $tenantId) {
-            $errors[] = 'The token contains a firebase.tenant claim, but was not expected to have one';
+            $errors[] = 'The ID token contains a tenant identifier, but was not expected to have one';
         } elseif ($expectedTenantId && $tenantId && $expectedTenantId !== $tenantId) {
             $errors[] = "The token's tenant ID did not match with the expected tenant ID";
         }
@@ -110,13 +113,17 @@ final class WithFirebaseJWT implements Handler
 
         // We replicate what's done in JWT::decode(), but have to re-encode/decode it
         // to get an array instead of an object
-        list($headb64, $bodyb64) = explode('.', $tokenString);
+        list($headb64, $bodyb64) = \explode('.', $tokenString);
         $headers = (array) JWT::jsonDecode(JWT::urlsafeB64Decode($headb64));
         $payload = (array) JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64));
 
         return TokenInstance::withValues($tokenString, $headers, $payload);
     }
 
+    /**
+     * @param int|null $timestamp
+     * @param int $leeway
+     */
     private function restoreJWTStaticVariables($timestamp, $leeway)
     {
         JWT::$timestamp = $timestamp;

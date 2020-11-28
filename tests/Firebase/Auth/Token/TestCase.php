@@ -1,41 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token\Tests;
 
-use Lcobucci\JWT\Signature;
+use Firebase\Auth\Token\Domain\KeyStore;
+use Firebase\Auth\Token\Tests\Util\ArrayKeyStore;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key\LocalFileReference;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 
+/**
+ * @internal
+ */
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @return Signer|\PHPUnit_Framework_MockObject_MockObject
-     */
-    public function createMockSigner()
+    protected function onePrivateKey(): Signer\Key
     {
-        $signer = $this->createMock(Signer::class);
+        return LocalFileReference::file(__DIR__.'/../../../_fixtures/one.key');
+    }
 
-        $signer->method('getAlgorithmId')
-            ->willReturn('mock');
+    protected function onePublicKey(): Signer\Key
+    {
+        return LocalFileReference::file(__DIR__.'/../../../_fixtures/one.pub');
+    }
 
-        $signer->method('modifyHeader')
-            ->willReturnCallback(function (&$headers) {
-                $headers['alg'] = 'mock';
-            });
+    protected function createJwtConfiguration(): Configuration
+    {
+        return Configuration::forSymmetricSigner(new Sha256(), $this->onePrivateKey());
+    }
 
-        $signer->method('sign')
-            ->willReturnCallback(function ($payload, $key) {
-                $key = is_string($key) ? new Signer\Key($key) : $key;
-
-                return new Signature($payload.$key->contents());
-            });
-
-        $signer->method('verify')
-            ->willReturnCallback(function ($expected, $payload, $key) {
-                $key = is_string($key) ? new Signer\Key($key) : $key;
-
-                return $expected === $payload.$key->contents();
-            });
-
-        return $signer;
+    protected function createKeyStore(): KeyStore
+    {
+        return new ArrayKeyStore(['valid_key_id' => $this->onePublicKey()->contents()]);
     }
 }

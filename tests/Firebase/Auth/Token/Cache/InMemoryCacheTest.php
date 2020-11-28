@@ -8,19 +8,18 @@ use DateInterval;
 use Firebase\Auth\Token\Cache\InMemoryCache;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 class InMemoryCacheTest extends TestCase
 {
-    /**
-     * @var InMemoryCache
-     */
+    /** @var InMemoryCache */
     private $cache;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $ttl = 10;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->cache = new InMemoryCache();
     }
@@ -82,7 +81,7 @@ class InMemoryCacheTest extends TestCase
 
         $this->assertEquals(
             $expected,
-            $this->cache->getMultiple(array_keys($expected), 'default')
+            $this->cache->getMultiple(\array_keys($expected), 'default')
         );
     }
 
@@ -92,7 +91,7 @@ class InMemoryCacheTest extends TestCase
 
         $this->cache->setMultiple($values, $this->ttl);
 
-        $this->assertEquals($values, $this->cache->getMultiple(array_keys($values)));
+        $this->assertEquals($values, $this->cache->getMultiple(\array_keys($values)));
     }
 
     public function testDeleteMultiple()

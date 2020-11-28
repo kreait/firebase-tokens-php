@@ -1,249 +1,159 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token\Tests;
 
-use Firebase\Auth\Token\Domain\KeyStore;
+use DateTimeImmutable;
 use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidSignature;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Exception\IssuedInTheFuture;
 use Firebase\Auth\Token\Exception\UnknownKey;
-use Firebase\Auth\Token\Tests\Util\ArrayKeyStore;
 use Firebase\Auth\Token\Tests\Util\TestHelperClock;
 use Firebase\Auth\Token\Verifier;
 use Kreait\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Signer;
-use Lcobucci\JWT\Signer\Key\InMemory as InMemoryKey;
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Key\LocalFileReference;
 
+/**
+ * @internal
+ */
 class VerifierTest extends TestCase
 {
-    /**
-     * @var Verifier
-     */
+    /** @var Verifier */
     private $verifier;
 
-    /**
-     * @var KeyStore|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $keyStore;
+    /** @var string */
+    private $projectId;
 
-    /**
-     * @var Signer|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $signer;
+    /** @var Builder */
+    private $builder;
 
-    protected function setUp()
+    /** @var Configuration */
+    private $config;
+
+    protected function setUp(): void
     {
-        $this->keyStore = new ArrayKeyStore(['valid_key_id' => 'valid_key']);
+        $this->config = $this->createJwtConfiguration();
+        $this->projectId = 'project-id';
 
-        $this->signer = $this->createMockSigner();
-
-        $this->verifier = new Verifier('project-id', $this->keyStore, $this->signer);
-    }
-
-    /**
-     * @param Token $token
-     *
-     * @dataProvider validTokenStringProvider
-     */
-    public function testItSucceedsWithAValidToken($token)
-    {
-        $token = (new Parser())->parse($token);
-
-        $this->signer
-            ->expects($this->once())
-            ->method('verify')
-            ->willReturn(true);
-
-        $this->verifier->verifyIdToken($token);
-    }
-
-    /**
-     * @param string $token
-     *
-     * @dataProvider validTokenStringProvider
-     */
-    public function testItCanHandleTokenString($token)
-    {
-        $this->signer
-            ->expects($this->once())
-            ->method('verify')
-            ->willReturn(true);
-
-        $this->verifier->verifyIdToken($token);
-    }
-
-    public function testItFailsOnAnUnknownKey()
-    {
         $clock = new TestHelperClock(new SystemClock());
 
-        $token = (new Builder())
+        $this->builder = $this->config->builder()
             ->expiresAt($clock->minutesLater(30))
             ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
             ->issuedAt($clock->secondsEarlier(10))
-            ->issuedBy('https://securetoken.google.com/project-id')
-            ->withHeader('kid', 'invalid_key_id')
-            ->getToken($this->signer, InMemoryKey::plainText('valid_key'));
+            ->issuedBy('https://securetoken.google.com/'.$this->projectId)
+            ->permittedFor($this->projectId)
+            ->withHeader('kid', 'valid_key_id');
+
+        $this->verifier = new Verifier($this->projectId, $this->createKeyStore(), $this->config->signer());
+    }
+
+    public function testItVerifiesAValidToken()
+    {
+        $token = $this->builder->getToken($this->config->signer(), $this->config->signingKey());
+
+        $this->verifier->verifyIdToken($token);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItVerifiesAValidTokenString()
+    {
+        $token = $this->builder->getToken($this->config->signer(), $this->config->signingKey())->toString();
+
+        $this->verifier->verifyIdToken($token);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItAppliesALeewayOf5MinutesWhenCheckingTheIssueTime()
+    {
+        $token = $this->builder
+            ->issuedAt((new DateTimeImmutable())->add(new \DateInterval('PT295S')))
+            ->getToken($this->config->signer(), $this->config->signingKey());
+
+        $this->verifier->verifyIdToken($token);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItAppliesALeewayOf5MinutesWhenCheckingTheAuthTime()
+    {
+        $token = $this->builder
+            ->withClaim('auth_time', (new DateTimeImmutable())->add(new \DateInterval('PT295S')))
+            ->getToken($this->config->signer(), $this->config->signingKey());
+
+        $this->verifier->verifyIdToken($token);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItRejectsATokenOfAUserThatHasNotYetAuthenticated()
+    {
+        $token = $this->builder
+            ->withClaim('auth_time', (new DateTimeImmutable())->add(new \DateInterval('PT2H')))
+            ->getToken($this->config->signer(), $this->config->signingKey());
+
+        $this->expectException(InvalidToken::class);
+        $this->verifier->verifyIdToken($token);
+    }
+
+    public function testItRejectsATokenWithNoAuthTime()
+    {
+        $token = $this->builder
+            ->withClaim('auth_time', null)
+            ->getToken($this->config->signer(), $this->config->signingKey());
+
+        $this->expectException(InvalidToken::class);
+        $this->verifier->verifyIdToken($token);
+    }
+
+    public function testItNeedsToFindAPublicKey()
+    {
+        $token = $this->builder
+            ->withHeader('kid', 'other')
+            ->getToken($this->config->signer(), $this->config->signingKey());
 
         $this->expectException(UnknownKey::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testItVerifiesTheSignatureNoMatterWhat()
+    public function testItRejectsAnUnknownSignature()
     {
-        $clock = new TestHelperClock(new SystemClock());
-
-        $token = (new Builder())
-            ->expiresAt($clock->minutesLater(30))
-            ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-            ->issuedAt($clock->secondsEarlier(10))
-            ->issuedBy('invalid') // Should not trigger
-            ->withHeader('kid', 'valid_key_id')
-            ->getToken($this->signer, InMemoryKey::plainText('invalid_key'));
+        $other = LocalFileReference::file(__DIR__.'/../../../_fixtures/other.key');
+        $token = $this->builder->getToken($this->config->signer(), $other);
 
         $this->expectException(InvalidSignature::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    /**
-     * @param string $exception
-     * @dataProvider invalidTokenProvider
-     */
-    public function testInvalidTokenResultsInException(Token $token, $exception)
+    public function testItRejectsAnExpiredToken()
     {
-        $this->expectException($exception);
+        $token = $this->builder
+            ->expiresAt((new DateTimeImmutable())->modify('-10 minutes'))
+            ->getToken($this->config->signer(), $this->config->signingKey());
 
+        $this->expectException(ExpiredToken::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function validTokenStringProvider()
+    public function testItRejectsANotYetIssuedToken()
     {
-        $clock = new TestHelperClock(new SystemClock());
-        $signer = $this->createMockSigner();
+        $token = $this->builder
+            ->issuedAt((new DateTimeImmutable())->modify('+10 minutes'))
+            ->getToken($this->config->signer(), $this->config->signingKey());
 
-        return [
-            'fully_valid' => [
-                (string) (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->secondsEarlier(10))
-                    ->issuedBy('https://securetoken.google.com/project-id')
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, InMemoryKey::plainText('valid_key')),
-            ],
-            'needing_leeway_for_iat' => [
-                (string) (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->secondsLater(299))
-                    ->issuedBy('https://securetoken.google.com/project-id')
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, InMemoryKey::plainText('valid_key')),
-            ],
-            'needing_leeway_for_auth_time' => [
-                (string) (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->secondsEarlier(10))
-                    ->issuedBy('https://securetoken.google.com/project-id')
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, InMemoryKey::plainText('valid_key')),
-            ],
-        ];
+        $this->expectException(IssuedInTheFuture::class);
+        $this->verifier->verifyIdToken($token);
     }
 
-    public function invalidTokenProvider()
+    public function testItRejectsAnUnknownIssuer()
     {
-        $clock = new TestHelperClock(new SystemClock());
-        $signer = $this->createMockSigner();
-        $validKey = InMemoryKey::plainText('valid_key');
-        $invalidKey = InMemoryKey::plainText('invalid_key');
+        $token = $this->builder
+            ->issuedBy('unknown')
+            ->getToken($this->config->signer(), $this->config->signingKey());
 
-        return [
-            'no_exp_claim' => [
-                (new Builder())->getToken($signer, $validKey),
-                InvalidToken::class,
-            ],
-            'expired' => [
-                (new Builder())
-                    ->expiresAt($clock->secondsEarlier(10))
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $validKey),
-                ExpiredToken::class,
-            ],
-            'no_auth_time_claim' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $validKey),
-                InvalidToken::class,
-            ],
-            'not_issued_in_the_past' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesLater(30)->getTimestamp())
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $validKey),
-                InvalidToken::class,
-            ],
-            'no_iat_claim' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $validKey),
-                InvalidToken::class,
-            ],
-            'not_yet_issued' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->minutesLater(30))
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $validKey),
-                IssuedInTheFuture::class,
-            ],
-            'no_iss_claim' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->secondsEarlier(10))
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $validKey),
-                InvalidToken::class,
-            ],
-            'invalid_issuer' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->secondsEarlier(10))
-                    ->issuedBy('invalid_issuer')
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $validKey),
-                InvalidToken::class,
-            ],
-            'missing_key_id' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->secondsEarlier(10))
-                    ->issuedBy('https://securetoken.google.com/project-id')
-                    ->getToken($signer, $invalidKey),
-                InvalidToken::class,
-            ],
-            'invalid_signature' => [
-                (new Builder())
-                    ->expiresAt($clock->minutesLater(30))
-                    ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-                    ->issuedAt($clock->secondsEarlier(10))
-                    ->issuedBy('https://securetoken.google.com/project-id')
-                    ->withHeader('kid', 'valid_key_id')
-                    ->getToken($signer, $invalidKey),
-                InvalidSignature::class,
-            ],
-        ];
+        $this->expectException(InvalidToken::class);
+        $this->verifier->verifyIdToken($token);
     }
 }

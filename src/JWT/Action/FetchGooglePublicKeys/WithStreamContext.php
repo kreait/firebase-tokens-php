@@ -23,30 +23,30 @@ final class WithStreamContext implements Handler
 
     public function handle(FetchGooglePublicKeys $action): Keys
     {
-        $context = stream_context_create([
+        $context = \stream_context_create([
             'http' => [
                 'method' => 'GET',
                 'header' => 'Content-Type: application/json; charset=UTF-8',
             ],
         ]);
 
-        $stream = fopen($action->url(), 'rb', false, $context);
+        $stream = \fopen($action->url(), 'rb', false, $context);
 
-        if (!is_resource($stream)) {
+        if (!\is_resource($stream)) {
             throw FetchingGooglePublicKeysFailed::because("{$action->url()} could not be opened");
         }
 
-        $metadata = stream_get_meta_data($stream);
+        $metadata = \stream_get_meta_data($stream);
         $headers = $metadata['wrapper_data'] ?? [];
 
         $expiresAt = null;
 
         foreach ($headers as $header) {
-            if (stripos($header, 'cache-control') === false) {
+            if (\mb_stripos($header, 'cache-control') === false) {
                 continue;
             }
 
-            if (((int) preg_match('/max-age=(\d+)/i', $header, $matches)) === 1) {
+            if (((int) \preg_match('/max-age=(\d+)/i', $header, $matches)) === 1) {
                 $maxAge = (int) $matches[1];
                 $now = $this->clock->now();
                 $expiresAt = $now->setTimestamp($now->getTimestamp() + $maxAge);
@@ -54,15 +54,15 @@ final class WithStreamContext implements Handler
             }
         }
 
-        $contents = stream_get_contents($stream);
+        $contents = \stream_get_contents($stream);
 
-        fclose($stream);
+        \fclose($stream);
 
-        if (!is_string($contents)) {
+        if (!\is_string($contents)) {
             throw FetchingGooglePublicKeysFailed::because("{$action->url()} returned no contents.");
         }
 
-        $keys = json_decode($contents, true);
+        $keys = \json_decode($contents, true);
 
         if ($expiresAt) {
             return ExpiringKeys::withValuesAndExpirationTime($keys, $expiresAt);

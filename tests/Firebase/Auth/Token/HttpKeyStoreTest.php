@@ -1,40 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token\Tests;
 
 use Firebase\Auth\Token\HttpKeyStore;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use OutOfBoundsException;
 use Psr\SimpleCache\CacheInterface;
 
+/**
+ * @internal
+ */
 class HttpKeyStoreTest extends TestCase
 {
-    /**
-     * @var HttpKeyStore
-     */
+    /** @var HttpKeyStore */
     private $store;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private static $liveKeys;
 
-    /**
-     * @var ClientInterface
-     */
+    /** @var ClientInterface */
     private $client;
 
-    /**
-     * @var CacheInterface
-     */
+    /** @var CacheInterface */
     private $cache;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        self::$liveKeys = json_decode(file_get_contents(HttpKeyStore::KEYS_URL), true);
+        self::$liveKeys = \json_decode(\file_get_contents(HttpKeyStore::KEYS_URL), true);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->client = $this->createMock(ClientInterface::class);
         $this->cache = $this->createMock(CacheInterface::class);
@@ -53,7 +51,7 @@ class HttpKeyStoreTest extends TestCase
 
     public function testGetKeyFromGoogle()
     {
-        $keyId = array_rand(self::$liveKeys);
+        $keyId = \array_rand(self::$liveKeys);
         $key = self::$liveKeys[$keyId];
 
         $store = new HttpKeyStore();
@@ -67,7 +65,7 @@ class HttpKeyStoreTest extends TestCase
             ->method('request')
             ->willReturn(new Response(200, [], '[]'));
 
-        $this->expectException(\OutOfBoundsException::class);
+        $this->expectException(OutOfBoundsException::class);
 
         $this->store->get('foo');
     }
