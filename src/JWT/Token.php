@@ -9,16 +9,20 @@ final class Token implements Contract\Token
     /** @var string */
     private $encodedString;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private $headers;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private $payload;
 
     private function __construct()
     {
     }
 
+    /**
+     * @param array<string, mixed> $headers
+     * @param array<string, mixed> $payload
+     */
     public static function withValues(string $encodedString, array $headers, array $payload): self
     {
         $token = new self();
@@ -30,11 +34,17 @@ final class Token implements Contract\Token
         return $token;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function headers(): array
     {
         return $this->headers;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function payload(): array
     {
         return $this->payload;

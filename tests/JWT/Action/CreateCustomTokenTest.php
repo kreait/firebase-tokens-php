@@ -31,7 +31,9 @@ final class CreateCustomTokenTest extends TestCase
         ];
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function the_uid_can_be_changed()
     {
         $action = CreateCustomToken::forUid('old')->withChangedUid('new');
@@ -39,7 +41,9 @@ final class CreateCustomTokenTest extends TestCase
         $this->assertSame('new', $action->uid());
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function a_claim_can_be_set()
     {
         $action = CreateCustomToken::forUid('uid')
@@ -50,7 +54,9 @@ final class CreateCustomTokenTest extends TestCase
         $this->assertEquals(['a' => 'b', 'c' => 'x', 'e' => 'f'], $action->customClaims());
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function custom_claims_can_be_added()
     {
         $action = CreateCustomToken::forUid('uid')

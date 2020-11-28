@@ -10,6 +10,9 @@ use Kreait\Clock\FrozenClock;
 use Kreait\Firebase\JWT\Cache\InMemoryCache;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class InMemoryCacheTest extends TestCase
 {
     /** @var FrozenClock */
@@ -21,14 +24,16 @@ final class InMemoryCacheTest extends TestCase
     /** @var int */
     private $ttl;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->clock = new FrozenClock(new DateTimeImmutable());
         $this->cache = InMemoryCache::createEmpty()->withClock($this->clock);
         $this->ttl = 10;
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_sets_gets_and_deletes()
     {
         $this->assertFalse($this->cache->has('foo'));
@@ -41,7 +46,9 @@ final class InMemoryCacheTest extends TestCase
         $this->assertNull($this->cache->get('foo'));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_returns_the_default_if_an_item_is_expired()
     {
         $this->cache->set('expired', 'value', new DateInterval('PT1S'));
@@ -69,7 +76,9 @@ final class InMemoryCacheTest extends TestCase
         ];
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_be_cleared()
     {
         $this->cache->set('foo', 'foo', $this->ttl);
@@ -81,7 +90,9 @@ final class InMemoryCacheTest extends TestCase
         $this->assertNull($this->cache->get('bar'));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_returns_multiple_items()
     {
         $values = ['foo' => 'foo', 'bar' => 'bar'];
@@ -93,21 +104,25 @@ final class InMemoryCacheTest extends TestCase
 
         $this->assertEquals(
             $expected,
-            $this->cache->getMultiple(array_keys($expected), 'default')
+            $this->cache->getMultiple(\array_keys($expected), 'default')
         );
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_set_multiple_items()
     {
         $values = ['foo' => 'foo', 'bar' => 'bar'];
 
         $this->cache->setMultiple($values, $this->ttl);
 
-        $this->assertEquals($values, $this->cache->getMultiple(array_keys($values)));
+        $this->assertEquals($values, $this->cache->getMultiple(\array_keys($values)));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_delete_multiple_items()
     {
         $this->cache->set('first', 'first', $this->ttl);

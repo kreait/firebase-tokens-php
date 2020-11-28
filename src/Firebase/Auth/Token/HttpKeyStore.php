@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
@@ -7,6 +9,7 @@ use Firebase\Auth\Token\Cache\InMemoryCache;
 use Firebase\Auth\Token\Domain\KeyStore;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use OutOfBoundsException;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -16,14 +19,10 @@ final class HttpKeyStore implements KeyStore
 {
     const KEYS_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 
-    /**
-     * @var ClientInterface
-     */
+    /** @var ClientInterface */
     private $client;
 
-    /**
-     * @var CacheInterface
-     */
+    /** @var CacheInterface */
     private $cache;
 
     /**
@@ -42,13 +41,13 @@ final class HttpKeyStore implements KeyStore
         }
 
         $response = $this->client->request(RequestMethod::METHOD_GET, self::KEYS_URL);
-        $keys = json_decode((string) $response->getBody(), true);
+        $keys = \json_decode((string) $response->getBody(), true);
 
         if (!($key = $keys[$keyId] ?? null)) {
-            throw new \OutOfBoundsException(sprintf('Key with ID "%s" not found.', $keyId));
+            throw new OutOfBoundsException(\sprintf('Key with ID "%s" not found.', $keyId));
         }
 
-        $ttl = preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control') ?? '', $matches)
+        $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control') ?? '', $matches)
             ? (int) $matches[1]
             : null;
 

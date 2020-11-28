@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Firebase\Auth\Token\Tests\Util;
 
+use DateInterval;
 use DateTimeImmutable;
 use Kreait\Clock;
 
 final class TestHelperClock implements Clock
 {
-    /**
-     * @var Clock
-     */
+    /** @var Clock */
     private $clock;
 
     public function __construct(Clock $clock)
@@ -26,21 +25,21 @@ final class TestHelperClock implements Clock
 
     public function minutesEarlier(int $minutes): DateTimeImmutable
     {
-        return $this->now()->sub(new \DateInterval('PT'.$minutes.'M'));
+        return $this->now()->sub(new DateInterval('PT'.$minutes.'M'));
     }
 
     public function minutesLater(int $minutes): DateTimeImmutable
     {
-        return $this->now()->add(new \DateInterval('PT'.$minutes.'M'));
+        return $this->now()->add(new DateInterval('PT'.$minutes.'M'));
     }
 
     public function secondsEarlier(int $seconds): DateTimeImmutable
     {
-        return $this->now()->sub(new \DateInterval('PT'.$seconds.'S'));
+        return $this->now()->sub(new DateInterval('PT'.$seconds.'S'));
     }
 
     public function secondsLater(int $seconds): DateTimeImmutable
     {
-        return $this->now()->add(new \DateInterval('PT'.$seconds.'S'));
+        return $this->now()->add(new DateInterval('PT'.$seconds.'S'));
     }
 }

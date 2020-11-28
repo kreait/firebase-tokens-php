@@ -20,6 +20,9 @@ final class StaticKeys implements Keys
         return new self();
     }
 
+    /**
+     * @param array<string, string> $values
+     */
     public static function withValues(array $values): self
     {
         $keys = new self();

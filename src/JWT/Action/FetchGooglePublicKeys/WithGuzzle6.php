@@ -47,13 +47,13 @@ final class WithGuzzle6 implements Handler
         }
 
         $expiresAt = null;
-        if (((int) preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)) === 1) {
+        if (((int) \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)) === 1) {
             $maxAge = (int) $matches[1];
             $now = $this->clock->now();
             $expiresAt = $now->setTimestamp($now->getTimestamp() + $maxAge);
         }
 
-        $keys = json_decode((string) $response->getBody(), true);
+        $keys = \json_decode((string) $response->getBody(), true);
 
         if ($expiresAt) {
             return ExpiringKeys::withValuesAndExpirationTime($keys, $expiresAt);

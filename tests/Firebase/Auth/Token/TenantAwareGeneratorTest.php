@@ -1,25 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token\Tests;
 
 use Firebase\Auth\Token\TenantAwareGenerator;
 
+/**
+ * @internal
+ */
 class TenantAwareGeneratorTest extends GeneratorTest
 {
-    /**
-     * @var TenantAwareGenerator
-     */
+    /** @var TenantAwareGenerator */
     protected $generator;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $tenantId;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->tenantId = 'my-tenant';
-        $this->generator = new TenantAwareGenerator($this->tenantId, 'user@domain.tld', 'some-key', $this->createMockSigner());
+        $this->generator = new TenantAwareGenerator($this->tenantId, 'user@domain.tld', $this->onePrivateKey()->contents());
     }
 
     public function testGenerateWithTenantId()

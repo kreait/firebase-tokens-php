@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token\Domain;
 
 use Firebase\Auth\Token\Exception\ExpiredToken;

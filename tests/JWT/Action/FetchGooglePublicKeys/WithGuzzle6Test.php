@@ -23,7 +23,7 @@ final class WithGuzzle6Test extends TestCase
     /** @var MockHandler */
     private $mockHandler;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -35,7 +35,9 @@ final class WithGuzzle6Test extends TestCase
         return new WithGuzzle6(new Client(['handler' => $this->mockHandler]), $this->clock);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_returns_keys()
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
@@ -43,7 +45,9 @@ final class WithGuzzle6Test extends TestCase
         parent::it_returns_keys();
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_returns_expiring_keys()
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
@@ -55,7 +59,9 @@ final class WithGuzzle6Test extends TestCase
         $this->assertGreaterThan($this->clock->now(), $keys->expiresAt());
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_returns_a_set_of_static_keys()
     {
         $this->mockHandler->append(new Response(200, [/* no cache-control header */], '{}'));
@@ -66,7 +72,9 @@ final class WithGuzzle6Test extends TestCase
         $this->assertInstanceOf(StaticKeys::class, $keys);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_handles_non_success_responses()
     {
         $this->mockHandler->append(new Response(500));
@@ -75,7 +83,9 @@ final class WithGuzzle6Test extends TestCase
         $this->createHandler()->handle($this->action);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_handles_connect_exceptions()
     {
         $error = new ConnectException('something went wrong', new Request('GET', 'bogus'));
@@ -83,7 +93,6 @@ final class WithGuzzle6Test extends TestCase
         $this->mockHandler->append($error);
 
         $this->expectException(FetchingGooglePublicKeysFailed::class);
-        $this->expectExceptionMessageRegExp('/something went wrong/');
         $this->createHandler()->handle($this->action);
     }
 }

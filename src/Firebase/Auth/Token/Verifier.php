@@ -1,34 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token;
 
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Firebase\Auth\Token\Domain\KeyStore;
 use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidSignature;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Exception\IssuedInTheFuture;
 use Firebase\Auth\Token\Exception\UnknownKey;
-use Lcobucci\JWT\Parser;
+use Lcobucci\Clock\SystemClock;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Lcobucci\JWT\Validation\Constraint\PermittedFor;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\Constraint\ValidAt;
+use Lcobucci\JWT\Validation\ConstraintViolation;
+use OutOfBoundsException;
+use Throwable;
 
 final class Verifier implements Domain\Verifier
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $projectId;
 
-    /**
-     * @var KeyStore
-     */
+    /** @var KeyStore */
     private $keys;
 
-    /**
-     * @var Signer
-     */
-    private $signer;
+    /** @var Configuration */
+    private $config;
 
     /**
      * @see https://github.com/firebase/firebase-admin-dotnet/pull/29
@@ -45,95 +53,76 @@ final class Verifier implements Domain\Verifier
     {
         $this->projectId = $projectId;
         $this->keys = $keys ?? new HttpKeyStore();
-        $this->signer = $signer ?? new Sha256();
+        $this->config = Configuration::forSymmetricSigner($signer ?? new Sha256(), InMemory::plainText(''));
     }
 
     public function verifyIdToken($token): Token
     {
         if (!($token instanceof Token)) {
-            $token = (new Parser())->parse($token);
+            $token = $this->config->parser()->parse($token);
         }
 
-        $errorBeforeSignatureCheck = null;
-        $now = new \DateTimeImmutable();
+        $key = $this->getKey($token);
+
+        $clock = SystemClock::fromSystemTimezone();
+        $leeway = new DateInterval('PT'.$this->leewayInSeconds.'S');
 
         try {
-            $this->verifyExpiry($token, $now);
-            $this->verifyAuthTime($token, $now);
-            $this->verifyIssuedAt($token, $now);
-            $this->verifyIssuer($token);
-        } catch (\Throwable $e) {
-            $errorBeforeSignatureCheck = $e;
-        }
+            $this->config->validator()->assert($token, ...[
+                new ValidAt($clock, $leeway),
+                new PermittedFor($this->projectId),
+                new IssuedBy(...["https://securetoken.google.com/{$this->projectId}"]),
+                new SignedWith($this->config->signer(), InMemory::plainText($key)),
+            ]);
 
-        $this->verifySignature($token, $this->getKey($token));
+            $this->assertUserAuthedAt($token, $clock->now()->add($leeway));
+        } catch (Throwable $e) {
+            $message = $e->getMessage();
 
-        if ($errorBeforeSignatureCheck) {
-            throw $errorBeforeSignatureCheck;
+            if (\mb_stripos($message, 'signature mismatch') !== false) {
+                throw new InvalidSignature($token, $message);
+            }
+
+            if (\mb_stripos($message, 'expired') !== false) {
+                throw new ExpiredToken($token);
+            }
+
+            if (\mb_stripos($message, 'future') !== false) {
+                throw new IssuedInTheFuture($token);
+            }
+
+            throw new InvalidToken($token, $e->getMessage());
         }
 
         return $token;
     }
 
-    private function verifyExpiry(Token $token, \DateTimeImmutable $now)
-    {
-        if ($token->isExpired($now)) {
-            throw new ExpiredToken($token);
-        }
-    }
-
-    private function verifyAuthTime(Token $token, \DateTimeImmutable $now)
-    {
-        if (!$token->claims()->has('auth_time')) {
-            throw new InvalidToken($token, 'The claim "auth_time" is missing.');
-        }
-
-        $authTimeWithLeeway = $token->claims()->get('auth_time') - $this->leewayInSeconds;
-
-        if ($authTimeWithLeeway > $now->getTimestamp()) {
-            throw new InvalidToken($token, "The user's authentication time must be in the past");
-        }
-    }
-
-    private function verifyIssuedAt(Token $token, \DateTimeImmutable $now)
-    {
-        if (!$token->hasBeenIssuedBefore($now->add(new \DateInterval('PT'.$this->leewayInSeconds.'S')))) {
-            throw new IssuedInTheFuture($token);
-        }
-    }
-
-    private function verifyIssuer(Token $token)
-    {
-        if (!$token->hasBeenIssuedBy("https://securetoken.google.com/{$this->projectId}")) {
-            throw new InvalidToken($token, 'This token has an invalid issuer.');
-        }
-    }
-
     private function getKey(Token $token): string
     {
-        if (!$token->headers()->has('kid')) {
-            throw new InvalidToken($token, 'The header "kid" is missing.');
-        }
-
-        $keyId = $token->headers()->get('kid');
+        $keyId = $token->headers()->get('kid', '');
 
         try {
             return $this->keys->get($keyId);
-        } catch (\OutOfBoundsException $e) {
+        } catch (OutOfBoundsException $e) {
             throw new UnknownKey($token, $keyId);
         }
     }
 
-    private function verifySignature(Token $token, string $key)
+    private function assertUserAuthedAt(Token $token, DateTimeInterface $now)
     {
-        if ($token->headers()->get('alg', false) !== $this->signer->getAlgorithmId()) {
-            throw new InvalidSignature($token, 'Unexpected algorithm');
+        /** @var int|DateTimeImmutable $authTime */
+        $authTime = $token->claims()->get('auth_time');
+
+        if (!$authTime) {
+            throw new ConstraintViolation('The token is missing the "auth_time" claim.');
         }
 
-        if ($token->signature()->verify($this->signer, $token->payload(), Signer\Key\InMemory::plainText($key))) {
-            return;
+        if (\is_numeric($authTime)) {
+            $authTime = new DateTimeImmutable('@'.((int) $authTime));
         }
 
-        throw new InvalidSignature($token);
+        if ($now < $authTime) {
+            throw new ConstraintViolation("The token's user must have authenticated in the past");
+        }
     }
 }

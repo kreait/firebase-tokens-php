@@ -12,6 +12,7 @@ final class FetchGooglePublicKeys
     const DEFAULT_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
     const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
 
+    /** @var string */
     private $url = self::DEFAULT_URL;
 
     /** @var Duration */

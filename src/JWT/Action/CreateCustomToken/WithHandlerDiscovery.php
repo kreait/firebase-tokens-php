@@ -9,7 +9,7 @@ use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\CreateCustomToken;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\DiscoveryFailed;
-use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Configuration;
 
 final class WithHandlerDiscovery implements Handler
 {
@@ -28,11 +28,11 @@ final class WithHandlerDiscovery implements Handler
 
     private static function discoverHandler(string $clientEmail, string $privateKey, Clock $clock): Handler
     {
-        if (class_exists(JWT::class)) {
+        if (\class_exists(JWT::class)) {
             return new CreateCustomToken\WithFirebaseJWT($clientEmail, $privateKey, $clock);
         }
 
-        if (class_exists(Builder::class)) {
+        if (\class_exists(Configuration::class)) {
             return new CreateCustomToken\WithLcobucciV3JWT($clientEmail, $privateKey, $clock);
         }
 

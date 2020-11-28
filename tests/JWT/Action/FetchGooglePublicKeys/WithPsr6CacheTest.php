@@ -13,6 +13,9 @@ use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use stdClass;
 
+/**
+ * @internal
+ */
 final class WithPsr6CacheTest extends TestCase
 {
     private $cache;
@@ -29,7 +32,7 @@ final class WithPsr6CacheTest extends TestCase
     /** @var StaticKeys */
     private $nonExpiringKeys;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -49,7 +52,9 @@ final class WithPsr6CacheTest extends TestCase
         return new WithPsr6Cache($this->inner, $this->cache, $this->clock);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_caches_fresh_keys()
     {
         $this->cacheItem->method('isHit')->willReturn(false);
@@ -59,7 +64,9 @@ final class WithPsr6CacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_returns_cached_non_expired_keys()
     {
         $this->cacheItem->method('isHit')->willReturn(true);
@@ -69,7 +76,9 @@ final class WithPsr6CacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_returns_cached_non_expiring_keys()
     {
         $this->cacheItem->method('isHit')->willReturn(true);
@@ -79,7 +88,9 @@ final class WithPsr6CacheTest extends TestCase
         $this->assertSame($this->nonExpiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_refreshes_expired_keys()
     {
         $this->cacheItem->method('isHit')->willReturn(true);
@@ -89,7 +100,9 @@ final class WithPsr6CacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_handles_invalid_cache_contents()
     {
         $this->cacheItem->method('isHit')->willReturn(true);
@@ -100,7 +113,9 @@ final class WithPsr6CacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_catches_errors_caused_by_the_inner_handler()
     {
         $innerError = FetchingGooglePublicKeysFailed::because('reason');

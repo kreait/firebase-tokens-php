@@ -2,7 +2,7 @@
 .PHONY: phpstan tests coverage view-coverage cs docs view-docs tag
 
 phpstan: ## Performs a static analysis
-	vendor/bin/phpstan analyse src tests/JWT -c phpstan.neon --level=max --no-progress -vvv
+	vendor/bin/phpstan analyse src -c phpstan.neon --level=max --no-progress -vvv
 
 tests: phpstan ## Executes the test suite
 	vendor/bin/phpunit

@@ -14,7 +14,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class FetchGooglePublicKeysTest extends TestCase
 {
-    /** @test */
+    /**
+     * @test
+     */
     public function its_url_points_to_google()
     {
         $this->assertSame(
@@ -23,7 +25,9 @@ final class FetchGooglePublicKeysTest extends TestCase
         );
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function its_url_can_be_changed()
     {
         $this->assertSame(
@@ -32,7 +36,9 @@ final class FetchGooglePublicKeysTest extends TestCase
         );
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_has_a_fallback_cache_duration_of_one_hour()
     {
         $now = new DateTimeImmutable();
@@ -41,7 +47,9 @@ final class FetchGooglePublicKeysTest extends TestCase
         $this->assertTrue(Duration::make('PT1H')->equals($fallbackCacheDuration));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function its_fallback_cache_duration_can_be_changed()
     {
         $duration = 'PT13H37M';

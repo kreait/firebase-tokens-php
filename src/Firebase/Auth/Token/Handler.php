@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token;
 
+use DateTimeInterface;
 use Firebase\Auth\Token\Domain\KeyStore;
 use Lcobucci\JWT\Token;
 
@@ -14,14 +17,10 @@ use Lcobucci\JWT\Token;
  */
 final class Handler implements Domain\Generator, Domain\Verifier
 {
-    /**
-     * @var Generator
-     */
+    /** @var Generator */
     private $generator;
 
-    /**
-     * @var Verifier
-     */
+    /** @var Verifier */
     private $verifier;
 
     /**
@@ -33,7 +32,7 @@ final class Handler implements Domain\Generator, Domain\Verifier
         $this->verifier = new Verifier($projectId, $keyStore ?? new HttpKeyStore());
     }
 
-    public function createCustomToken($uid, array $claims = [], \DateTimeInterface $expiresAt = null): Token
+    public function createCustomToken($uid, array $claims = [], DateTimeInterface $expiresAt = null): Token
     {
         return $this->generator->createCustomToken($uid, $claims, $expiresAt);
     }

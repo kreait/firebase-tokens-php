@@ -1,47 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firebase\Auth\Token\Tests;
 
-use Firebase\Auth\Token\Domain\Verifier;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\TenantAwareVerifier;
 use Firebase\Auth\Token\Tests\Util\TestHelperClock;
+use Firebase\Auth\Token\Verifier;
 use Kreait\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Configuration;
 
+/**
+ * @internal
+ */
 class TenantAwareVerifierTest extends TestCase
 {
-    /**
-     * @var TenantAwareVerifier
-     */
+    /** @var TenantAwareVerifier */
     private $verifier;
 
-    /**
-     * @var Verifier|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $baseVerifier;
+    /** @var Configuration */
+    private $config;
 
-    /**
-     * @var string
-     */
-    protected $tenantId;
+    /** @var string */
+    private $projectId;
 
-    protected function setUp()
+    /** @var string */
+    private $tenantId;
+
+    /** @var Builder */
+    private $builder;
+
+    protected function setUp(): void
     {
-        parent::setUp();
-
+        $this->config = $this->createJwtConfiguration();
+        $this->projectId = 'project-id';
         $this->tenantId = 'my-tenant';
-        $this->baseVerifier = $this->createMock(Verifier::class);
-        $this->verifier = new TenantAwareVerifier($this->tenantId, $this->baseVerifier);
+
+        $clock = new TestHelperClock(new SystemClock());
+
+        $this->builder = $this->config->builder()
+            ->expiresAt($clock->minutesLater(30))
+            ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
+            ->issuedAt($clock->secondsEarlier(10))
+            ->issuedBy('https://securetoken.google.com/'.$this->projectId)
+            ->permittedFor($this->projectId)
+            ->withHeader('kid', 'valid_key_id');
+
+        $baseVerifier = new Verifier($this->projectId, $this->createKeyStore(), $this->config->signer());
+        $this->verifier = new TenantAwareVerifier($this->tenantId, $baseVerifier);
     }
 
     public function testWithMatchingTenantId()
     {
-        $token = $this->tokenWithTenantId($this->tenantId);
-
-        $this->baseVerifier->method('verifyIdToken')->with($token)->willReturn($token);
+        $token = $this->builder
+            ->withClaim('firebase', (object) ['tenant' => $this->tenantId])
+            ->getToken($this->config->signer(), $this->config->signingKey());
 
         $this->verifier->verifyIdToken($token);
         $this->addToAssertionCount(1);
@@ -49,9 +64,9 @@ class TenantAwareVerifierTest extends TestCase
 
     public function testWithMismatchingTenantId()
     {
-        $token = $this->tokenWithTenantId('my-other-tenant');
-
-        $this->baseVerifier->method('verifyIdToken')->with($token)->willReturn($token);
+        $token = $this->builder
+            ->withClaim('firebase', (object) ['tenant' => 'unknown-tenant'])
+            ->getToken($this->config->signer(), $this->config->signingKey());
 
         $this->expectException(InvalidToken::class);
         $this->verifier->verifyIdToken($token);
@@ -59,38 +74,10 @@ class TenantAwareVerifierTest extends TestCase
 
     public function testWithMissingTenantId()
     {
-        $token = $this->tokenWithoutTenantId();
-
-        $this->baseVerifier->method('verifyIdToken')->with($token)->willReturn($token);
+        $token = $this->builder
+            ->getToken($this->config->signer(), $this->config->signingKey());
 
         $this->expectException(InvalidToken::class);
         $this->verifier->verifyIdToken($token);
-    }
-
-    private function tokenWithTenantId($tenantId): Token
-    {
-        $clock = new TestHelperClock(new SystemClock());
-
-        return (new Builder())
-            ->expiresAt($clock->minutesLater(30))
-            ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-            ->issuedAt($clock->secondsEarlier(10))
-            ->issuedBy('https://securetoken.google.com/project-id')
-            ->withHeader('kid', 'valid_key_id')
-            ->withClaim('firebase', (object) ['tenant' => $tenantId])
-            ->getToken($this->createMockSigner(), InMemory::plainText('valid_key'));
-    }
-
-    private function tokenWithoutTenantId(): Token
-    {
-        $clock = new TestHelperClock(new SystemClock());
-
-        return (new Builder())
-            ->expiresAt($clock->minutesLater(30))
-            ->withClaim('auth_time', $clock->minutesEarlier(30)->getTimestamp())
-            ->issuedAt($clock->secondsEarlier(10))
-            ->issuedBy('https://securetoken.google.com/project-id')
-            ->withHeader('kid', 'valid_key_id')
-            ->getToken($this->createMockSigner(), InMemory::plainText('valid_key'));
     }
 }

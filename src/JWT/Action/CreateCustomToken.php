@@ -20,7 +20,7 @@ final class CreateCustomToken
     /** @var string|null */
     private $tenantId;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private $customClaims = [];
 
     /** @var Duration */
@@ -55,6 +55,9 @@ final class CreateCustomToken
         return $action;
     }
 
+    /**
+     * @param mixed $value
+     */
     public function withCustomClaim(string $name, $value): self
     {
         $action = clone $this;
@@ -63,6 +66,9 @@ final class CreateCustomToken
         return $action;
     }
 
+    /**
+     * @param array<string, mixed> $claims
+     */
     public function withCustomClaims(array $claims): self
     {
         $action = clone $this;
@@ -71,10 +77,13 @@ final class CreateCustomToken
         return $action;
     }
 
+    /**
+     * @param array<string, mixed> $claims
+     */
     public function withAddedCustomClaims(array $claims): self
     {
         $action = clone $this;
-        $action->customClaims = array_merge($action->customClaims, $claims);
+        $action->customClaims = \array_merge($action->customClaims, $claims);
 
         return $action;
     }
@@ -91,7 +100,7 @@ final class CreateCustomToken
 
         if ($ttl->isSmallerThan($minTtl) || $ttl->isLargerThan($maxTtl)) {
             $message = 'The expiration time of a custom token must be between %s and %s, but got %s';
-            throw new InvalidArgumentException(sprintf($message, $minTtl, $maxTtl, $ttl));
+            throw new InvalidArgumentException(\sprintf($message, $minTtl, $maxTtl, $ttl));
         }
 
         $action = clone $this;
@@ -113,6 +122,9 @@ final class CreateCustomToken
         return $this->tenantId;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function customClaims(): array
     {
         return $this->customClaims;

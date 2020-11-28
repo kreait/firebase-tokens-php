@@ -10,9 +10,14 @@ use InvalidArgumentException;
 use Kreait\Firebase\JWT\Value\Duration;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 class DurationTest extends TestCase
 {
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_be_none()
     {
         $now = new DateTimeImmutable();
@@ -54,9 +59,6 @@ class DurationTest extends TestCase
         $negativeInterval->invert = 1;
 
         return [
-            'null' => [null],
-            'true' => [true],
-            'false' => [false],
             'negative seconds' => [-1],
             'invalid spec' => ['P1H'], // should be PT1H
             'negative interval' => [$negativeInterval],
@@ -64,13 +66,17 @@ class DurationTest extends TestCase
         ];
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_optimizes_the_date_interval_spec()
     {
         $this->assertSame('P1DT1H', (string) Duration::make('PT24H60M'));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_be_compared()
     {
         $given = Duration::make('60 minutes');
@@ -82,7 +88,9 @@ class DurationTest extends TestCase
         $this->assertTrue($given->isSmallerThan($larger));
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_be_casted_to_a_date_interval_spec_string()
     {
         $this->assertSame('PT1H', (string) Duration::make('1 hour'));
