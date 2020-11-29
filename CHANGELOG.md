@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.13.0 - 2020-11-29
 
 - Added support for PHP 8.0
 
