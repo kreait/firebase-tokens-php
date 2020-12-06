@@ -11,7 +11,7 @@ class ExpiredToken extends InvalidToken
 {
     public function __construct(Token $token)
     {
-        if ($expiredSince = $token->claims()->get('exp')) {
+        if ($token instanceof Token\Plain && $expiredSince = $token->claims()->get('exp')) {
             $message = "This token is expired since {$expiredSince->format(DateTime::ATOM)}.";
         } else {
             $message = 'This token is expired.';

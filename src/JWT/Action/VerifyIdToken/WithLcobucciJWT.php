@@ -63,6 +63,10 @@ final class WithLcobucciJWT implements Handler
             throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid', $e->getMessage()]);
         }
 
+        if (!($token instanceof JWT\Plain)) {
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token could not be decrypted']);
+        }
+
         $key = $this->getKey($token);
         $clock = new FrozenClock($this->clock->now());
         $leeway = new DateInterval('PT'.$action->leewayInSeconds().'S');
@@ -91,6 +95,10 @@ final class WithLcobucciJWT implements Handler
 
         if (!empty($errors)) {
             throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, $errors);
+        }
+
+        if (!($token instanceof JWT\Plain)) {
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token could not be decrypted']);
         }
 
         $claims = $token->claims()->all();
@@ -128,7 +136,7 @@ final class WithLcobucciJWT implements Handler
         throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
     }
 
-    private function assertUserAuthedAt(JWT $token, DateTimeInterface $now)
+    private function assertUserAuthedAt(JWT\Plain $token, DateTimeInterface $now)
     {
         /** @var int|DateTimeImmutable $authTime */
         $authTime = $token->claims()->get('auth_time');
@@ -150,7 +158,7 @@ final class WithLcobucciJWT implements Handler
         }
     }
 
-    private function assertTenantId(JWT $token, string $tenantId)
+    private function assertTenantId(JWT\Plain $token, string $tenantId)
     {
         $claim = $token->claims()->get('firebase');
 

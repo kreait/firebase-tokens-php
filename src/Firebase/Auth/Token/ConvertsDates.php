@@ -16,7 +16,7 @@ trait ConvertsDates
             return $date;
         }
 
-        if ($date instanceof \DateTimeImmutable) {
+        if ($date instanceof \DateTime) {
             return DateTimeImmutable::createFromMutable($date);
         }
 

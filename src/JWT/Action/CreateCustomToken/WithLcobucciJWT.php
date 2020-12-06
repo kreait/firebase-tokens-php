@@ -12,6 +12,7 @@ use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Token\Plain;
 use Throwable;
 
 final class WithLcobucciJWT implements Handler
@@ -60,6 +61,10 @@ final class WithLcobucciJWT implements Handler
             $token = $builder->getToken($this->config->signer(), $this->config->signingKey());
         } catch (Throwable $e) {
             throw CustomTokenCreationFailed::because($e->getMessage(), $e->getCode(), $e);
+        }
+
+        if (!($token instanceof Plain)) {
+            return TokenInstance::withValues($token->toString(), [], []);
         }
 
         $claims = $token->claims()->all();

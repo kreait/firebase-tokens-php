@@ -110,6 +110,10 @@ final class Verifier implements Domain\Verifier
 
     private function assertUserAuthedAt(Token $token, DateTimeInterface $now)
     {
+        if (!($token instanceof Token\Plain)) {
+            throw new ConstraintViolation('The token could not be decrypted');
+        }
+
         /** @var int|DateTimeImmutable $authTime */
         $authTime = $token->claims()->get('auth_time');
 

@@ -29,6 +29,10 @@ final class TenantAwareVerifier implements Domain\Verifier
     {
         $token = $this->baseVerifier->verifyIdToken($token);
 
+        if (!($token instanceof Token\Plain)) {
+            throw new InvalidToken($token, 'The ID token could not be decrypted');
+        }
+
         $claim = $token->claims()->get('firebase');
 
         $tenant = \is_object($claim)
