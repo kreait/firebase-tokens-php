@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Kreait\Firebase\JWT\Tests\Action\VerifyIdToken;
 
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
-use Kreait\Firebase\JWT\Action\VerifyIdToken\WithLcobucciV3JWT;
+use Kreait\Firebase\JWT\Action\VerifyIdToken\WithLcobucciJWT;
 
 /**
  * @internal
  */
-final class WithLcobucciV3JWTTest extends TestCase
+final class WithLcobucciJWTTest extends TestCase
 {
     protected function createHandler(): Handler
     {
-        return new WithLcobucciV3JWT($this->projectId, $this->keys, $this->clock);
+        return new WithLcobucciJWT($this->projectId, $this->keys, $this->clock);
     }
 }

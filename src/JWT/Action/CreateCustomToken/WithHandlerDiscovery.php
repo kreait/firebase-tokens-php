@@ -33,7 +33,7 @@ final class WithHandlerDiscovery implements Handler
         }
 
         if (\class_exists(Configuration::class)) {
-            return new CreateCustomToken\WithLcobucciV3JWT($clientEmail, $privateKey, $clock);
+            return new CreateCustomToken\WithLcobucciJWT($clientEmail, $privateKey, $clock);
         }
 
         throw DiscoveryFailed::noJWTLibraryFound();

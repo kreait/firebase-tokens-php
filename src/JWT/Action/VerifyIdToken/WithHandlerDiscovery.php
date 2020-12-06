@@ -34,7 +34,7 @@ final class WithHandlerDiscovery implements Handler
         }
 
         if (\class_exists(Configuration::class)) {
-            return new VerifyIdToken\WithLcobucciV3JWT($projectId, $keys, $clock);
+            return new VerifyIdToken\WithLcobucciJWT($projectId, $keys, $clock);
         }
 
         throw DiscoveryFailed::noJWTLibraryFound();
