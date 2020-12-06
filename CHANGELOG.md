@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Drop the `V3` suffix from handlers using `lcobucci/jwt`
+- Limit support to PHP 8.0.*
 
 ## 1.13.0 - 2020-11-29
 
