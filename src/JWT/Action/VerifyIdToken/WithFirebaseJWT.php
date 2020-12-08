@@ -93,11 +93,13 @@ final class WithFirebaseJWT implements Handler
 
         $expectedTenantId = $action->expectedTenantId();
 
-        $claim = $token->firebase ?? null;
+        $firebaseClaim = \property_exists($token, 'firebase')
+            ? $token->firebase
+            : null;
 
-        $tenantId = \is_object($claim)
-            ? ($claim->tenant ?? null)
-            : ($claim['tenant'] ?? null);
+        $tenantId = \is_object($firebaseClaim)
+            ? ($firebaseClaim->tenant ?? null)
+            : ($firebaseClaim['tenant'] ?? null);
 
         if ($expectedTenantId && !$tenantId) {
             $errors[] = 'The ID token does not contain a tenant identifier';
@@ -123,6 +125,8 @@ final class WithFirebaseJWT implements Handler
     /**
      * @param int|null $timestamp
      * @param int $leeway
+     *
+     * @return void
      */
     private function restoreJWTStaticVariables($timestamp, $leeway)
     {

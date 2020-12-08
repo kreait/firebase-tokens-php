@@ -136,6 +136,9 @@ final class WithLcobucciJWT implements Handler
         throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
     }
 
+    /**
+     * @return void
+     */
     private function assertUserAuthedAt(JWT\Plain $token, DateTimeInterface $now)
     {
         /** @var int|DateTimeImmutable $authTime */
@@ -158,6 +161,9 @@ final class WithLcobucciJWT implements Handler
         }
     }
 
+    /**
+     * @return void
+     */
     private function assertTenantId(JWT\Plain $token, string $tenantId)
     {
         $claim = $token->claims()->get('firebase');
