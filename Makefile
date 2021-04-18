@@ -8,10 +8,10 @@ tests: phpstan ## Executes the test suite
 	vendor/bin/phpunit
 
 coverage: ## Executes the test suite and generates code coverage reports
-	@vendor/bin/phpunit --coverage-html=build/coverage
+	php -dxdebug.mode=coverage vendor/bin/phpunit -v --coverage-html=build/coverage
 
 view-coverage: ## Shows the code coverage report
-	open build/coverage/index.html
+	php -S localhost:1337 -t build/coverage
 
 cs: ## Fixes coding standard problems
 	@vendor/bin/php-cs-fixer fix || true
