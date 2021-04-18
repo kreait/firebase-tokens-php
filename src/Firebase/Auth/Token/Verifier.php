@@ -108,9 +108,6 @@ final class Verifier implements Domain\Verifier
         }
     }
 
-    /**
-     * @return void
-     */
     private function assertUserAuthedAt(Token $token, DateTimeInterface $now)
     {
         if (!($token instanceof Token\Plain)) {

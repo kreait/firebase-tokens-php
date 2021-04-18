@@ -17,7 +17,13 @@ use Psr\SimpleCache\CacheInterface;
  */
 final class HttpKeyStore implements KeyStore
 {
+    /** @deprecated 1.15.0 */
     const KEYS_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
+
+    const KEY_URLS = [
+        'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
+        'https://www.googleapis.com/oauth2/v1/certs',
+    ];
 
     /** @var ClientInterface */
     private $client;
@@ -36,23 +42,63 @@ final class HttpKeyStore implements KeyStore
 
     public function get($keyId)
     {
-        if ($key = $this->cache->get($keyId)) {
-            return $key;
+        $keys = $this->fetchKeys();
+
+        if (isset($keys[$keyId])) {
+            return $keys[$keyId];
         }
 
-        $response = $this->client->request(RequestMethod::METHOD_GET, self::KEYS_URL);
-        $keys = \json_decode((string) $response->getBody(), true);
+        throw new OutOfBoundsException(\sprintf('Key with ID "%s" not found.', $keyId));
+    }
 
-        if (!($key = $keys[$keyId] ?? null)) {
-            throw new OutOfBoundsException(\sprintf('Key with ID "%s" not found.', $keyId));
+    /**
+     * @return array<string, string>
+     */
+    private function fetchKeys(): array
+    {
+        $cacheKey = \md5(__CLASS__).'_keys';
+
+        $keys = $this->cache->get($cacheKey, null);
+
+        if (\is_array($keys) && \count($keys) >= 1) {
+            return $keys;
         }
+
+        $keys = [];
+        $ttls = [];
+        foreach (self::KEY_URLS as $url) {
+            $result = $this->fetchKeysFromUrl($url);
+            $keys[] = $result['keys'];
+            $ttls[] = $result['ttl'];
+        }
+
+        $keys = \array_merge(...$keys);
+        $ttl = \min($ttls);
+
+        $this->cache->set($cacheKey, $keys, $ttl);
+
+        return $keys;
+    }
+
+    /**
+     * @return array{
+     *     keys: array<string, string>,
+     *     ttl: int
+     * }
+     */
+    private function fetchKeysFromUrl(string $url): array
+    {
+        $response = $this->client->request(RequestMethod::METHOD_GET, $url);
 
         $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control') ?? '', $matches)
             ? (int) $matches[1]
-            : null;
+            : 0;
 
-        $this->cache->set($keyId, $key, $ttl);
+        $keys = \json_decode((string) $response->getBody(), true);
 
-        return $key;
+        return [
+            'keys' => $keys,
+            'ttl' => $ttl,
+        ];
     }
 }

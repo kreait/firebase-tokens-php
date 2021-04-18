@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Firebase\Auth\Token\Tests;
 
 use Firebase\Auth\Token\HttpKeyStore;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Psr7\Response;
 use OutOfBoundsException;
 use Psr\SimpleCache\CacheInterface;
 
@@ -21,32 +19,27 @@ class HttpKeyStoreTest extends TestCase
     /** @var array */
     private static $liveKeys;
 
-    /** @var ClientInterface */
-    private $client;
-
     /** @var CacheInterface */
     private $cache;
 
     public static function setUpBeforeClass(): void
     {
-        self::$liveKeys = \json_decode(\file_get_contents(HttpKeyStore::KEYS_URL), true);
+        self::$liveKeys = (static function () {
+            $keys = [];
+
+            foreach (HttpKeyStore::KEY_URLS as $url) {
+                $keys[] = \json_decode(\file_get_contents($url), true);
+            }
+
+            return \array_merge(...$keys);
+        })();
     }
 
     protected function setUp(): void
     {
-        $this->client = $this->createMock(ClientInterface::class);
         $this->cache = $this->createMock(CacheInterface::class);
 
-        $this->store = new HttpKeyStore($this->client, $this->cache);
-    }
-
-    public function testGetKey()
-    {
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willReturn(new Response(200, [], '{"foo":"bar"}'));
-
-        $this->assertEquals('bar', $this->store->get('foo'));
+        $this->store = new HttpKeyStore(null, $this->cache);
     }
 
     public function testGetKeyFromGoogle()
@@ -54,31 +47,22 @@ class HttpKeyStoreTest extends TestCase
         $keyId = \array_rand(self::$liveKeys);
         $key = self::$liveKeys[$keyId];
 
-        $store = new HttpKeyStore();
-
-        $this->assertEquals($key, $store->get($keyId));
+        $this->assertEquals($key, $this->store->get($keyId));
     }
 
     public function testGetNonExistingKey()
     {
-        $this->client->expects($this->once())
-            ->method('request')
-            ->willReturn(new Response(200, [], '[]'));
-
         $this->expectException(OutOfBoundsException::class);
 
-        $this->store->get('foo');
+        $this->store->get('non_existing');
     }
 
     public function testGetKeyFromCache()
     {
         $this->cache->expects($this->once())
             ->method('get')
-            ->with('foo')
-            ->willReturn('bar');
-
-        $this->client->expects($this->never())
-            ->method('request');
+            ->with($this->anything())
+            ->willReturn(['foo' => 'bar']);
 
         $this->assertSame('bar', $this->store->get('foo'));
     }

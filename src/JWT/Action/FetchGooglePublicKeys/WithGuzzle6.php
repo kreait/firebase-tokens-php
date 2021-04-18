@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 
+use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Kreait\Clock;
@@ -11,7 +12,6 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
-use Kreait\Firebase\JWT\Keys\StaticKeys;
 
 final class WithGuzzle6 implements Handler
 {
@@ -29,8 +29,35 @@ final class WithGuzzle6 implements Handler
 
     public function handle(FetchGooglePublicKeys $action): Keys
     {
-        $url = $action->url();
+        $keys = [];
+        $ttls = [];
 
+        foreach ($action->urls() as $url) {
+            $result = $this->fetchKeysFromUrl($url);
+
+            $keys[] = $result['keys'];
+            $ttls[] = $result['ttl'];
+        }
+
+        $keys = \array_merge(...$keys);
+        $ttl = \min($ttls);
+        $now = $this->clock->now();
+
+        $expiresAt = $ttl > 0
+            ? $now->setTimestamp($now->getTimestamp() + $ttl)
+            : $now->add($action->getFallbackCacheDuration()->value());
+
+        return ExpiringKeys::withValuesAndExpirationTime($keys, $expiresAt);
+    }
+
+    /**
+     * @return array{
+     *     keys: array<string, string>,
+     *     ttl: int
+     * }
+     */
+    private function fetchKeysFromUrl(string $url): array
+    {
         try {
             $response = $this->client->request('GET', $url, [
                 'http_errors' => false,
@@ -46,19 +73,22 @@ final class WithGuzzle6 implements Handler
             throw FetchingGooglePublicKeysFailed::because("Unexpected status code {$statusCode}");
         }
 
-        $expiresAt = null;
-        if (((int) \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)) === 1) {
-            $maxAge = (int) $matches[1];
-            $now = $this->clock->now();
-            $expiresAt = $now->setTimestamp($now->getTimestamp() + $maxAge);
-        }
+        $response = $this->client->request(RequestMethod::METHOD_GET, $url, [
+            'http_errors' => false,
+            'headers' => [
+                'Content-Type' => 'Content-Type: application/json; charset=UTF-8',
+            ],
+        ]);
+
+        $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control') ?? '', $matches)
+            ? (int) $matches[1]
+            : 0;
 
         $keys = \json_decode((string) $response->getBody(), true);
 
-        if ($expiresAt) {
-            return ExpiringKeys::withValuesAndExpirationTime($keys, $expiresAt);
-        }
-
-        return StaticKeys::withValues($keys);
+        return [
+            'keys' => $keys,
+            'ttl' => $ttl,
+        ];
     }
 }

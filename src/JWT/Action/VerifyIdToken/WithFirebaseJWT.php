@@ -125,8 +125,6 @@ final class WithFirebaseJWT implements Handler
     /**
      * @param int|null $timestamp
      * @param int $leeway
-     *
-     * @return void
      */
     private function restoreJWTStaticVariables($timestamp, $leeway)
     {

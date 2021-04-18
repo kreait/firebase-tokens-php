@@ -13,7 +13,6 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle6;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
-use Kreait\Firebase\JWT\Keys\StaticKeys;
 
 /**
  * @internal
@@ -41,6 +40,7 @@ final class WithGuzzle6Test extends TestCase
     public function it_returns_keys()
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
+        $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
 
         parent::it_returns_keys();
     }
@@ -51,25 +51,14 @@ final class WithGuzzle6Test extends TestCase
     public function it_returns_expiring_keys()
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
+        $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
 
         /** @var ExpiringKeys $keys */
         $keys = $this->createHandler()->handle($this->action);
 
         $this->assertInstanceOf(ExpiringKeys::class, $keys);
         $this->assertGreaterThan($this->clock->now(), $keys->expiresAt());
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_a_set_of_static_keys()
-    {
-        $this->mockHandler->append(new Response(200, [/* no cache-control header */], '{}'));
-
-        /** @var StaticKeys $keys */
-        $keys = $this->createHandler()->handle($this->action);
-
-        $this->assertInstanceOf(StaticKeys::class, $keys);
+        $this->assertTrue($keys->isExpiredAt($this->clock->now()->modify('+2 seconds')));
     }
 
     /**
