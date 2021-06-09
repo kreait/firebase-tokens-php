@@ -23,6 +23,7 @@ final class HttpKeyStore implements KeyStore
     const KEY_URLS = [
         'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
         'https://www.googleapis.com/oauth2/v1/certs',
+        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/publicKeys',
     ];
 
     /** @var ClientInterface */

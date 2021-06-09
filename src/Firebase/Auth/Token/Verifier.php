@@ -97,10 +97,47 @@ final class Verifier implements Domain\Verifier
         return $token;
     }
 
+    public function verifySessionCookie($token): Token
+    {
+        if (!($token instanceof Token)) {
+            $token = $this->config->parser()->parse($token);
+        }
+        $key = $this->getKey($token);
+        $clock = SystemClock::fromSystemTimezone();
+        $leeway = new DateInterval('PT'.$this->leewayInSeconds.'S');
+
+        try {
+            $this->config->validator()->assert($token, ...[
+                new ValidAt($clock, $leeway),
+                new PermittedFor($this->projectId),
+                new IssuedBy(...["https://session.firebase.google.com/{$this->projectId}"]),
+                new SignedWith($this->config->signer(), InMemory::plainText($key)),
+            ]);
+            $this->assertUserAuthedAt($token, $clock->now()->add($leeway));
+        } catch (Throwable $e) {
+            $message = $e->getMessage();
+
+            if (\mb_stripos($message, 'signature mismatch') !== false) {
+                throw new InvalidSignature($token, $message);
+            }
+
+            if (\mb_stripos($message, 'expired') !== false) {
+                throw new ExpiredToken($token);
+            }
+
+            if (\mb_stripos($message, 'future') !== false) {
+                throw new IssuedInTheFuture($token);
+            }
+
+            throw new InvalidToken($token, $e->getMessage());
+        }
+
+        return $token;
+    }
+
     private function getKey(Token $token): string
     {
         $keyId = $token->headers()->get('kid', '');
-
         try {
             return $this->keys->get($keyId);
         } catch (OutOfBoundsException $e) {
