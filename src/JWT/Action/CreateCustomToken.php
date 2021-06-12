@@ -10,21 +10,18 @@ use Kreait\Firebase\JWT\Value\Duration;
 
 final class CreateCustomToken
 {
-    const MINIMUM_TTL = 'PT1S';
-    const MAXIMUM_TTL = 'PT1H';
-    const DEFAULT_TTL = self::MAXIMUM_TTL;
+    public const MINIMUM_TTL = 'PT1S';
+    public const MAXIMUM_TTL = 'PT1H';
+    public const DEFAULT_TTL = self::MAXIMUM_TTL;
 
-    /** @var string */
-    private $uid;
+    private ?string $uid = null;
 
-    /** @var string|null */
-    private $tenantId;
+    private ?string $tenantId = null;
 
     /** @var array<string, mixed> */
     private $customClaims = [];
 
-    /** @var Duration */
-    private $ttl;
+    private Duration $ttl;
 
     private function __construct()
     {
@@ -100,6 +97,7 @@ final class CreateCustomToken
 
         if ($ttl->isSmallerThan($minTtl) || $ttl->isLargerThan($maxTtl)) {
             $message = 'The expiration time of a custom token must be between %s and %s, but got %s';
+
             throw new InvalidArgumentException(\sprintf($message, $minTtl, $maxTtl, $ttl));
         }
 

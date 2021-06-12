@@ -10,8 +10,7 @@ use Throwable;
 
 class InvalidToken extends InvalidArgumentException
 {
-    /** @var Token */
-    private $token;
+    private Token $token;
 
     /**
      * @param string $message

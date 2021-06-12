@@ -19,8 +19,7 @@ use Kreait\Firebase\JWT\Keys\ExpiringKeys;
  */
 final class WithGuzzle6Test extends TestCase
 {
-    /** @var MockHandler */
-    private $mockHandler;
+    private MockHandler $mockHandler;
 
     protected function setUp(): void
     {
@@ -34,21 +33,15 @@ final class WithGuzzle6Test extends TestCase
         return new WithGuzzle6(new Client(['handler' => $this->mockHandler]), $this->clock);
     }
 
-    /**
-     * @test
-     */
-    public function it_returns_keys()
+    public function testItReturnsKeys(): void
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
 
-        parent::it_returns_keys();
+        parent::testItReturnsKeys();
     }
 
-    /**
-     * @test
-     */
-    public function it_returns_expiring_keys()
+    public function testItReturnsExpiringKeys(): void
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
@@ -61,10 +54,7 @@ final class WithGuzzle6Test extends TestCase
         $this->assertTrue($keys->isExpiredAt($this->clock->now()->modify('+2 seconds')));
     }
 
-    /**
-     * @test
-     */
-    public function it_handles_non_success_responses()
+    public function testItHandlesNonSuccessResponses(): void
     {
         $this->mockHandler->append(new Response(500));
 
@@ -72,10 +62,7 @@ final class WithGuzzle6Test extends TestCase
         $this->createHandler()->handle($this->action);
     }
 
-    /**
-     * @test
-     */
-    public function it_handles_connect_exceptions()
+    public function testItHandlesConnectExceptions(): void
     {
         $error = new ConnectException('something went wrong', new Request('GET', 'bogus'));
 

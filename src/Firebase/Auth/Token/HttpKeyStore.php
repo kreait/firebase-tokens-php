@@ -18,18 +18,16 @@ use Psr\SimpleCache\CacheInterface;
 final class HttpKeyStore implements KeyStore
 {
     /** @deprecated 1.15.0 */
-    const KEYS_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
+    public const KEYS_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 
-    const KEY_URLS = [
+    public const KEY_URLS = [
         'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
         'https://www.googleapis.com/oauth2/v1/certs',
     ];
 
-    /** @var ClientInterface */
-    private $client;
+    private ClientInterface $client;
 
-    /** @var CacheInterface */
-    private $cache;
+    private CacheInterface $cache;
 
     public function __construct(ClientInterface $client = null, CacheInterface $cache = null)
     {
@@ -79,9 +77,9 @@ final class HttpKeyStore implements KeyStore
 
     /**
      * @return array{
-     *     keys: array<string, string>,
-     *     ttl: int
-     * }
+     *                keys: array<string, string>,
+     *                ttl: int
+     *                }
      */
     private function fetchKeysFromUrl(string $url): array
     {

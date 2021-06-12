@@ -14,8 +14,7 @@ class TenantAwareGeneratorTest extends GeneratorTest
     /** @var TenantAwareGenerator */
     protected $generator;
 
-    /** @var string */
-    protected $tenantId;
+    protected string $tenantId;
 
     protected function setUp(): void
     {
@@ -23,7 +22,7 @@ class TenantAwareGeneratorTest extends GeneratorTest
         $this->generator = new TenantAwareGenerator($this->tenantId, 'user@domain.tld', $this->onePrivateKey()->contents());
     }
 
-    public function testGenerateWithTenantId()
+    public function testGenerateWithTenantId(): void
     {
         $token = $this->generator->createCustomToken('uid');
 

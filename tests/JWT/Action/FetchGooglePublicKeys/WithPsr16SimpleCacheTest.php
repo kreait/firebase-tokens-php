@@ -20,14 +20,11 @@ final class WithPsr16SimpleCacheTest extends TestCase
     private $cache;
     private $inner;
 
-    /** @var ExpiringKeys */
-    private $expiringKeys;
+    private ExpiringKeys $expiringKeys;
 
-    /** @var ExpiringKeys */
-    private $expiredKeys;
+    private ExpiringKeys $expiredKeys;
 
-    /** @var StaticKeys */
-    private $nonExpiringKeys;
+    private StaticKeys $nonExpiringKeys;
 
     protected function setUp(): void
     {
@@ -46,10 +43,7 @@ final class WithPsr16SimpleCacheTest extends TestCase
         return new WithPsr16SimpleCache($this->inner, $this->cache, $this->clock);
     }
 
-    /**
-     * @test
-     */
-    public function it_caches_fresh_keys()
+    public function testItCachesFreshKeys(): void
     {
         $this->cache->method('get')->willReturn(null);
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
@@ -58,10 +52,7 @@ final class WithPsr16SimpleCacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /**
-     * @test
-     */
-    public function it_returns_cached_non_expired_keys()
+    public function testItReturnsCachedNonExpiredKeys(): void
     {
         $this->cache->method('get')->willReturn($this->expiringKeys);
         $this->inner->expects($this->never())->method($this->anything());
@@ -69,10 +60,7 @@ final class WithPsr16SimpleCacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /**
-     * @test
-     */
-    public function it_returns_cached_non_expiring_keys()
+    public function testItReturnsCachedNonExpiringKeys(): void
     {
         $this->cache->method('get')->willReturn($this->nonExpiringKeys);
         $this->inner->expects($this->never())->method($this->anything());
@@ -80,10 +68,7 @@ final class WithPsr16SimpleCacheTest extends TestCase
         $this->assertSame($this->nonExpiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /**
-     * @test
-     */
-    public function it_refreshes_expired_keys()
+    public function testItRefreshesExpiredKeys(): void
     {
         $this->cache->method('get')->willReturn($this->expiredKeys);
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
@@ -91,10 +76,7 @@ final class WithPsr16SimpleCacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /**
-     * @test
-     */
-    public function it_handles_invalid_cache_contents()
+    public function testItHandlesInvalidCacheContents(): void
     {
         $this->cache->method('get')->willReturn(new stdClass());
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
@@ -102,10 +84,7 @@ final class WithPsr16SimpleCacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
-    /**
-     * @test
-     */
-    public function it_catches_errors_caused_by_the_inner_handler()
+    public function testItCatchesErrorsCausedByTheInnerHandler(): void
     {
         $innerError = FetchingGooglePublicKeysFailed::because('reason');
         $this->inner->method($this->anything())->willThrowException($innerError);

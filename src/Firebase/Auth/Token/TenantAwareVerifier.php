@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Firebase\Auth\Token;
 
+use Firebase\Auth\Token\Domain\Verifier;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Plain;
 
-final class TenantAwareVerifier implements Domain\Verifier
+final class TenantAwareVerifier implements Verifier
 {
-    /** @var string */
-    private $tenantId;
+    private string $tenantId;
 
-    /** @var Domain\Verifier */
-    private $baseVerifier;
+    private Verifier $baseVerifier;
 
-    public function __construct(string $tenantId, Domain\Verifier $baseVerifier)
+    public function __construct(string $tenantId, Verifier $baseVerifier)
     {
         $this->tenantId = $tenantId;
         $this->baseVerifier = $baseVerifier;
@@ -25,7 +25,7 @@ final class TenantAwareVerifier implements Domain\Verifier
     {
         $token = $this->baseVerifier->verifyIdToken($token);
 
-        if (!($token instanceof Token\Plain)) {
+        if (!($token instanceof Plain)) {
             throw new InvalidToken($token, 'The ID token could not be decrypted');
         }
 

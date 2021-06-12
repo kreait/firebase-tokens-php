@@ -21,7 +21,7 @@ final class DiscoveryFailed extends LogicException
 
     public static function noJWTLibraryFound(): self
     {
-        $message = <<<MESSAGE
+        $message = <<<'MESSAGE'
 Unable to create token handlers. Please install one of the following JWT libraries:
 
 - firebase/php-jwt ^5.0 (https://github.com/firebase/php-jwt)
@@ -41,7 +41,7 @@ MESSAGE;
 
     public static function noHttpLibraryFound(): self
     {
-        $message = <<<MESSAGE
+        $message = <<<'MESSAGE'
 Unable to find a HTTP transport to fetch public keys from Google. Please set
 `allow_url_fopen = On` in your php.ini or use one of the
 following supported HTTP libraries:

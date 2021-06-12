@@ -13,8 +13,7 @@ use Lcobucci\JWT\Configuration;
 
 final class WithHandlerDiscovery implements Handler
 {
-    /** @var Handler */
-    private $handler;
+    private Handler $handler;
 
     public function __construct(string $clientEmail, string $privateKey, Clock $clock)
     {
@@ -29,11 +28,11 @@ final class WithHandlerDiscovery implements Handler
     private static function discoverHandler(string $clientEmail, string $privateKey, Clock $clock): Handler
     {
         if (\class_exists(JWT::class)) {
-            return new CreateCustomToken\WithFirebaseJWT($clientEmail, $privateKey, $clock);
+            return new WithFirebaseJWT($clientEmail, $privateKey, $clock);
         }
 
         if (\class_exists(Configuration::class)) {
-            return new CreateCustomToken\WithLcobucciJWT($clientEmail, $privateKey, $clock);
+            return new WithLcobucciJWT($clientEmail, $privateKey, $clock);
         }
 
         throw DiscoveryFailed::noJWTLibraryFound();

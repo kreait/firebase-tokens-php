@@ -19,6 +19,7 @@ use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
@@ -29,21 +30,16 @@ use Throwable;
 
 final class Verifier implements Domain\Verifier
 {
-    /** @var string */
-    private $projectId;
+    private string $projectId;
 
-    /** @var KeyStore */
-    private $keys;
+    private KeyStore $keys;
 
-    /** @var Configuration */
-    private $config;
+    private Configuration $config;
 
     /**
      * @see https://github.com/firebase/firebase-admin-dotnet/pull/29
-     *
-     * @var int
      */
-    private $leewayInSeconds = 300;
+    private int $leewayInSeconds = 300;
 
     public function __construct(string $projectId, KeyStore $keys = null, Signer $signer = null)
     {
@@ -104,9 +100,9 @@ final class Verifier implements Domain\Verifier
         }
     }
 
-    private function assertUserAuthedAt(Token $token, DateTimeInterface $now)
+    private function assertUserAuthedAt(Token $token, DateTimeInterface $now): void
     {
-        if (!($token instanceof Token\Plain)) {
+        if (!($token instanceof Plain)) {
             throw new ConstraintViolation('The token could not be decrypted');
         }
 

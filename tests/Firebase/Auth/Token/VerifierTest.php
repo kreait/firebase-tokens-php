@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Firebase\Auth\Token\Tests;
 
+use DateInterval;
 use DateTimeImmutable;
 use Firebase\Auth\Token\Exception\ExpiredToken;
 use Firebase\Auth\Token\Exception\InvalidSignature;
@@ -22,17 +23,13 @@ use Lcobucci\JWT\Signer\Key\LocalFileReference;
  */
 class VerifierTest extends TestCase
 {
-    /** @var Verifier */
-    private $verifier;
+    private Verifier $verifier;
 
-    /** @var string */
-    private $projectId;
+    private string $projectId;
 
-    /** @var Builder */
-    private $builder;
+    private Builder $builder;
 
-    /** @var Configuration */
-    private $config;
+    private Configuration $config;
 
     protected function setUp(): void
     {
@@ -47,12 +44,13 @@ class VerifierTest extends TestCase
             ->issuedAt($clock->secondsEarlier(10))
             ->issuedBy('https://securetoken.google.com/'.$this->projectId)
             ->permittedFor($this->projectId)
-            ->withHeader('kid', 'valid_key_id');
+            ->withHeader('kid', 'valid_key_id')
+        ;
 
         $this->verifier = new Verifier($this->projectId, $this->createKeyStore(), $this->config->signer());
     }
 
-    public function testItVerifiesAValidToken()
+    public function testItVerifiesAValidToken(): void
     {
         $token = $this->builder->getToken($this->config->signer(), $this->config->signingKey());
 
@@ -60,7 +58,7 @@ class VerifierTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItVerifiesAValidTokenString()
+    public function testItVerifiesAValidTokenString(): void
     {
         $token = $this->builder->getToken($this->config->signer(), $this->config->signingKey())->toString();
 
@@ -68,57 +66,62 @@ class VerifierTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItAppliesALeewayOf5MinutesWhenCheckingTheIssueTime()
+    public function testItAppliesALeewayOf5MinutesWhenCheckingTheIssueTime(): void
     {
         $token = $this->builder
-            ->issuedAt((new DateTimeImmutable())->add(new \DateInterval('PT295S')))
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->issuedAt((new DateTimeImmutable())->add(new DateInterval('PT295S')))
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->verifier->verifyIdToken($token);
         $this->addToAssertionCount(1);
     }
 
-    public function testItAppliesALeewayOf5MinutesWhenCheckingTheAuthTime()
+    public function testItAppliesALeewayOf5MinutesWhenCheckingTheAuthTime(): void
     {
         $token = $this->builder
-            ->withClaim('auth_time', (new DateTimeImmutable())->add(new \DateInterval('PT295S')))
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->withClaim('auth_time', (new DateTimeImmutable())->add(new DateInterval('PT295S')))
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->verifier->verifyIdToken($token);
         $this->addToAssertionCount(1);
     }
 
-    public function testItRejectsATokenOfAUserThatHasNotYetAuthenticated()
+    public function testItRejectsATokenOfAUserThatHasNotYetAuthenticated(): void
     {
         $token = $this->builder
-            ->withClaim('auth_time', (new DateTimeImmutable())->add(new \DateInterval('PT2H')))
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->withClaim('auth_time', (new DateTimeImmutable())->add(new DateInterval('PT2H')))
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(InvalidToken::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testItRejectsATokenWithNoAuthTime()
+    public function testItRejectsATokenWithNoAuthTime(): void
     {
         $token = $this->builder
             ->withClaim('auth_time', null)
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(InvalidToken::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testItNeedsToFindAPublicKey()
+    public function testItNeedsToFindAPublicKey(): void
     {
         $token = $this->builder
             ->withHeader('kid', 'other')
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(UnknownKey::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testItRejectsAnUnknownSignature()
+    public function testItRejectsAnUnknownSignature(): void
     {
         $other = LocalFileReference::file(__DIR__.'/../../../_fixtures/other.key');
         $token = $this->builder->getToken($this->config->signer(), $other);
@@ -127,31 +130,34 @@ class VerifierTest extends TestCase
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testItRejectsAnExpiredToken()
+    public function testItRejectsAnExpiredToken(): void
     {
         $token = $this->builder
             ->expiresAt((new DateTimeImmutable())->modify('-10 minutes'))
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(ExpiredToken::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testItRejectsANotYetIssuedToken()
+    public function testItRejectsANotYetIssuedToken(): void
     {
         $token = $this->builder
             ->issuedAt((new DateTimeImmutable())->modify('+10 minutes'))
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(IssuedInTheFuture::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testItRejectsAnUnknownIssuer()
+    public function testItRejectsAnUnknownIssuer(): void
     {
         $token = $this->builder
             ->issuedBy('unknown')
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(InvalidToken::class);
         $this->verifier->verifyIdToken($token);

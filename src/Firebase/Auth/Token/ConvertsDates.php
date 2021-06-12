@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firebase\Auth\Token;
 
 use DateInterval;
+use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -16,7 +17,7 @@ trait ConvertsDates
             return $date;
         }
 
-        if ($date instanceof \DateTime) {
+        if ($date instanceof DateTime) {
             return DateTimeImmutable::createFromMutable($date);
         }
 

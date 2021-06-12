@@ -11,7 +11,7 @@ final class KeyPair
 {
     public static function privateKey(): string
     {
-        return <<<PRIVATE_KEY
+        return <<<'PRIVATE_KEY'
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC73IqjjFLQVBQr
 U68OFus62MkhQo4rPs1/8IYtr+vv7v4iPsvHhg9j493wp5Pw/wU5PlmMC+7zTt9O
@@ -45,7 +45,7 @@ PRIVATE_KEY;
 
     public static function publicKey(): string
     {
-        return <<<PUBLIC_KEY
+        return <<<'PUBLIC_KEY'
 -----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu9yKo4xS0FQUK1OvDhbr
 OtjJIUKOKz7Nf/CGLa/r7+7+Ij7Lx4YPY+Pd8KeT8P8FOT5ZjAvu807fTiBW3/6/

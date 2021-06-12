@@ -10,8 +10,7 @@ use Kreait\Clock;
 
 final class TestHelperClock implements Clock
 {
-    /** @var Clock */
-    private $clock;
+    private Clock $clock;
 
     public function __construct(Clock $clock)
     {

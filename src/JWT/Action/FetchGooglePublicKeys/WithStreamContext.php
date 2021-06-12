@@ -12,8 +12,7 @@ use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 
 final class WithStreamContext implements Handler
 {
-    /** @var Clock */
-    private $clock;
+    private Clock $clock;
 
     public function __construct(Clock $clock)
     {
@@ -45,9 +44,9 @@ final class WithStreamContext implements Handler
 
     /**
      * @return array{
-     *     keys: array<string, string>,
-     *     ttl: int
-     * }
+     *                keys: array<string, string>,
+     *                ttl: int
+     *                }
      */
     private function fetchKeysFromUrl(string $url): array
     {
@@ -61,7 +60,7 @@ final class WithStreamContext implements Handler
         $stream = \fopen($url, 'rb', false, $context);
 
         if (!\is_resource($stream)) {
-            throw FetchingGooglePublicKeysFailed::because("$url could not be opened");
+            throw FetchingGooglePublicKeysFailed::because("{$url} could not be opened");
         }
 
         $metadata = \stream_get_meta_data($stream);
@@ -84,7 +83,7 @@ final class WithStreamContext implements Handler
         \fclose($stream);
 
         if (!\is_string($contents)) {
-            throw FetchingGooglePublicKeysFailed::because("$url returned no contents.");
+            throw FetchingGooglePublicKeysFailed::because("{$url} returned no contents.");
         }
 
         $keys = \json_decode($contents, true);

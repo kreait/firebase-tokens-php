@@ -19,11 +19,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     abstract protected static function createHandlerWithInvalidPrivateKey(): Handler;
 
-    /** @var FrozenClock */
-    protected static $clock;
+    protected static FrozenClock $clock;
 
-    /** @var Handler */
-    private $handler;
+    private Handler $handler;
 
     protected function setUp(): void
     {
@@ -34,14 +32,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->handler = static::createHandler();
     }
 
-    /**
-     * @test
-     */
-    public function it_creates_a_fully_customized_custom_token()
+    public function testItCreatesAFullyCustomizedCustomToken(): void
     {
         $action = CreateCustomToken::forUid($uid = 'uid')
             ->withCustomClaims($claims = ['first_claim' => 'first_value', 'second_claim' => 'second_value'])
-            ->withTimeToLive($expirationTime = 13);
+            ->withTimeToLive($expirationTime = 13)
+        ;
 
         $token = $this->handler->handle($action);
 
@@ -57,10 +53,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertEquals($claims, (array) $payload['claims']);
     }
 
-    /**
-     * @test
-     */
-    public function it_creates_a_custom_token_with_a_default_expiration_time_of_one_hour()
+    public function testItCreatesACustomTokenWithADefaultExpirationTimeOfOneHour(): void
     {
         $payload = $this->handler->handle(CreateCustomToken::forUid('uid'))->payload();
 
@@ -68,20 +61,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertSame(self::$clock->now()->modify('+1 hour')->getTimestamp(), $payload['exp']);
     }
 
-    /**
-     * @test
-     */
-    public function it_does_not_add_custom_claims_when_none_are_given()
+    public function testItDoesNotAddCustomClaimsWhenNoneAreGiven(): void
     {
         $payload = $this->handler->handle(CreateCustomToken::forUid('uid'))->payload();
 
         $this->assertArrayNotHasKey('claims', $payload);
     }
 
-    /**
-     * @test
-     */
-    public function it_uses_a_tenant_id_when_given()
+    public function testItUsesATenantIdWhenGiven(): void
     {
         $action = CreateCustomToken::forUid('uid')->withTenantId($tenantId = 'my-tenant');
 
@@ -91,10 +78,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertSame($payload['tenant_id'], $tenantId);
     }
 
-    /**
-     * @test
-     */
-    public function it_fails_with_an_invalid_private_key()
+    public function testItFailsWithAnInvalidPrivateKey(): void
     {
         $handler = static::createHandlerWithInvalidPrivateKey();
 
@@ -102,10 +86,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $handler->handle(CreateCustomToken::forUid('uid'));
     }
 
-    /**
-     * @test
-     */
-    public function it_is_stringable()
+    public function testItIsStringable(): void
     {
         $token = $this->handler->handle(CreateCustomToken::forUid('uid'));
 

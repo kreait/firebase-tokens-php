@@ -6,7 +6,7 @@ namespace Kreait\Firebase\JWT\Action\CreateCustomToken;
 
 use Firebase\JWT\JWT;
 use Kreait\Clock;
-use Kreait\Firebase\JWT\Action;
+use Kreait\Firebase\JWT\Action\CreateCustomToken;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
@@ -14,14 +14,11 @@ use Throwable;
 
 final class WithFirebaseJWT implements Handler
 {
-    /** @var string */
-    private $clientEmail;
+    private string $clientEmail;
 
-    /** @var string */
-    private $privateKey;
+    private string $privateKey;
 
-    /** @var Clock */
-    private $clock;
+    private Clock $clock;
 
     public function __construct(string $clientEmail, string $privateKey, Clock $clock)
     {
@@ -30,7 +27,7 @@ final class WithFirebaseJWT implements Handler
         $this->clock = $clock;
     }
 
-    public function handle(Action\CreateCustomToken $action): Token
+    public function handle(CreateCustomToken $action): Token
     {
         $now = $this->clock->now();
 

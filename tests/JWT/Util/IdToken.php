@@ -13,23 +13,17 @@ use Kreait\Clock\SystemClock;
  */
 final class IdToken
 {
-    /** @var Clock */
-    private $clock;
+    private Clock $clock;
 
-    /** @var array */
-    private $headers = ['typ' => 'JWT', 'alg' => 'RS256', 'kid' => 'kid'];
+    private array $headers = ['typ' => 'JWT', 'alg' => 'RS256', 'kid' => 'kid'];
 
-    /** @var array */
-    private $payload;
+    private array $payload;
 
-    /** @var array */
-    private $claimsToDelete = [];
+    private array $claimsToDelete = [];
 
-    /** @var array */
-    private $headersToDelete = [];
+    private array $headersToDelete = [];
 
-    /** @var string|null */
-    private $privateKey;
+    private ?string $privateKey = null;
 
     public function __construct(Clock $clock = null)
     {

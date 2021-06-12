@@ -13,10 +13,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class VerifyIdTokenTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function it_rejects_a_negative_leeway()
+    public function testItRejectsANegativeLeeway(): void
     {
         $this->expectException(InvalidArgumentException::class);
         VerifyIdToken::withToken('token')->withLeewayInSeconds(-1);

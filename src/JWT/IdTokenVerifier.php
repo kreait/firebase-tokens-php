@@ -6,8 +6,11 @@ namespace Kreait\Firebase\JWT;
 
 use InvalidArgumentException;
 use Kreait\Clock\SystemClock;
-use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
+use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithHandlerDiscovery;
+use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr16SimpleCache;
+use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr6Cache;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
+use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Cache\InMemoryCache;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
@@ -16,13 +19,11 @@ use Psr\SimpleCache\CacheInterface;
 
 final class IdTokenVerifier
 {
-    /** @var VerifyIdToken\Handler */
-    private $handler;
+    private Handler $handler;
 
-    /** @var string|null */
-    private $expectedTenantId;
+    private ?string $expectedTenantId = null;
 
-    public function __construct(VerifyIdToken\Handler $handler)
+    public function __construct(Handler $handler)
     {
         $this->handler = $handler;
     }
@@ -38,11 +39,11 @@ final class IdTokenVerifier
     public static function createWithProjectIdAndCache(string $projectId, $cache): self
     {
         $clock = new SystemClock();
-        $keyHandler = new FetchGooglePublicKeys\WithHandlerDiscovery($clock);
+        $keyHandler = new WithHandlerDiscovery($clock);
 
         $keyHandler = $cache instanceof CacheInterface
-            ? new FetchGooglePublicKeys\WithPsr16SimpleCache($keyHandler, $cache, $clock)
-            : new FetchGooglePublicKeys\WithPsr6Cache($keyHandler, $cache, $clock);
+            ? new WithPsr16SimpleCache($keyHandler, $cache, $clock)
+            : new WithPsr6Cache($keyHandler, $cache, $clock);
 
         $keys = new GooglePublicKeys($keyHandler, $clock);
         $handler = new VerifyIdToken\WithHandlerDiscovery($projectId, $keys, $clock);

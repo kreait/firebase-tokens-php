@@ -9,7 +9,7 @@ use OutOfBoundsException;
 
 class ArrayKeyStore implements KeyStore
 {
-    private $keys;
+    private array $keys;
 
     public function __construct(array $keys)
     {

@@ -17,20 +17,15 @@ use Lcobucci\JWT\Configuration;
  */
 class TenantAwareVerifierTest extends TestCase
 {
-    /** @var TenantAwareVerifier */
-    private $verifier;
+    private TenantAwareVerifier $verifier;
 
-    /** @var Configuration */
-    private $config;
+    private Configuration $config;
 
-    /** @var string */
-    private $projectId;
+    private string $projectId;
 
-    /** @var string */
-    private $tenantId;
+    private string $tenantId;
 
-    /** @var Builder */
-    private $builder;
+    private Builder $builder;
 
     protected function setUp(): void
     {
@@ -46,36 +41,40 @@ class TenantAwareVerifierTest extends TestCase
             ->issuedAt($clock->secondsEarlier(10))
             ->issuedBy('https://securetoken.google.com/'.$this->projectId)
             ->permittedFor($this->projectId)
-            ->withHeader('kid', 'valid_key_id');
+            ->withHeader('kid', 'valid_key_id')
+        ;
 
         $baseVerifier = new Verifier($this->projectId, $this->createKeyStore(), $this->config->signer());
         $this->verifier = new TenantAwareVerifier($this->tenantId, $baseVerifier);
     }
 
-    public function testWithMatchingTenantId()
+    public function testWithMatchingTenantId(): void
     {
         $token = $this->builder
             ->withClaim('firebase', (object) ['tenant' => $this->tenantId])
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->verifier->verifyIdToken($token);
         $this->addToAssertionCount(1);
     }
 
-    public function testWithMismatchingTenantId()
+    public function testWithMismatchingTenantId(): void
     {
         $token = $this->builder
             ->withClaim('firebase', (object) ['tenant' => 'unknown-tenant'])
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(InvalidToken::class);
         $this->verifier->verifyIdToken($token);
     }
 
-    public function testWithMissingTenantId()
+    public function testWithMissingTenantId(): void
     {
         $token = $this->builder
-            ->getToken($this->config->signer(), $this->config->signingKey());
+            ->getToken($this->config->signer(), $this->config->signingKey())
+        ;
 
         $this->expectException(InvalidToken::class);
         $this->verifier->verifyIdToken($token);

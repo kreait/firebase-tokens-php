@@ -16,10 +16,9 @@ use Throwable;
  */
 final class Duration
 {
-    const NONE = 'PT0S';
+    public const NONE = 'PT0S';
 
-    /** @var DateInterval */
-    private $value;
+    private ?DateInterval $value = null;
 
     private function __construct()
     {

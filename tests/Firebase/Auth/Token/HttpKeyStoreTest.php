@@ -13,11 +13,9 @@ use Psr\SimpleCache\CacheInterface;
  */
 class HttpKeyStoreTest extends TestCase
 {
-    /** @var HttpKeyStore */
-    private $store;
+    private HttpKeyStore $store;
 
-    /** @var array */
-    private static $liveKeys;
+    private static array $liveKeys;
 
     /** @var CacheInterface */
     private $cache;
@@ -42,7 +40,7 @@ class HttpKeyStoreTest extends TestCase
         $this->store = new HttpKeyStore(null, $this->cache);
     }
 
-    public function testGetKeyFromGoogle()
+    public function testGetKeyFromGoogle(): void
     {
         $keyId = \array_rand(self::$liveKeys);
         $key = self::$liveKeys[$keyId];
@@ -50,19 +48,20 @@ class HttpKeyStoreTest extends TestCase
         $this->assertEquals($key, $this->store->get($keyId));
     }
 
-    public function testGetNonExistingKey()
+    public function testGetNonExistingKey(): void
     {
         $this->expectException(OutOfBoundsException::class);
 
         $this->store->get('non_existing');
     }
 
-    public function testGetKeyFromCache()
+    public function testGetKeyFromCache(): void
     {
         $this->cache->expects($this->once())
             ->method('get')
             ->with($this->anything())
-            ->willReturn(['foo' => 'bar']);
+            ->willReturn(['foo' => 'bar'])
+        ;
 
         $this->assertSame('bar', $this->store->get('foo'));
     }

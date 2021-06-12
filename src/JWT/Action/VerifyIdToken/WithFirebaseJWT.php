@@ -19,14 +19,11 @@ use UnexpectedValueException;
 
 final class WithFirebaseJWT implements Handler
 {
-    /** @var string */
-    private $projectId;
+    private string $projectId;
 
-    /** @var Keys */
-    private $keys;
+    private Keys $keys;
 
-    /** @var Clock */
-    private $clock;
+    private Clock $clock;
 
     public function __construct(string $projectId, Keys $keys, Clock $clock)
     {
@@ -86,7 +83,7 @@ final class WithFirebaseJWT implements Handler
             $errors[] = "The token's 'sub' claim must be a non-empty string. Got: '{$subject}' (".\gettype($subject).')';
         }
 
-        $authTime = (int) ($token->auth_time ?? \PHP_INT_MAX);
+        $authTime = $token->auth_time ?? \PHP_INT_MAX;
         if ($authTime > ($now->getTimestamp() + $leeway)) {
             $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and be in the past.";
         }
@@ -126,7 +123,7 @@ final class WithFirebaseJWT implements Handler
      * @param int|null $timestamp
      * @param int $leeway
      */
-    private function restoreJWTStaticVariables($timestamp, $leeway)
+    private function restoreJWTStaticVariables($timestamp, $leeway): void
     {
         JWT::$timestamp = $timestamp;
         JWT::$leeway = $leeway;

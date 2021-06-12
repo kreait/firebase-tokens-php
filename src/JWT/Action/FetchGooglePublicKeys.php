@@ -10,20 +10,19 @@ use Kreait\Firebase\JWT\Value\Duration;
 final class FetchGooglePublicKeys
 {
     /** @deprecated 1.15.0 */
-    const DEFAULT_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
+    public const DEFAULT_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 
-    const DEFAULT_URLS = [
+    public const DEFAULT_URLS = [
         'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
         'https://www.googleapis.com/oauth2/v1/certs',
     ];
 
-    const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
+    public const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
 
     /** @var array<int, string> */
     private $urls;
 
-    /** @var Duration */
-    private $fallbackCacheDuration;
+    private Duration $fallbackCacheDuration;
 
     /**
      * @param array<array-key, string> $urls

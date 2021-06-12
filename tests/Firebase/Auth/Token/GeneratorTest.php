@@ -21,21 +21,21 @@ class GeneratorTest extends TestCase
         $this->generator = new Generator('user@domain.tld', $this->onePrivateKey()->contents());
     }
 
-    public function testCreateCustomToken()
+    public function testCreateCustomToken(): void
     {
         $token = $this->generator->createCustomToken('some-uid', ['some' => 'claim']);
 
         $this->assertInstanceOf(Token::class, $token);
     }
 
-    public function testCreateCustomTokenWithEmptyClaims()
+    public function testCreateCustomTokenWithEmptyClaims(): void
     {
         $token = $this->generator->createCustomToken('some-uid');
 
         $this->assertSame('some-uid', $token->claims()->get('uid'));
     }
 
-    public function testCreateCustomTokenWithCustomExpiration()
+    public function testCreateCustomTokenWithCustomExpiration(): void
     {
         $expiresAt = (new DateTimeImmutable())->modify(\random_int(1, 3600).' minutes');
 
@@ -44,7 +44,7 @@ class GeneratorTest extends TestCase
         $this->assertSame($expiresAt->getTimestamp(), $token->claims()->get('exp')->getTimestamp());
     }
 
-    public function testDontCarryStateBetweenCalls()
+    public function testDontCarryStateBetweenCalls(): void
     {
         $token1 = $this->generator->createCustomToken('first', ['admin' => true]);
         $token2 = $this->generator->createCustomToken('second');

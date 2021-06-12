@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-function generate($name)
+function generate($name): void
 {
     $key = \openssl_pkey_new([
         'digest_alg' => 'sha512',
@@ -15,5 +15,5 @@ function generate($name)
     \file_put_contents(__DIR__."/{$name}.pub", \openssl_pkey_get_details($key)['key']);
 }
 
-generate('one');
-generate('other');
+\generate('one');
+\generate('other');

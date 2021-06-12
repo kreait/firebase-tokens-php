@@ -14,8 +14,7 @@ use Lcobucci\JWT\Configuration;
 
 final class WithHandlerDiscovery implements Handler
 {
-    /** @var Handler */
-    private $handler;
+    private Handler $handler;
 
     public function __construct(string $projectId, Keys $keys, Clock $clock)
     {
@@ -30,11 +29,11 @@ final class WithHandlerDiscovery implements Handler
     private static function discoverHandler(string $projectId, Keys $keys, Clock $clock): Handler
     {
         if (\class_exists(JWT::class)) {
-            return new VerifyIdToken\WithFirebaseJWT($projectId, $keys, $clock);
+            return new WithFirebaseJWT($projectId, $keys, $clock);
         }
 
         if (\class_exists(Configuration::class)) {
-            return new VerifyIdToken\WithLcobucciJWT($projectId, $keys, $clock);
+            return new WithLcobucciJWT($projectId, $keys, $clock);
         }
 
         throw DiscoveryFailed::noJWTLibraryFound();

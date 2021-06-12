@@ -7,7 +7,7 @@ namespace Kreait\Firebase\JWT\Tests;
 use DateInterval;
 use DateTimeImmutable;
 use Kreait\Clock\FrozenClock;
-use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
+use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\GooglePublicKeys;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
@@ -20,17 +20,13 @@ final class GooglePublicKeysTest extends TestCase
 {
     private $handler;
 
-    /** @var FrozenClock */
-    private $clock;
+    private FrozenClock $clock;
 
-    /** @var GooglePublicKeys */
-    private $keys;
+    private GooglePublicKeys $keys;
 
-    /** @var ExpiringKeys */
-    private $expiringResult;
+    private ExpiringKeys $expiringResult;
 
-    /** @var StaticKeys */
-    private $staticResult;
+    private StaticKeys $staticResult;
 
     protected function setUp(): void
     {
@@ -38,7 +34,7 @@ final class GooglePublicKeysTest extends TestCase
         $now = $now->setTimestamp($now->getTimestamp()); // Trim microseconds, just to be sure
 
         $this->clock = new FrozenClock($now);
-        $this->handler = $this->createMock(FetchGooglePublicKeys\Handler::class);
+        $this->handler = $this->createMock(Handler::class);
 
         $this->expiringResult = ExpiringKeys::withValuesAndExpirationTime(['ir' => 'relevant'], $this->clock->now()->modify('+1 hour'));
         $this->staticResult = StaticKeys::withValues(['ir' => 'relevant']);
@@ -46,10 +42,7 @@ final class GooglePublicKeysTest extends TestCase
         $this->keys = new GooglePublicKeys($this->handler, $this->clock);
     }
 
-    /**
-     * @test
-     */
-    public function it_fetches_keys_only_the_first_time()
+    public function testItFetchesKeysOnlyTheFirstTime(): void
     {
         $this->handler->expects($this->once())->method('handle')->willReturn($this->expiringResult);
 
@@ -57,10 +50,7 @@ final class GooglePublicKeysTest extends TestCase
         $this->assertSame($this->expiringResult->all(), $this->keys->all());
     }
 
-    /**
-     * @test
-     */
-    public function it_re_fetches_keys_when_they_are_expired()
+    public function testItReFetchesKeysWhenTheyAreExpired(): void
     {
         $this->handler->expects($this->exactly(2))->method('handle')->willReturn($this->expiringResult);
 
@@ -69,10 +59,7 @@ final class GooglePublicKeysTest extends TestCase
         $this->keys->all();
     }
 
-    /**
-     * @test
-     */
-    public function it_uses_non_expiring_keys_forever()
+    public function testItUsesNonExpiringKeysForever(): void
     {
         $this->handler->expects($this->once())->method('handle')->willReturn($this->staticResult);
 

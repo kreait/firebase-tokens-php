@@ -40,6 +40,7 @@ return (new PhpCsFixer\Config())
         'php_unit_test_annotation' => true, // Adds or removes @test annotations from tests, following configuration.
         'php_unit_test_class_requires_covers' => false,
         'use_arrow_functions' => true, // Anonymous functions with one-liner return statement must use arrow functions.
+        'void_return' => true, // Add void return type to functions with missing or empty return statements, but priority is given to @return annotations.
         'yoda_style' => [ // Write conditions in Yoda style (true), non-Yoda style (['equal' => false, 'identical' => false, 'less_and_greater' => false]) or ignore those conditions (null) based on configuration.
             'equal' => null,
             'identical' => null,

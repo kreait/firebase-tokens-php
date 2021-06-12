@@ -15,11 +15,9 @@ use Kreait\Firebase\JWT\Value\Duration;
 
 final class CustomTokenGenerator
 {
-    /** @var Handler */
-    private $handler;
+    private Handler $handler;
 
-    /** @var string|null */
-    private $tenantId;
+    private ?string $tenantId = null;
 
     public function __construct(Handler $handler)
     {

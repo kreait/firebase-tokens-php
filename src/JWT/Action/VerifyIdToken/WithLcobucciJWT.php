@@ -15,7 +15,6 @@ use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token as JWT;
@@ -29,20 +28,13 @@ use Throwable;
 
 final class WithLcobucciJWT implements Handler
 {
-    /** @var string */
-    private $projectId;
+    private string $projectId;
 
-    /** @var Keys */
-    private $keys;
+    private Keys $keys;
 
-    /** @var Clock */
-    private $clock;
+    private Clock $clock;
 
-    /** @var Signer */
-    private $signer;
-
-    /** @var Configuration */
-    private $config;
+    private Configuration $config;
 
     public function __construct(string $projectId, Keys $keys, Clock $clock)
     {
@@ -86,19 +78,13 @@ final class WithLcobucciJWT implements Handler
             }
         } catch (RequiredConstraintsViolated $e) {
             $errors = \array_map(
-                static function (ConstraintViolation $violation): string {
-                    return '- '.$violation->getMessage();
-                },
+                static fn (ConstraintViolation $violation): string => '- '.$violation->getMessage(),
                 $e->violations()
             );
         }
 
         if (!empty($errors)) {
             throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, $errors);
-        }
-
-        if (!($token instanceof JWT\Plain)) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token could not be decrypted']);
         }
 
         $claims = $token->claims()->all();
@@ -136,7 +122,7 @@ final class WithLcobucciJWT implements Handler
         throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
     }
 
-    private function assertUserAuthedAt(JWT\Plain $token, DateTimeInterface $now)
+    private function assertUserAuthedAt(JWT\Plain $token, DateTimeInterface $now): void
     {
         /** @var int|DateTimeImmutable $authTime */
         $authTime = $token->claims()->get('auth_time');
@@ -158,7 +144,7 @@ final class WithLcobucciJWT implements Handler
         }
     }
 
-    private function assertTenantId(JWT\Plain $token, string $tenantId)
+    private function assertTenantId(JWT\Plain $token, string $tenantId): void
     {
         $claim = $token->claims()->get('firebase');
 

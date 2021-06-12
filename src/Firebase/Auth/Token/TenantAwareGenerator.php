@@ -8,22 +8,22 @@ use BadMethodCallException;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Firebase\Auth\Token\Domain\Generator;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 
-final class TenantAwareGenerator implements Domain\Generator
+final class TenantAwareGenerator implements Generator
 {
     use ConvertsDates;
 
-    /** @var string */
-    private $tenantId;
+    private string $tenantId;
 
-    /** @var string */
-    private $clientEmail;
+    private string $clientEmail;
 
-    /** @var Configuration */
-    private $config;
+    private Configuration $config;
 
     public function __construct(
         string $tenantId,
@@ -35,8 +35,8 @@ final class TenantAwareGenerator implements Domain\Generator
         $this->clientEmail = $clientEmail;
 
         $this->config = Configuration::forSymmetricSigner(
-            $signer ?: new Signer\Rsa\Sha256(),
-            Signer\Key\InMemory::plainText($privateKey)
+            $signer ?: new Sha256(),
+            InMemory::plainText($privateKey)
         );
     }
 
@@ -44,7 +44,6 @@ final class TenantAwareGenerator implements Domain\Generator
      * Returns a token for the given user and claims.
      *
      * @param mixed $uid
-     * @param DateTimeInterface $expiresAt
      *
      * @throws BadMethodCallException when a claim is invalid
      */
@@ -63,7 +62,8 @@ final class TenantAwareGenerator implements Domain\Generator
             ->withClaim('uid', (string) $uid)
             ->withClaim('tenant_id', $this->tenantId)
             ->issuedAt($now)
-            ->expiresAt($expiresAt);
+            ->expiresAt($expiresAt)
+        ;
 
         if (!empty($claims)) {
             $builder->withClaim('claims', $claims);

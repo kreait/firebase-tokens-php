@@ -6,8 +6,7 @@ namespace Kreait\Firebase\JWT;
 
 final class Token implements Contract\Token
 {
-    /** @var string */
-    private $encodedString;
+    private ?string $encodedString = null;
 
     /** @var array<string, mixed> */
     private $headers;
