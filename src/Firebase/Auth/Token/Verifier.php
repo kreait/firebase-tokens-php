@@ -45,10 +45,6 @@ final class Verifier implements Domain\Verifier
      */
     private $leewayInSeconds = 300;
 
-    /**
-     * @deprecated 1.9.0
-     * @see \Kreait\Firebase\JWT\IdTokenVerifier
-     */
     public function __construct(string $projectId, KeyStore $keys = null, Signer $signer = null)
     {
         $this->projectId = $projectId;

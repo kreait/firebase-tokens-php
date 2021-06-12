@@ -25,10 +25,6 @@ final class TenantAwareGenerator implements Domain\Generator
     /** @var Configuration */
     private $config;
 
-    /**
-     * @deprecated 1.12.0
-     * @see \Kreait\Firebase\JWT\CustomTokenGenerator
-     */
     public function __construct(
         string $tenantId,
         string $clientEmail,

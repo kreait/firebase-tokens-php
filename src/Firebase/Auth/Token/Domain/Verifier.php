@@ -12,10 +12,6 @@ use Firebase\Auth\Token\Exception\UnknownKey;
 use InvalidArgumentException;
 use Lcobucci\JWT\Token;
 
-/**
- * @deprecated 1.9.0
- * @see \Kreait\Firebase\JWT\IdTokenVerifier
- */
 interface Verifier
 {
     /**

@@ -15,10 +15,6 @@ final class TenantAwareVerifier implements Domain\Verifier
     /** @var Domain\Verifier */
     private $baseVerifier;
 
-    /**
-     * @deprecated 1.12.0
-     * @see \Kreait\Firebase\JWT\IdTokenVerifier
-     */
     public function __construct(string $tenantId, Domain\Verifier $baseVerifier)
     {
         $this->tenantId = $tenantId;

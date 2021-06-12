@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Unreleased
+
+- Un-deprecated `Firebase\Auth\Token\Domain\Generator`, `Firebase\Auth\Token\Domain\Verifier` and
+  `\Firebase\Auth\Token\Domain\KeyStore`
+
 ## 1.15.0 - 2021-04-19
 
 - Use fallback cache duration (defaults to 1 hour) when fetching public keys from Google and
