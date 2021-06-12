@@ -85,7 +85,7 @@ final class HttpKeyStore implements KeyStore
     {
         $response = $this->client->request(RequestMethod::METHOD_GET, $url);
 
-        $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control') ?? '', $matches)
+        $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)
             ? (int) $matches[1]
             : 0;
 

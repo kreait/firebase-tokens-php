@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firebase\Auth\Token\Tests;
 
 use DateTimeImmutable;
+use Firebase\Auth\Token\Domain;
 use Firebase\Auth\Token\Generator;
 use Lcobucci\JWT\Token;
 
@@ -14,7 +15,7 @@ use Lcobucci\JWT\Token;
 class GeneratorTest extends TestCase
 {
     /** @var Generator */
-    protected $generator;
+    protected Domain\Generator $generator;
 
     protected function setUp(): void
     {
@@ -31,6 +32,7 @@ class GeneratorTest extends TestCase
     public function testCreateCustomTokenWithEmptyClaims(): void
     {
         $token = $this->generator->createCustomToken('some-uid');
+        $this->assertInstanceOf(Token\Plain::class, $token);
 
         $this->assertSame('some-uid', $token->claims()->get('uid'));
     }
@@ -40,6 +42,7 @@ class GeneratorTest extends TestCase
         $expiresAt = (new DateTimeImmutable())->modify(\random_int(1, 3600).' minutes');
 
         $token = $this->generator->createCustomToken('some-uid', [], $expiresAt);
+        $this->assertInstanceOf(Token\Plain::class, $token);
 
         $this->assertSame($expiresAt->getTimestamp(), $token->claims()->get('exp')->getTimestamp());
     }
@@ -48,6 +51,9 @@ class GeneratorTest extends TestCase
     {
         $token1 = $this->generator->createCustomToken('first', ['admin' => true]);
         $token2 = $this->generator->createCustomToken('second');
+
+        $this->assertInstanceOf(Token\Plain::class, $token1);
+        $this->assertInstanceOf(Token\Plain::class, $token2);
 
         $this->assertSame(['admin' => true], $token1->claims()->get('claims'));
         $this->assertSame([], $token2->claims()->get('claims', []));

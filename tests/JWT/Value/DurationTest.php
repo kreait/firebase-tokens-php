@@ -32,6 +32,9 @@ class DurationTest extends TestCase
         $this->assertSame($expectedSpec, (string) Duration::make($value));
     }
 
+    /**
+     * @return array<string, array<array-key, string|DateInterval|Duration>>
+     */
     public function validValues(): array
     {
         return [
@@ -45,7 +48,7 @@ class DurationTest extends TestCase
     /**
      * @dataProvider invalidValues
      *
-     * @param mixed $value
+     * @param DateInterval|int|string $value
      */
     public function testItRejectsInvalidValues($value): void
     {
@@ -53,6 +56,9 @@ class DurationTest extends TestCase
         Duration::make($value);
     }
 
+    /**
+     * @return array<string, array<int, DateInterval|int|string>>
+     */
     public function invalidValues(): array
     {
         $negativeInterval = new DateInterval('PT1H');

@@ -22,11 +22,14 @@ final class CreateCustomTokenTest extends TestCase
         CreateCustomToken::forUid('uid')->withTimeToLive($seconds);
     }
 
+    /**
+     * @return array<string, array<array-key, int>>
+     */
     public function invalidExpirationTimesInSeconds(): array
     {
         return [
-            [0],
-            [3601],
+            'zero' => [0],
+            'more than 1 hour' => [3601],
         ];
     }
 

@@ -78,7 +78,7 @@ final class WithGuzzle6 implements Handler
             ],
         ]);
 
-        $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control') ?? '', $matches)
+        $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)
             ? (int) $matches[1]
             : 0;
 

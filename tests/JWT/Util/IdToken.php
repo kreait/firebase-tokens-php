@@ -15,15 +15,19 @@ final class IdToken
 {
     private Clock $clock;
 
+    /** @var array<string, string> */
     private array $headers = ['typ' => 'JWT', 'alg' => 'RS256', 'kid' => 'kid'];
 
+    /** @var array<string, mixed> */
     private array $payload;
 
+    /** @var string[] */
     private array $claimsToDelete = [];
 
+    /** @var string[] */
     private array $headersToDelete = [];
 
-    private ?string $privateKey = null;
+    private ?string $privateKey;
 
     public function __construct(Clock $clock = null)
     {
@@ -32,6 +36,9 @@ final class IdToken
         $this->privateKey = KeyPair::privateKey();
     }
 
+    /**
+     * @param mixed $value
+     */
     public function withClaim(string $name, $value): self
     {
         $builder = clone $this;
@@ -48,7 +55,7 @@ final class IdToken
         return $builder;
     }
 
-    public function withChangedHeader(string $name, $value): self
+    public function withChangedHeader(string $name, string $value): self
     {
         $builder = clone $this;
         $builder->headers[$name] = $value;
@@ -95,6 +102,9 @@ final class IdToken
         return $this->encode($payload, $headers);
     }
 
+    /**
+     * @return array{iss: string, sub: string, aud: string}
+     */
     private function defaultPayload(): array
     {
         return [
@@ -104,6 +114,10 @@ final class IdToken
         ];
     }
 
+    /**
+     * @param array<string, mixed> $payload
+     * @param array<string, string> $headers
+     */
     private function encode(array $payload, array $headers): string
     {
         $segments = [];

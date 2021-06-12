@@ -31,11 +31,14 @@ final class TenantAwareVerifier implements Verifier
 
         $claim = $token->claims()->get('firebase');
 
-        $tenant = \is_object($claim)
-            ? ($claim->tenant ?? null)
-            : ($claim['tenant'] ?? null);
+        $tenant = null;
+        if (\is_object($claim) && \property_exists($claim, 'tenant')) {
+            $tenant = $claim->tenant;
+        } elseif (\is_array($claim)) {
+            $tenant = $claim['tenant'] ?? null;
+        }
 
-        if (!$tenant) {
+        if (!\is_string($tenant)) {
             throw new InvalidToken($token, 'The ID token does not contain a tenant identifier');
         }
 

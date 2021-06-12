@@ -67,23 +67,23 @@ final class WithFirebaseJWT implements Handler
 
         $errors = [];
 
-        $audience = $token->aud ?? null;
+        $audience = \property_exists($token, 'aud') ? $token->aud : null;
         if ($audience !== $this->projectId) {
             $errors[] = "The token's audience doesn't match the current Firebase project. Expected '{$this->projectId}', got '{$audience}'.";
         }
 
-        $issuer = $token->iss ?? null;
+        $issuer = \property_exists($token, 'iss') ? $token->iss : null;
         $expectedIssuer = 'https://securetoken.google.com/'.$this->projectId;
         if ($issuer !== $expectedIssuer) {
             $errors[] = "The token was issued by the wrong principal. Expected '{$expectedIssuer}', got '{$issuer}'";
         }
 
-        $subject = $token->sub ?? '';
+        $subject = \property_exists($token, 'sub') ? $token->sub : '';
         if (\trim($subject) === '') {
-            $errors[] = "The token's 'sub' claim must be a non-empty string. Got: '{$subject}' (".\gettype($subject).')';
+            $errors[] = "The token's 'sub' claim must be a non-empty string.";
         }
 
-        $authTime = $token->auth_time ?? \PHP_INT_MAX;
+        $authTime = \property_exists($token, 'auth_time') ? $token->auth_time : \PHP_INT_MAX;
         if ($authTime > ($now->getTimestamp() + $leeway)) {
             $errors[] = "The token's 'auth_time' claim (the time when the user authenticated) must be present and be in the past.";
         }
@@ -91,12 +91,10 @@ final class WithFirebaseJWT implements Handler
         $expectedTenantId = $action->expectedTenantId();
 
         $firebaseClaim = \property_exists($token, 'firebase')
-            ? $token->firebase
+            ? (array) $token->firebase
             : null;
 
-        $tenantId = \is_object($firebaseClaim)
-            ? ($firebaseClaim->tenant ?? null)
-            : ($firebaseClaim['tenant'] ?? null);
+        $tenantId = $firebaseClaim['tenant'] ?? null;
 
         if ($expectedTenantId && !$tenantId) {
             $errors[] = 'The ID token does not contain a tenant identifier';
@@ -112,18 +110,14 @@ final class WithFirebaseJWT implements Handler
 
         // We replicate what's done in JWT::decode(), but have to re-encode/decode it
         // to get an array instead of an object
-        list($headb64, $bodyb64) = \explode('.', $tokenString);
+        [$headb64, $bodyb64] = \explode('.', $tokenString);
         $headers = (array) JWT::jsonDecode(JWT::urlsafeB64Decode($headb64));
         $payload = (array) JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64));
 
         return TokenInstance::withValues($tokenString, $headers, $payload);
     }
 
-    /**
-     * @param int|null $timestamp
-     * @param int $leeway
-     */
-    private function restoreJWTStaticVariables($timestamp, $leeway): void
+    private function restoreJWTStaticVariables(?int $timestamp, int $leeway): void
     {
         JWT::$timestamp = $timestamp;
         JWT::$leeway = $leeway;

@@ -57,6 +57,9 @@ final class InMemoryCacheTest extends TestCase
         $this->assertFalse($this->cache->has('foo'));
     }
 
+    /**
+     * @return array<string, array<int|null>>
+     */
     public function nullValues(): array
     {
         return [

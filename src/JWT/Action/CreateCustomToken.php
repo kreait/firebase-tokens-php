@@ -14,26 +14,24 @@ final class CreateCustomToken
     public const MAXIMUM_TTL = 'PT1H';
     public const DEFAULT_TTL = self::MAXIMUM_TTL;
 
-    private ?string $uid = null;
+    private string $uid;
 
     private ?string $tenantId = null;
 
     /** @var array<string, mixed> */
-    private $customClaims = [];
+    private array $customClaims = [];
 
     private Duration $ttl;
 
-    private function __construct()
+    private function __construct(string $uid)
     {
+        $this->uid = $uid;
         $this->ttl = Duration::fromDateIntervalSpec(self::DEFAULT_TTL);
     }
 
     public static function forUid(string $uid): self
     {
-        $action = new self();
-        $action->uid = $uid;
-
-        return $action;
+        return new self($uid);
     }
 
     public function withTenantId(string $tenantId): self
@@ -112,10 +110,7 @@ final class CreateCustomToken
         return $this->uid;
     }
 
-    /**
-     * @return string|null
-     */
-    public function tenantId()
+    public function tenantId(): ?string
     {
         return $this->tenantId;
     }

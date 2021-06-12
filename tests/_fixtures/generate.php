@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-function generate($name): void
+function generate(string $name): void
 {
     $key = \openssl_pkey_new([
         'digest_alg' => 'sha512',

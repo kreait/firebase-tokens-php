@@ -11,6 +11,7 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\GooglePublicKeys;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class GooglePublicKeysTest extends TestCase
 {
+    /** @var Handler|MockObject */
     private $handler;
 
     private FrozenClock $clock;

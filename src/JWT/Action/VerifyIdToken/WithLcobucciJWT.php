@@ -146,13 +146,11 @@ final class WithLcobucciJWT implements Handler
 
     private function assertTenantId(JWT\Plain $token, string $tenantId): void
     {
-        $claim = $token->claims()->get('firebase');
+        $claim = (array) $token->claims()->get('firebase', []);
 
-        $tenant = \is_object($claim)
-            ? ($claim->tenant ?? null)
-            : ($claim['tenant'] ?? null);
+        $tenant = $claim['tenant'] ?? null;
 
-        if (!$tenant) {
+        if (!\is_string($tenant)) {
             throw RequiredConstraintsViolated::fromViolations(
                 new ConstraintViolation('The ID token does not contain a tenant identifier')
             );

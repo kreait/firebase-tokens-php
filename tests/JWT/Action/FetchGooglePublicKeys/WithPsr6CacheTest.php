@@ -9,6 +9,7 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr6Cache;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use stdClass;
@@ -18,9 +19,13 @@ use stdClass;
  */
 final class WithPsr6CacheTest extends TestCase
 {
+    /** @var CacheItemPoolInterface|MockObject */
     private $cache;
+
+    /** @var CacheItemInterface|MockObject */
     private $cacheItem;
 
+    /** @var Handler|MockObject */
     private $inner;
 
     private ExpiringKeys $expiringKeys;

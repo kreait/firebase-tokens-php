@@ -6,6 +6,7 @@ namespace Firebase\Auth\Token\Tests;
 
 use Firebase\Auth\Token\HttpKeyStore;
 use OutOfBoundsException;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -15,22 +16,23 @@ class HttpKeyStoreTest extends TestCase
 {
     private HttpKeyStore $store;
 
+    /** @var array<string, string> */
     private static array $liveKeys;
 
-    /** @var CacheInterface */
+    /** @var CacheInterface|MockObject */
     private $cache;
 
     public static function setUpBeforeClass(): void
     {
-        self::$liveKeys = (static function () {
-            $keys = [];
+        $keys = [];
 
-            foreach (HttpKeyStore::KEY_URLS as $url) {
-                $keys[] = \json_decode(\file_get_contents($url), true);
+        foreach (HttpKeyStore::KEY_URLS as $url) {
+            foreach ((array) \json_decode((string) \file_get_contents($url), true) as $keyId => $key) {
+                $keys[$keyId] = $key;
             }
+        }
 
-            return \array_merge(...$keys);
-        })();
+        self::$liveKeys = $keys;
     }
 
     protected function setUp(): void

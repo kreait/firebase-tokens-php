@@ -9,8 +9,14 @@ use OutOfBoundsException;
 
 class ArrayKeyStore implements KeyStore
 {
+    /**
+     * @var array<string, string>
+     */
     private array $keys;
 
+    /**
+     * @param array<string, string> $keys
+     */
     public function __construct(array $keys)
     {
         $this->keys = $keys;
