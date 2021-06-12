@@ -1,6 +1,0 @@
-parameters:
-	ignoreErrors:
-		- '#Access to an undefined property object#'
-
-includes:
-	- vendor/phpstan/phpstan-phpunit/extension.neon

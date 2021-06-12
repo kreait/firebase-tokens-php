@@ -1,9 +1,11 @@
 /build
 /vendor
 
-/.php_cs.cache
+/.php-cs-fixer*
+!/.php-cs-fixer.dist.php
 /.phpunit.result.cache
 /composer.lock
+/phpstan.neon
 /phpunit.xml
 
 /tests/credentials.json

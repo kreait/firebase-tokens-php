@@ -1,0 +1,10 @@
+parameters:
+	level: max
+	paths:
+		- src/
+		- tests/
+
+	checkUninitializedProperties: true
+
+includes:
+	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
