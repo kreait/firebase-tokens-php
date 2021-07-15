@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.16.0 - 2021-07-15
 
 - Un-deprecated `Firebase\Auth\Token\Domain\Generator`, `Firebase\Auth\Token\Domain\Verifier` and
   `\Firebase\Auth\Token\Domain\KeyStore`
