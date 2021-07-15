@@ -6,6 +6,7 @@
   `\Firebase\Auth\Token\Domain\KeyStore`
 - Dropped support for unsupported PHP versions. Starting with this release, supported versions 
   are PHP ^7.4 and PHP ^8.0.
+- Allowed usage of `psr/cache` `^2.0|^3.0`
 
 ## 1.15.0 - 2021-04-19
 
