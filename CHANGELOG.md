@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Unreleased
+
+Update [lcobucci/jwt](https://github.com/lcobucci/jwt) version constraint to `^3.4.6|^4.0.4|^4.1.5` to prevent misuse
+of the `LocalFileReference` key.
+
+More info: [GHSA-7322-jrq4-x5hf](https://github.com/lcobucci/jwt/security/advisories/GHSA-7322-jrq4-x5hf)
+
 ## 1.16.0 - 2021-07-15
 
 - Un-deprecated `Firebase\Auth\Token\Domain\Generator`, `Firebase\Auth\Token\Domain\Verifier` and
