@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.16.1 - 2021-10-03
 
 Update [lcobucci/jwt](https://github.com/lcobucci/jwt) version constraint to `^3.4.6|^4.0.4|^4.1.5` to prevent misuse
 of the `LocalFileReference` key.
