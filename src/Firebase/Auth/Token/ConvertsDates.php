@@ -13,18 +13,10 @@ trait ConvertsDates
 {
     protected function convertExpiryDate(DateTimeInterface $date): DateTimeImmutable
     {
-        if ($date instanceof DateTimeImmutable) {
-            return $date;
-        }
-
         if ($date instanceof DateTime) {
-            return DateTimeImmutable::createFromMutable($date);
+            $date = DateTimeImmutable::createFromMutable($date);
         }
 
-        if ($result = DateTimeImmutable::createFromFormat('U.u', $date->format('U.u'))) {
-            return $result;
-        }
-
-        return (new DateTimeImmutable())->add(new DateInterval('PT1H'));
+        return $date;
     }
 }
