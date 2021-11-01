@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Firebase\Auth\Token\Tests;
 
-use DateTimeImmutable;
-use Firebase\Auth\Token\Domain;
-use Firebase\Auth\Token\Generator;
+use Firebase\Auth\Token\Domain\Generator;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Plain;
+use RuntimeException;
 
 /**
  * @internal
  */
 abstract class GeneratorTestCase extends TestCase
 {
-    protected Domain\Generator $generator;
+    protected Generator $generator;
 
     protected function setUp(): void
     {
-        $this->generator = new class implements Domain\Generator {
+        $this->generator = new class() implements Generator {
             public function createCustomToken($uid, array $claims = []): Token
             {
-                throw new \RuntimeException("Generator has not been set up");
+                throw new RuntimeException('Generator has not been set up');
             }
         };
     }
@@ -30,7 +30,7 @@ abstract class GeneratorTestCase extends TestCase
     {
         $token = $this->generator->createCustomToken($uid = 'some-uid', $claims = ['some' => 'claim']);
 
-        $this->assertInstanceOf(Token\Plain::class, $token);
+        $this->assertInstanceOf(Plain::class, $token);
         $this->assertSame($uid, $token->claims()->get('uid'));
         $this->assertEqualsCanonicalizing($claims, $token->claims()->get('claims'));
     }
@@ -38,7 +38,7 @@ abstract class GeneratorTestCase extends TestCase
     public function testCreateCustomTokenWithEmptyClaims(): void
     {
         $token = $this->generator->createCustomToken('some-uid');
-        $this->assertInstanceOf(Token\Plain::class, $token);
+        $this->assertInstanceOf(Plain::class, $token);
 
         $this->assertSame('some-uid', $token->claims()->get('uid'));
         $this->assertNull($token->claims()->get('claims'));
@@ -49,8 +49,8 @@ abstract class GeneratorTestCase extends TestCase
         $token1 = $this->generator->createCustomToken('first', ['admin' => true]);
         $token2 = $this->generator->createCustomToken('second');
 
-        $this->assertInstanceOf(Token\Plain::class, $token1);
-        $this->assertInstanceOf(Token\Plain::class, $token2);
+        $this->assertInstanceOf(Plain::class, $token1);
+        $this->assertInstanceOf(Plain::class, $token2);
 
         $this->assertSame(['admin' => true], $token1->claims()->get('claims'));
         $this->assertSame([], $token2->claims()->get('claims', []));

@@ -9,13 +9,9 @@ use DateTimeInterface;
 
 trait ExpirableTrait
 {
-    /** @var DateTimeImmutable */
-    private $expirationTime;
+    private \DateTimeImmutable $expirationTime;
 
-    /**
-     * @return static
-     */
-    public function withExpirationTime(DateTimeImmutable $expirationTime)
+    public function withExpirationTime(DateTimeImmutable $expirationTime): self
     {
         $expirable = clone $this;
         $expirable->expirationTime = $expirationTime;

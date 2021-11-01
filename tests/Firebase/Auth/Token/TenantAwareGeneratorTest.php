@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Firebase\Auth\Token\Tests;
 
-use Firebase\Auth\Token\Domain;
 use Firebase\Auth\Token\TenantAwareGenerator;
 use Lcobucci\JWT\Token\Plain;
 
 /**
  * @internal
+ *
  * @property TenantAwareGenerator $generator
  */
 class TenantAwareGeneratorTest extends GeneratorTestCase

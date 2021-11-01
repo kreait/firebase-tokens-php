@@ -6,10 +6,11 @@ namespace Firebase\Auth\Token\Tests;
 
 use DateTimeImmutable;
 use Firebase\Auth\Token\Generator;
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Plain;
 
 /**
  * @internal
+ *
  * @property Generator $generator
  */
 class GeneratorTest extends GeneratorTestCase
@@ -26,7 +27,7 @@ class GeneratorTest extends GeneratorTestCase
         $expiresAt = (new DateTimeImmutable())->modify(\random_int(1, 3600).' minutes');
 
         $token = $this->generator->createCustomToken('some-uid', [], $expiresAt);
-        $this->assertInstanceOf(Token\Plain::class, $token);
+        $this->assertInstanceOf(Plain::class, $token);
 
         $this->assertSame($expiresAt->getTimestamp(), $token->claims()->get('exp')->getTimestamp());
     }

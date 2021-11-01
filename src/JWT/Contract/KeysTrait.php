@@ -7,7 +7,7 @@ namespace Kreait\Firebase\JWT\Contract;
 trait KeysTrait
 {
     /** @var array<string, string> */
-    private $values = [];
+    private array $values = [];
 
     /**
      * @return array<string, string>
