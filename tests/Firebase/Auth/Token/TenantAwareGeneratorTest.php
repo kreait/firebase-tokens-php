@@ -10,12 +10,10 @@ use Lcobucci\JWT\Token\Plain;
 
 /**
  * @internal
+ * @property TenantAwareGenerator $generator
  */
-class TenantAwareGeneratorTest extends GeneratorTest
+class TenantAwareGeneratorTest extends GeneratorTestCase
 {
-    /** @var TenantAwareGenerator */
-    protected Domain\Generator $generator;
-
     protected string $tenantId;
 
     protected function setUp(): void
