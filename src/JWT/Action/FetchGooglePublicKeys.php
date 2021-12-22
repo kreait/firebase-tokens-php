@@ -20,7 +20,7 @@ final class FetchGooglePublicKeys
     public const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
 
     /** @var array<int, string> */
-    private $urls;
+    private array $urls;
 
     private Duration $fallbackCacheDuration;
 

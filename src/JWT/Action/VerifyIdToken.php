@@ -10,8 +10,7 @@ final class VerifyIdToken
 {
     private string $token = '';
 
-    /** @var int */
-    private $leewayInSeconds = 0;
+    private int $leewayInSeconds = 0;
 
     private ?string $expectedTenantId = null;
 

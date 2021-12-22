@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Core\Configuration\Option;
+use Rector\Core\ValueObject\PhpVersion;
 use Rector\Php74\Rector\Property\TypedPropertyRector;
 use Rector\PostRector\Rector\NameImportingPostRector;
 use Rector\Set\ValueObject\SetList;
@@ -16,6 +17,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         __DIR__.'/src',
         __DIR__.'/tests',
     ]);
+    $parameters->set(Option::PHP_VERSION_FEATURES, PhpVersion::PHP_74);
     $parameters->set(Option::AUTO_IMPORT_NAMES, true);
 
     // Define what rule sets will be applied
