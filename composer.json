@@ -42,13 +42,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Kreait\\Firebase\\JWT\\":"src/JWT",
-            "Firebase\\Auth\\Token\\": "src/Firebase/Auth/Token"
+            "Kreait\\Firebase\\JWT\\":"src/JWT"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Firebase\\Auth\\Token\\Tests\\": "tests/Firebase/Auth/Token",
             "Kreait\\Firebase\\JWT\\Tests\\": "tests/JWT"
         }
     },
