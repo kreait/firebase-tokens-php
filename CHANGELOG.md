@@ -5,6 +5,7 @@ After updating, please refer to the [Migration Documentation](MIGRATE-1.x-to-2.0
 
 * Removed `Firebase\Auth` namespace
 * Ensured compatibility with PHP 8.1 by adding it to the test matrix.
+* Dropped support for `lcobucci/jwt` <4.1
 
 ## 1.16.1 - 2021-10-03
 

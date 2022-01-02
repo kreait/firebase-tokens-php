@@ -5,28 +5,6 @@ updating to 1.9 first so that you can benefit from deprecation notices in your I
 
 ## Dependencies
 
-### JWT handling
-
-[`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt) has been removed as the default JWT library.
-If you don't already have it in your project's dependencies, add it with `composer require lcobucci/jwt:^3.2` 
-or by adding it directly to the `composer.json` file in your project's root directory:
-
-```json
-{
-  "require": {
-      "kreait/firebase-tokens": "^2.0",
-      "lcobucci/jwt": "^3.2"
-  }
-}
-```
-
-The following JWT libraries are currently supported out of the box:
-* [`lcobucci/jwt`](https://github.com/lcobucci/jwt)
-* [`firebase/php-jwt`](https://github.com/firebase/php-jwt)
-
-If you already have one of the supported JWT libraries present in your project, you can remove the previous
-`lcobucci/jwt` dependency.
-
 ### HTTP handling
 
 [guzzlehttp/guzzle](https://packagist.org/packages/guzzlehttp/guzzle) has been removed as the default HTTP handler. 
