@@ -10,14 +10,14 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
-use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle6;
+use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 
 /**
  * @internal
  */
-final class WithGuzzle6Test extends TestCase
+final class WithGuzzleTest extends TestCase
 {
     private MockHandler $mockHandler;
 
@@ -30,7 +30,7 @@ final class WithGuzzle6Test extends TestCase
 
     protected function createHandler(): Handler
     {
-        return new WithGuzzle6(new Client(['handler' => $this->mockHandler]), $this->clock);
+        return new WithGuzzle(new Client(['handler' => $this->mockHandler]), $this->clock);
     }
 
     public function testItReturnsKeys(): void

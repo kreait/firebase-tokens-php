@@ -13,7 +13,7 @@ use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 
-final class WithGuzzle6 implements Handler
+final class WithGuzzle implements Handler
 {
     private ClientInterface $client;
 

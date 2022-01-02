@@ -32,7 +32,7 @@ final class WithHandlerDiscovery implements Handler
         }
 
         if (\interface_exists(ClientInterface::class)) {
-            return new WithGuzzle6(new Client(['http_errors' => false]), $clock);
+            return new WithGuzzle(new Client(['http_errors' => false]), $clock);
         }
 
         throw DiscoveryFailed::noHttpLibraryFound();

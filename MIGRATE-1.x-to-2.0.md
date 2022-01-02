@@ -1,24 +1,7 @@
-# Migrating from from 1.x to 2.x
+# Migrating from 1.x to 2.x
 
 This guide will help you migrating from a 1.x to a 2.x version. If you are updating from a <1.9 version, consider
 updating to 1.9 first so that you can benefit from deprecation notices in your IDE.
-
-## Dependencies
-
-### HTTP handling
-
-[guzzlehttp/guzzle](https://packagist.org/packages/guzzlehttp/guzzle) has been removed as the default HTTP handler. 
-If you don't already have it in your project's dependencies, add it with `composer require guzzlehttp/guzzle:^6.2.1` 
-or by adding it directly to the `composer.json` file in your project's root directory:
-
-```json
-{
-  "require": {
-      "kreait/firebase-tokens": "^2.0",
-      "guzzlehttp/guzzle": "^6.2.1"
-  }
-}
-```
 
 ## Changed return values
 
