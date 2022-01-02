@@ -15,17 +15,14 @@ final class FetchGooglePublicKeysTest extends TestCase
 {
     public function testItsUrlPointsToGoogle(): void
     {
-        $this->assertSame(
-            'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
-            FetchGooglePublicKeys::fromGoogle()->url()
-        );
+        $this->assertNotEmpty(FetchGooglePublicKeys::fromGoogle()->urls());
     }
 
     public function testItsUrlCanBeChanged(): void
     {
         $this->assertSame(
-            'https://domain.tld',
-            FetchGooglePublicKeys::fromUrl('https://domain.tld')->url()
+            ['https://domain.tld'],
+            FetchGooglePublicKeys::fromUrl('https://domain.tld')->urls()
         );
     }
 
