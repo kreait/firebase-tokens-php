@@ -1,6 +1,6 @@
 # Migrating from 1.x to 2.x
 
-This guide will help you migrating from a 1.x to a 2.x version. If you are updating from a <1.9 version, consider
+This guide will help you to miograte from a 1.x to a 2.x version. If you are updating from a <1.9 version, consider
 updating to 1.9 first so that you can benefit from deprecation notices in your IDE.
 
 ## Changed return values
@@ -36,7 +36,7 @@ use Firebase\Auth\Token\Generator;
 
 $generator = new Generator($clientEmail, $privateKey);
 $token = $generator->createCustomToken($uid, $claims);
-// Returns an instance of Lcobucci\JWT\Token instance
+// Returns an instance of Lcobucci\JWT\Token
 ``` 
 
 #### 2.0 usage

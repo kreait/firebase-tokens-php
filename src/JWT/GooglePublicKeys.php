@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT;
 
+use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle;
+use GuzzleHttp\Client;
 use Kreait\Clock;
 use Kreait\Clock\SystemClock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
-use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithHandlerDiscovery;
 use Kreait\Firebase\JWT\Contract\Expirable;
 use Kreait\Firebase\JWT\Contract\Keys;
 
@@ -23,7 +24,7 @@ final class GooglePublicKeys implements Keys
     public function __construct(Handler $handler = null, Clock $clock = null)
     {
         $this->clock = $clock ?: new SystemClock();
-        $this->handler = $handler ?: new WithHandlerDiscovery($this->clock);
+        $this->handler = $handler ?: new WithGuzzle(new Client(['http_errors' => false]), $this->clock);
     }
 
     public function all(): array

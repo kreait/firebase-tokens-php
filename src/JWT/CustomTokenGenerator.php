@@ -8,7 +8,7 @@ use DateInterval;
 use Kreait\Clock\SystemClock;
 use Kreait\Firebase\JWT\Action\CreateCustomToken;
 use Kreait\Firebase\JWT\Action\CreateCustomToken\Handler;
-use Kreait\Firebase\JWT\Action\CreateCustomToken\WithHandlerDiscovery;
+use Kreait\Firebase\JWT\Action\CreateCustomToken\WithLcobucciJWT;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
 use Kreait\Firebase\JWT\Value\Duration;
@@ -26,7 +26,7 @@ final class CustomTokenGenerator
 
     public static function withClientEmailAndPrivateKey(string $clientEmail, string $privateKey): self
     {
-        $handler = new WithHandlerDiscovery($clientEmail, $privateKey, new SystemClock());
+        $handler = new WithLcobucciJWT($clientEmail, $privateKey, new SystemClock());
 
         return new self($handler);
     }
