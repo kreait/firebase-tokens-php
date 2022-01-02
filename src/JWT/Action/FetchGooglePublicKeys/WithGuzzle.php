@@ -7,19 +7,19 @@ namespace Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
-use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
+use Psr\Clock\ClockInterface;
 
 final class WithGuzzle implements Handler
 {
     private ClientInterface $client;
 
-    private Clock $clock;
+    private ClockInterface $clock;
 
-    public function __construct(ClientInterface $client, Clock $clock)
+    public function __construct(ClientInterface $client, ClockInterface $clock)
     {
         $this->client = $client;
         $this->clock = $clock;

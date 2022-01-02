@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT;
 
+use Beste\Clock\SystemClock;
 use DateInterval;
-use Kreait\Clock\SystemClock;
 use Kreait\Firebase\JWT\Action\CreateCustomToken;
 use Kreait\Firebase\JWT\Action\CreateCustomToken\Handler;
 use Kreait\Firebase\JWT\Action\CreateCustomToken\WithLcobucciJWT;
@@ -26,7 +26,7 @@ final class CustomTokenGenerator
 
     public static function withClientEmailAndPrivateKey(string $clientEmail, string $privateKey): self
     {
-        $handler = new WithLcobucciJWT($clientEmail, $privateKey, new SystemClock());
+        $handler = new WithLcobucciJWT($clientEmail, $privateKey, SystemClock::create());
 
         return new self($handler);
     }

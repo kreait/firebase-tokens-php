@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests\Action\CreateCustomToken;
 
+use Beste\Clock\FrozenClock;
 use DateTimeImmutable;
-use Kreait\Clock\FrozenClock;
 use Kreait\Firebase\JWT\Action\CreateCustomToken;
 use Kreait\Firebase\JWT\Action\CreateCustomToken\Handler;
 use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
@@ -28,7 +28,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $now = new DateTimeImmutable();
         $now = $now->setTimestamp($now->getTimestamp()); // Trim microseconds, just to be sure
 
-        self::$clock = new FrozenClock($now);
+        self::$clock = FrozenClock::at($now);
         $this->handler = static::createHandler();
     }
 

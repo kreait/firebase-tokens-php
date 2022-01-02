@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Cache;
 
+use Beste\Clock\SystemClock;
 use DateInterval;
-use Kreait\Clock;
-use Kreait\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 
 final class InMemoryCache implements CacheInterface
@@ -14,21 +14,21 @@ final class InMemoryCache implements CacheInterface
     /** @var array<string, mixed> */
     private array $items = [];
 
-    private Clock $clock;
+    private ClockInterface $clock;
 
-    private function __construct()
+    private function __construct(ClockInterface $clock)
     {
-        $this->clock = new SystemClock();
+        $this->clock = $clock;
     }
 
-    public static function createEmpty(): self
+    public static function createEmpty(?ClockInterface $clock = null): self
     {
-        return new self();
+        return new self($clock ?: SystemClock::create());
     }
 
-    public function withClock(Clock $clock): self
+    public function withClock(ClockInterface $clock): self
     {
-        $cache = new self();
+        $cache = clone $this;
         $cache->clock = $clock;
 
         return $cache;

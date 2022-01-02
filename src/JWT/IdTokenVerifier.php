@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT;
 
+use Beste\Clock\SystemClock;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
-use Kreait\Clock\SystemClock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr16SimpleCache;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr6Cache;
@@ -40,7 +40,7 @@ final class IdTokenVerifier
      */
     public static function createWithProjectIdAndCache(string $projectId, $cache): self
     {
-        $clock = new SystemClock();
+        $clock = SystemClock::create();
         $keyHandler = new WithGuzzle(new Client(['http_errors' => false]), $clock);
 
         $keyHandler = $cache instanceof CacheInterface

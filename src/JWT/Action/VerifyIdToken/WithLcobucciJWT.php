@@ -7,7 +7,6 @@ namespace Kreait\Firebase\JWT\Action\VerifyIdToken;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
@@ -24,6 +23,7 @@ use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
+use Psr\Clock\ClockInterface;
 use Throwable;
 
 final class WithLcobucciJWT implements Handler
@@ -32,11 +32,11 @@ final class WithLcobucciJWT implements Handler
 
     private Keys $keys;
 
-    private Clock $clock;
+    private ClockInterface $clock;
 
     private Configuration $config;
 
-    public function __construct(string $projectId, Keys $keys, Clock $clock)
+    public function __construct(string $projectId, Keys $keys, ClockInterface $clock)
     {
         $this->projectId = $projectId;
         $this->keys = $keys;

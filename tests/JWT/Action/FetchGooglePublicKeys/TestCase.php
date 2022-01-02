@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests\Action\FetchGooglePublicKeys;
 
+use Beste\Clock\FrozenClock;
 use DateTimeImmutable;
-use Kreait\Clock\FrozenClock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 
@@ -24,7 +24,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $now = new DateTimeImmutable();
         $now = $now->setTimestamp($now->getTimestamp()); // Trim microseconds, just to be sure
-        $this->clock = new FrozenClock($now);
+        $this->clock = FrozenClock::at($now);
 
         $this->action = FetchGooglePublicKeys::fromUrl('bogus');
     }

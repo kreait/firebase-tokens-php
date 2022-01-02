@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 
-use Kreait\Clock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Contract\Expirable;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
+use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 
 final class WithPsr16SimpleCache implements Handler
@@ -17,9 +17,9 @@ final class WithPsr16SimpleCache implements Handler
 
     private CacheInterface $cache;
 
-    private Clock $clock;
+    private ClockInterface $clock;
 
-    public function __construct(Handler $handler, CacheInterface $cache, Clock $clock)
+    public function __construct(Handler $handler, CacheInterface $cache, ClockInterface $clock)
     {
         $this->handler = $handler;
         $this->cache = $cache;

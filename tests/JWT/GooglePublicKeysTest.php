@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests;
 
+use Beste\Clock\FrozenClock;
 use DateInterval;
 use DateTimeImmutable;
-use Kreait\Clock\FrozenClock;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\GooglePublicKeys;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
@@ -35,7 +35,7 @@ final class GooglePublicKeysTest extends TestCase
         $now = new DateTimeImmutable();
         $now = $now->setTimestamp($now->getTimestamp()); // Trim microseconds, just to be sure
 
-        $this->clock = new FrozenClock($now);
+        $this->clock = FrozenClock::at($now);
         $this->handler = $this->createMock(Handler::class);
 
         $this->expiringResult = ExpiringKeys::withValuesAndExpirationTime(['ir' => 'relevant'], $this->clock->now()->modify('+1 hour'));

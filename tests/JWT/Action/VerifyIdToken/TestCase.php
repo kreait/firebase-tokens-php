@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests\Action\VerifyIdToken;
 
+use Beste\Clock\FrozenClock;
 use DateTimeImmutable;
-use Kreait\Clock\FrozenClock;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
@@ -34,7 +34,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $now = new DateTimeImmutable();
         $now = $now->setTimestamp($now->getTimestamp()); // Trim microseconds, just to be sure
 
-        $this->clock = new FrozenClock($now);
+        $this->clock = FrozenClock::at($now);
 
         $this->keys = StaticKeys::withValues(['kid' => KeyPair::publicKey(), 'invalid' => 'invalid']);
         $this->idToken = new IdToken($this->clock);

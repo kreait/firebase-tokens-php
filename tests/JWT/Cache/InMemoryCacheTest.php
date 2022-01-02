@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests\Cache;
 
+use Beste\Clock\FrozenClock;
 use DateInterval;
-use DateTimeImmutable;
-use Kreait\Clock\FrozenClock;
 use Kreait\Firebase\JWT\Cache\InMemoryCache;
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +22,7 @@ final class InMemoryCacheTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->clock = new FrozenClock(new DateTimeImmutable());
+        $this->clock = FrozenClock::fromUTC();
         $this->cache = InMemoryCache::createEmpty()->withClock($this->clock);
         $this->ttl = 10;
     }

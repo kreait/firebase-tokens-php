@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests\Util;
 
+use Beste\Clock\SystemClock;
 use Firebase\JWT\JWT;
-use Kreait\Clock;
-use Kreait\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 
 /**
  * @internal
  */
 final class IdToken
 {
-    private Clock $clock;
+    private ClockInterface $clock;
 
     /** @var array<string, string> */
     private array $headers = ['typ' => 'JWT', 'alg' => 'RS256', 'kid' => 'kid'];
@@ -29,9 +29,9 @@ final class IdToken
 
     private ?string $privateKey;
 
-    public function __construct(Clock $clock = null)
+    public function __construct(?ClockInterface $clock = null)
     {
-        $this->clock = $clock ?: new SystemClock();
+        $this->clock = $clock ?: SystemClock::create();
         $this->payload = $this->defaultPayload();
         $this->privateKey = KeyPair::privateKey();
     }
