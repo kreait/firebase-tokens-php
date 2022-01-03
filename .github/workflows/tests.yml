@@ -24,25 +24,17 @@ jobs:
                   php-version: ${{ matrix.php }}
                   coverage: none
 
+            - name: Install dependencies
+              uses: "ramsey/composer-install@v2"
+
             - name: Setup problem matchers for PHP
               run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
 
-            - name: Get composer cache directory
-              id: composercache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-            - name: Cache dependencies
-              uses: actions/cache@v2
-              with:
-                  path: ${{ steps.composercache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-                  restore-keys: ${{ runner.os }}-composer-
-
-            - name: Install dependencies
-              run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
-
             - name: Setup Problem Matchers for PHPUnit
               run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+            - name: Run PHPStan
+              run: vendor/bin/phpstan
 
             - name: Run PHPUnit
               run: vendor/bin/phpunit
