@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 2.0.1 - 2022-01-03
 
 Fixed failing ID token verification when the `nbf` claim is not present.
 
