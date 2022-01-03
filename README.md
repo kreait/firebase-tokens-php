@@ -184,9 +184,9 @@ Here's an example using the [Symfony Cache Component](https://symfony.com/doc/cu
 
 ```php
 use Kreait\Firebase\JWT\IdTokenVerifier;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
-$cache = new FilesystemCache();
+$cache = new FilesystemAdapter();
 
 $verifier = IdTokenVerifier::createWithProjectIdAndCache($projectId, $cache);
 ```
