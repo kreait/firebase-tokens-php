@@ -18,9 +18,9 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
-use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 use Psr\Clock\ClockInterface;
@@ -67,7 +67,7 @@ final class WithLcobucciJWT implements Handler
         try {
             $this->config->validator()->assert(
                 $token,
-                new StrictValidAt($clock, $leeway),
+                new LooseValidAt($clock, $leeway),
                 new IssuedBy(...["https://securetoken.google.com/{$this->projectId}"]),
                 new PermittedFor($this->projectId),
                 new SignedWith(

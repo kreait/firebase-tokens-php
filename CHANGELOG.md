@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+Fixed failing ID token verification when the `nbf` claim is not present.
+
 ## 2.0.0 - 2022-01-03
 
 After updating, please refer to the [Migration Documentation](MIGRATE-1.x-to-2.0.md) to be ready for the 2.0 release of this library.

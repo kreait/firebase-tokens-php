@@ -190,4 +190,15 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken)->withExpectedTenantId('a-tenant'));
     }
+
+    public function testItVerifiesTheNbfClaimIfAvailable(): void
+    {
+        $extra = [
+            'nbf' => $this->clock->now()->getTimestamp() + 10,
+        ];
+
+        $this->expectException(IdTokenVerificationFailed::class);
+        $this->expectExceptionMessageMatches('/yet/');
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->build($extra)));
+    }
 }

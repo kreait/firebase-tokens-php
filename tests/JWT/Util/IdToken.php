@@ -79,7 +79,10 @@ final class IdToken
         return $builder;
     }
 
-    public function build(): string
+    /**
+     * @param array<string, scalar> $extra
+     */
+    public function build(array $extra = []): string
     {
         $now = $this->clock->now();
 
@@ -93,7 +96,10 @@ final class IdToken
         $payload['iat'] = $payload['iat'] ?? $now->getTimestamp();
         $payload['auth_time'] = $payload['auth_time'] ?? ($now->getTimestamp() - 1);
         $payload['exp'] = $payload['exp'] ?? ($now->getTimestamp() + 3600); // 1 hour
-        $payload['nbf'] = $payload['nbf'] ?? ($now->getTimestamp() - 10);
+
+        foreach ($extra as $key => $value) {
+            $payload[$key] = $value;
+        }
 
         foreach ($this->claimsToDelete as $claim) {
             unset($payload[$claim]);
