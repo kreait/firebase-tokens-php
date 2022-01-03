@@ -7,6 +7,7 @@ After updating, please refer to the [Migration Documentation](MIGRATE-1.x-to-2.0
 * Ensured compatibility with PHP 8.1 by adding it to the test matrix.
 * Dropped support for `lcobucci/jwt` <4.1
 * Dropped support for `guzzlehttp/guzzle` <7.0
+* Dropped direct support for `psr/simple-cache`
 
 ## 1.16.1 - 2021-10-03
 
