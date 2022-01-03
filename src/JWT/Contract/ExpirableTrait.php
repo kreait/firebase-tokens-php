@@ -9,7 +9,7 @@ use DateTimeInterface;
 
 trait ExpirableTrait
 {
-    private \DateTimeImmutable $expirationTime;
+    private DateTimeImmutable $expirationTime;
 
     public function withExpirationTime(DateTimeImmutable $expirationTime): self
     {

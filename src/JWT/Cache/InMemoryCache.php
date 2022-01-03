@@ -9,6 +9,9 @@ use DateInterval;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 
+/**
+ * @internal
+ */
 final class InMemoryCache implements CacheInterface
 {
     /** @var array<string, mixed> */
@@ -39,7 +42,7 @@ final class InMemoryCache implements CacheInterface
         $now = $this->clock->now();
 
         if ($item = $this->items[$key] ?? null) {
-            list($expiresAt, $value) = $item;
+            [$expiresAt, $value] = $item;
 
             if (!$expiresAt || $expiresAt > $now) {
                 return $value;
@@ -95,7 +98,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @return array<string, mixed>
      */
-    public function getMultiple($keys, $default = null)
+    public function getMultiple($keys, $default = null): array
     {
         $result = [];
 
@@ -107,7 +110,7 @@ final class InMemoryCache implements CacheInterface
     }
 
     /**
-     * @param iterable<mixed> $values
+     * @param iterable<string, mixed> $values
      * @param int|DateInterval|null $ttl
      */
     public function setMultiple($values, $ttl = null): bool

@@ -26,6 +26,9 @@ use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 use Psr\Clock\ClockInterface;
 use Throwable;
 
+/**
+ * @internal
+ */
 final class WithLcobucciJWT implements Handler
 {
     private string $projectId;
@@ -62,12 +65,16 @@ final class WithLcobucciJWT implements Handler
         $errors = [];
 
         try {
-            $this->config->validator()->assert($token, ...[
+            $this->config->validator()->assert(
+                $token,
                 new StrictValidAt($clock, $leeway),
                 new IssuedBy(...["https://securetoken.google.com/{$this->projectId}"]),
                 new PermittedFor($this->projectId),
-                new SignedWith($this->config->signer(), InMemory::plainText($key)),
-            ]);
+                new SignedWith(
+                    $this->config->signer(),
+                    InMemory::plainText($key)
+                )
+            );
 
             $this->assertUserAuthedAt($token, $clock->now()->add($leeway));
             if ($tenantId = $action->expectedTenantId()) {

@@ -11,6 +11,9 @@ use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Clock\ClockInterface;
 
+/**
+ * @internal
+ */
 final class WithPsr6Cache implements Handler
 {
     private Handler $handler;
@@ -33,7 +36,7 @@ final class WithPsr6Cache implements Handler
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $cacheItem = $this->cache->getItem($cacheKey);
-        /** @var Keys|null $keys */
+        /** @var Keys|Expirable|null $keys */
         $keys = $cacheItem->get();
 
         // We deliberately don't care if the cache item is expired here, as long as the keys

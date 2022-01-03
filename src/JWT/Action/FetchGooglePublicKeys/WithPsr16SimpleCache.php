@@ -11,6 +11,9 @@ use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 
+/**
+ * @internal
+ */
 final class WithPsr16SimpleCache implements Handler
 {
     private Handler $handler;
@@ -33,14 +36,10 @@ final class WithPsr16SimpleCache implements Handler
         $cacheKey = \md5(\get_class($action));
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        /** @var Keys|null $keys */
+        /** @var Keys|Expirable|null $keys */
         $keys = $this->cache->get($cacheKey);
 
-        if ($keys instanceof Keys && $keys instanceof Expirable && !$keys->isExpiredAt($now)) {
-            return $keys;
-        }
-
-        if ($keys instanceof Keys && !($keys instanceof Expirable)) {
+        if (($keys instanceof Keys) && (!($keys instanceof Expirable) || !$keys->isExpiredAt($now))) {
             return $keys;
         }
 

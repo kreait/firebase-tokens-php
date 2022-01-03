@@ -15,6 +15,9 @@ use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Psr\Clock\ClockInterface;
 use Throwable;
 
+/**
+ * @internal
+ */
 final class WithLcobucciJWT implements Handler
 {
     private string $clientEmail;

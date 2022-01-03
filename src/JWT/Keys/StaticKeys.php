@@ -7,6 +7,9 @@ namespace Kreait\Firebase\JWT\Keys;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\KeysTrait;
 
+/**
+ * @internal
+ */
 final class StaticKeys implements Keys
 {
     use KeysTrait;

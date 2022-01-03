@@ -13,6 +13,9 @@ use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use Psr\Clock\ClockInterface;
 
+/**
+ * @internal
+ */
 final class WithGuzzle implements Handler
 {
     private ClientInterface $client;
@@ -82,7 +85,11 @@ final class WithGuzzle implements Handler
             ? (int) $matches[1]
             : 0;
 
-        $keys = \json_decode((string) $response->getBody(), true);
+        try {
+            $keys = \json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw FetchingGooglePublicKeysFailed::because('Unexpected response: '.$e->getMessage());
+        }
 
         return [
             'keys' => $keys,
