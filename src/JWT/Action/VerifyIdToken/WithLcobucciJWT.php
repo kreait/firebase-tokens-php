@@ -68,7 +68,7 @@ final class WithLcobucciJWT implements Handler
             $this->config->validator()->assert(
                 $token,
                 new LooseValidAt($clock, $leeway),
-                new IssuedBy(...["https://securetoken.google.com/{$this->projectId}"]),
+                new IssuedBy(...["https://securetoken.google.com/{$this->projectId}", "https://session.firebase.google.com/{$this->projectId}"]),
                 new PermittedFor($this->projectId),
                 new SignedWith(
                     $this->config->signer(),
