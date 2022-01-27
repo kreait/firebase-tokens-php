@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.1.0 - 2022-01-28
+
 Added `Kreait\Firebase\JWT\SessionCookieVerifier` that works similarly as the existing ID Token verifier.
 You can find its documentation in the README.
 
