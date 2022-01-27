@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Unreleased
+
+Added `Kreait\Firebase\JWT\SessionCookieVerifier` that works similarly as the existing ID Token verifier.
+You can find its documentation in the README.
+
 ## 2.0.1 - 2022-01-03
 
 Fixed failing ID token verification when the `nbf` claim is not present.
