@@ -12,6 +12,8 @@ final class VerifySessionCookie
 
     private int $leewayInSeconds = 0;
 
+    private ?string $expectedTenantId = null;
+
     private function __construct()
     {
     }
@@ -20,6 +22,14 @@ final class VerifySessionCookie
     {
         $action = new self();
         $action->sessionCookie = $sessionCookie;
+
+        return $action;
+    }
+
+    public function withExpectedTenantId(string $tenantId): self
+    {
+        $action = clone $this;
+        $action->expectedTenantId = $tenantId;
 
         return $action;
     }
@@ -39,6 +49,11 @@ final class VerifySessionCookie
     public function sessionCookie(): string
     {
         return $this->sessionCookie;
+    }
+
+    public function expectedTenantId(): ?string
+    {
+        return $this->expectedTenantId;
     }
 
     public function leewayInSeconds(): int

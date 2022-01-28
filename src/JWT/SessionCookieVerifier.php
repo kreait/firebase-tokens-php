@@ -20,6 +20,8 @@ final class SessionCookieVerifier
 {
     private Handler $handler;
 
+    private ?string $expectedTenantId = null;
+
     public function __construct(Handler $handler)
     {
         $this->handler = $handler;
@@ -49,8 +51,20 @@ final class SessionCookieVerifier
         return new self($handler);
     }
 
+    public function withExpectedTenantId(string $tenantId): self
+    {
+        $generator = clone $this;
+        $generator->expectedTenantId = $tenantId;
+
+        return $generator;
+    }
+
     public function execute(VerifySessionCookie $action): Token
     {
+        if ($this->expectedTenantId) {
+            $action = $action->withExpectedTenantId($this->expectedTenantId);
+        }
+
         return $this->handler->handle($action);
     }
 

@@ -62,4 +62,10 @@ final class SessionCookieVerifierTest extends TestCase
         $this->assertSame('cookie', $this->handler->action->sessionCookie());
         $this->assertSame(1337, $this->handler->action->leewayInSeconds());
     }
+
+    public function testItVerifiesATokenWithAnExpectedTenantId(): void
+    {
+        $this->verifier->withExpectedTenantId('my-tenant')->verifySessionCookie('cookie');
+        $this->assertSame('my-tenant', $this->handler->action->expectedTenantId());
+    }
 }

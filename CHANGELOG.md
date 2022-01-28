@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+Added tenant support to Session Cookie Verification. It doesn't seem to be supported at the moment
+(executing it with a tenant-enabled Firebase project yields an `UNSUPPORTED_TENANT_OPERATION`)
+error, but once it _is_ supported, this library will need no or just minimal updates.
+
+The [Firebase Admin SDK for PHP](https://github.com/kreait/firebase-php) has integration tests 
+checking for this error so that we know early on when it starts working.
+
 ## 2.1.1 - 2022-01-28
 
 Fixed method name `Kreait\Firebase\JWT\SessionCookieVerifier::sessionCookieWithLeeway` to

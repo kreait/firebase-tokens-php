@@ -77,6 +77,10 @@ final class WithLcobucciJWT implements Handler
             );
 
             $this->assertUserAuthedAt($token, $clock->now()->add($leeway));
+
+            if ($tenantId = $action->expectedTenantId()) {
+                $this->assertTenantId($token, $tenantId);
+            }
         } catch (RequiredConstraintsViolated $e) {
             $errors = \array_map(
                 static fn (ConstraintViolation $violation): string => '- '.$violation->getMessage(),
@@ -141,6 +145,25 @@ final class WithLcobucciJWT implements Handler
         if ($now < $authTime) {
             throw RequiredConstraintsViolated::fromViolations(
                 new ConstraintViolation("The token's user must have authenticated in the past")
+            );
+        }
+    }
+
+    private function assertTenantId(UnencryptedToken $token, string $tenantId): void
+    {
+        $claim = (array) $token->claims()->get('firebase', []);
+
+        $tenant = $claim['tenant'] ?? null;
+
+        if (!\is_string($tenant)) {
+            throw RequiredConstraintsViolated::fromViolations(
+                new ConstraintViolation('The ID token does not contain a tenant identifier')
+            );
+        }
+
+        if ($tenant !== $tenantId) {
+            throw RequiredConstraintsViolated::fromViolations(
+                new ConstraintViolation("The token's tenant ID did not match with the expected tenant ID")
             );
         }
     }
