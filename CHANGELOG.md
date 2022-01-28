@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.2.0 - 2022-01-28
+
 Added tenant support to Session Cookie Verification. It doesn't seem to be supported at the moment
 (executing it with a tenant-enabled Firebase project yields an `UNSUPPORTED_TENANT_OPERATION`)
 error, but once it _is_ supported, this library will need no or just minimal updates.
