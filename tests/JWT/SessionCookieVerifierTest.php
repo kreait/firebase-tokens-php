@@ -58,7 +58,7 @@ final class SessionCookieVerifierTest extends TestCase
 
     public function testItVerifiesATokenWithLeeway(): void
     {
-        $this->verifier->sessionCookieWithLeeway('cookie', 1337);
+        $this->verifier->verifySessionCookieWithLeeway('cookie', 1337);
         $this->assertSame('cookie', $this->handler->action->sessionCookie());
         $this->assertSame(1337, $this->handler->action->leewayInSeconds());
     }

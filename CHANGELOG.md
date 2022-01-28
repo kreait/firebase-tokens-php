@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+Fixed method name `Kreait\Firebase\JWT\SessionCookieVerifier::sessionCookieWithLeeway` to
+`Kreait\Firebase\JWT\SessionCookieVerifier::verifySessionCookieWithLeeway` 🤦‍. This is technically
+a breaking change, but since 2.1.0 was released just a few minutes ago, it was most certainly not
+used yet.
+
 ## 2.1.0 - 2022-01-28
 
 Added `Kreait\Firebase\JWT\SessionCookieVerifier` that works similarly as the existing ID Token verifier.

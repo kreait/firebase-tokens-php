@@ -115,7 +115,7 @@ try {
 }
 
 try {
-    $token = $verifier->sessionCookieWithLeeway($sessionCookie, $leewayInSeconds = 10000000);
+    $token = $verifier->verifySessionCookieWithLeeway($sessionCookie, $leewayInSeconds = 10000000);
 } catch (SessionCookieVerificationFailed $e) {
     print $e->getMessage();
     exit;

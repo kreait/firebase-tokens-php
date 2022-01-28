@@ -66,7 +66,7 @@ final class SessionCookieVerifier
      * @throws InvalidArgumentException on invalid leeway
      * @throws SessionCookieVerificationFailed
      */
-    public function sessionCookieWithLeeway(string $sessionCookie, int $leewayInSeconds): Token
+    public function verifySessionCookieWithLeeway(string $sessionCookie, int $leewayInSeconds): Token
     {
         return $this->execute(VerifySessionCookie::withSessionCookie($sessionCookie)->withLeewayInSeconds($leewayInSeconds));
     }
