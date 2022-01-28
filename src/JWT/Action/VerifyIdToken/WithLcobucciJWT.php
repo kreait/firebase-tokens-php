@@ -77,6 +77,7 @@ final class WithLcobucciJWT implements Handler
             );
 
             $this->assertUserAuthedAt($token, $clock->now()->add($leeway));
+
             if ($tenantId = $action->expectedTenantId()) {
                 $this->assertTenantId($token, $tenantId);
             }

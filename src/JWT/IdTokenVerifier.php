@@ -53,10 +53,10 @@ final class IdTokenVerifier
 
     public function withExpectedTenantId(string $tenantId): self
     {
-        $generator = clone $this;
-        $generator->expectedTenantId = $tenantId;
+        $verifier = clone $this;
+        $verifier->expectedTenantId = $tenantId;
 
-        return $generator;
+        return $verifier;
     }
 
     public function execute(VerifyIdToken $action): Token
