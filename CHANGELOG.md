@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.1.1 - 2022-01-28
+
 Fixed method name `Kreait\Firebase\JWT\SessionCookieVerifier::sessionCookieWithLeeway` to
 `Kreait\Firebase\JWT\SessionCookieVerifier::verifySessionCookieWithLeeway` 🤦‍. This is technically
 a breaking change, but since 2.1.0 was released just a few minutes ago, it was most certainly not
