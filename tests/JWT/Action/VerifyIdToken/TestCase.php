@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Kreait\Firebase\JWT\Tests\Action\VerifyIdToken;
 
 use Beste\Clock\FrozenClock;
-use DateTimeImmutable;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
-use Kreait\Firebase\JWT\Tests\Util\IdToken;
 use Kreait\Firebase\JWT\Tests\Util\KeyPair;
+use Kreait\Firebase\JWT\Tests\Util\Token;
 use stdClass;
 
 /**
@@ -25,24 +24,21 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected FrozenClock $clock;
 
-    private IdToken $idToken;
+    private Token $token;
 
     abstract protected function createHandler(): Handler;
 
     final protected function setUp(): void
     {
-        $now = new DateTimeImmutable();
-        $now = $now->setTimestamp($now->getTimestamp()); // Trim microseconds, just to be sure
-
-        $this->clock = FrozenClock::at($now);
+        $this->clock = FrozenClock::fromUTC();
 
         $this->keys = StaticKeys::withValues(['kid' => KeyPair::publicKey(), 'invalid' => 'invalid']);
-        $this->idToken = new IdToken($this->clock);
+        $this->token = new Token($this->clock);
     }
 
     public function testItWorksWhenEverythingIsFine(): void
     {
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->build()));
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken()));
         $this->addToAssertionCount(1);
     }
 
@@ -51,38 +47,38 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->keys = StaticKeys::empty();
 
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->build()));
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken()));
     }
 
     public function testItRejectsAMalformedToken(): void
     {
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken('x'.$this->idToken->build()));
+        $this->createHandler()->handle(VerifyIdToken::withToken('x'.$this->token->idToken()));
     }
 
     public function testItRejectsAnUnsignedToken(): void
     {
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->withoutSignature()->build()));
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withoutSignature()->idToken()));
     }
 
     public function testItRejectsATokenWithoutAKeyId(): void
     {
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->withoutHeader('kid')->build()));
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withoutHeader('kid')->idToken()));
     }
 
     public function testItRejectsATokenWithANonMatchingKeyId(): void
     {
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->withChangedHeader('kid', 'unknown')->build()));
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withChangedHeader('kid', 'unknown')->idToken()));
     }
 
     public function testItRejectsAnExpiredToken(): void
     {
-        $idToken = $this->idToken
-            ->withClaim('exp', $this->clock->now()->getTimestamp() - 1)
-            ->build()
+        $idToken = $this->token
+            ->withClaim('exp', $this->clock->now()->modify('-1 second'))
+            ->idToken()
         ;
 
         $this->expectException(IdTokenVerificationFailed::class);
@@ -91,9 +87,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItAcceptsAnExpiredTokenWithLeeway(): void
     {
-        $idToken = $this->idToken
-            ->withClaim('exp', $this->clock->now()->getTimestamp() - 1)
-            ->build()
+        $idToken = $this->token
+            ->withClaim('exp', $this->clock->now()->modify('-1 second'))
+            ->idToken()
         ;
 
         $action = VerifyIdToken::withToken($idToken)->withLeewayInSeconds(2);
@@ -104,9 +100,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenThatWasIssuedInTheFuture(): void
     {
-        $idToken = $this->idToken
-            ->withClaim('iat', $this->clock->now()->getTimestamp() + 10)
-            ->build()
+        $idToken = $this->token
+            ->withClaim('iat', $this->clock->now()->modify('+10 seconds'))
+            ->idToken()
         ;
 
         $this->expectException(IdTokenVerificationFailed::class);
@@ -115,9 +111,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenThatIsToBeUsedInTheFuture(): void
     {
-        $idToken = $this->idToken
-            ->withClaim('nbf', $this->clock->now()->getTimestamp() + 1)
-            ->build()
+        $idToken = $this->token
+            ->withClaim('nbf', $this->clock->now()->modify('+1 second'))
+            ->idToken()
         ;
 
         $this->expectException(IdTokenVerificationFailed::class);
@@ -126,9 +122,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithoutAnAuthTime(): void
     {
-        $idToken = $this->idToken
+        $idToken = $this->token
             ->withoutClaim('auth_time')
-            ->build()
+            ->idToken()
         ;
 
         $this->expectException(IdTokenVerificationFailed::class);
@@ -137,9 +133,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithAFutureAuthTime(): void
     {
-        $idToken = $this->idToken
-            ->withClaim('auth_time', $this->clock->now()->getTimestamp() + 1)
-            ->build()
+        $idToken = $this->token
+            ->withClaim('auth_time', $this->clock->now()->modify('+1 second'))
+            ->idToken()
         ;
 
         $this->expectException(IdTokenVerificationFailed::class);
@@ -148,7 +144,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithTheWrongAudience(): void
     {
-        $idToken = $this->idToken->withClaim('aud', 'wrong-project-id')->build();
+        $idToken = $this->token->withClaim('aud', 'wrong-project-id')->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
@@ -156,7 +152,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithTheWrongIssuer(): void
     {
-        $idToken = $this->idToken->withClaim('iss', 'wrong')->build();
+        $idToken = $this->token->sessionCookie();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
@@ -166,7 +162,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $firebaseClaim = new stdClass();
         $firebaseClaim->tenant = 'my-tenant';
-        $idToken = $this->idToken->withClaim('firebase', $firebaseClaim)->build();
+        $idToken = $this->token->withClaim('firebase', $firebaseClaim)->idToken();
 
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken)->withExpectedTenantId($firebaseClaim->tenant));
         $this->addToAssertionCount(1);
@@ -176,7 +172,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $firebaseClaim = new stdClass();
         $firebaseClaim->tenant = 'unexpected-tenant';
-        $idToken = $this->idToken->withClaim('firebase', $firebaseClaim)->build();
+        $idToken = $this->token->withClaim('firebase', $firebaseClaim)->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken)->withExpectedTenantId('expected-tenant'));
@@ -185,7 +181,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function testItVerifiesATokenWithoutATenantIdWhenItExpectsOne(): void
     {
         $firebaseClaim = new stdClass();
-        $idToken = $this->idToken->withClaim('firebase', $firebaseClaim)->build();
+        $idToken = $this->token->withClaim('firebase', $firebaseClaim)->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken)->withExpectedTenantId('a-tenant'));
@@ -194,11 +190,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function testItVerifiesTheNbfClaimIfAvailable(): void
     {
         $extra = [
-            'nbf' => $this->clock->now()->getTimestamp() + 10,
+            'nbf' => $this->clock->now()->modify('+10 seconds'),
         ];
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->expectExceptionMessageMatches('/yet/');
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->idToken->build($extra)));
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken($extra)));
     }
 }

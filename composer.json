@@ -25,7 +25,6 @@
         "psr/cache-implementation": "to cache fetched remote public keys"
     },
     "require-dev": {
-        "firebase/php-jwt": "^5.5",
         "friendsofphp/php-cs-fixer": "^3.4",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^1.2",

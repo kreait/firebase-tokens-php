@@ -36,6 +36,7 @@ final class WithPsr6Cache implements Handler
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $cacheItem = $this->cache->getItem($cacheKey);
+
         /** @var Keys|Expirable|null $keys */
         $keys = $cacheItem->get();
 

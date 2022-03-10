@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Removed `firebase/php-jwt` dev dependency and simplified test token generation.
+
 ## 2.2.0 - 2022-01-28
 
 Added tenant support to Session Cookie Verification. It doesn't seem to be supported at the moment

@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace Kreait\Firebase\JWT\Tests\Util;
 
 use Beste\Clock\SystemClock;
-use Firebase\JWT\JWT;
+use Lcobucci\JWT\Encoding\ChainedFormatter;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\None;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Token\Builder;
 use Psr\Clock\ClockInterface;
 
-/**
- * @internal
- */
-final class SessionCookie
+final class Token
 {
+    private const ID_TOKEN_ISSUER = 'https://securetoken.google.com/project-id';
+    private const SESSION_COOKIE_ISSUER = 'https://session.firebase.google.com/project-id';
+
     private ClockInterface $clock;
 
     /** @var array<string, string> */
@@ -80,9 +85,25 @@ final class SessionCookie
     }
 
     /**
+     * @param array<string, mixed> $extra
+     */
+    public function idToken(array $extra = []): string
+    {
+        return $this->build(self::ID_TOKEN_ISSUER, $extra);
+    }
+
+    /**
+     * @param array<string, mixed> $extra
+     */
+    public function sessionCookie(array $extra = []): string
+    {
+        return $this->build(self::SESSION_COOKIE_ISSUER, $extra);
+    }
+
+    /**
      * @param array<string, scalar> $extra
      */
-    public function build(array $extra = []): string
+    private function build(string $issuer, array $extra = []): string
     {
         $now = $this->clock->now();
 
@@ -93,9 +114,10 @@ final class SessionCookie
         }
 
         $payload = $this->payload;
-        $payload['iat'] = $payload['iat'] ?? $now->getTimestamp();
-        $payload['auth_time'] = $payload['auth_time'] ?? ($now->getTimestamp() - 1);
-        $payload['exp'] = $payload['exp'] ?? ($now->getTimestamp() + 3600); // 1 hour
+        $payload['iss'] = $issuer;
+        $payload['iat'] = $payload['iat'] ?? $now;
+        $payload['auth_time'] = $payload['auth_time'] ?? $now->modify('-1 second');
+        $payload['exp'] = $payload['exp'] ?? $now->modify('+1 hour');
 
         foreach ($extra as $key => $value) {
             $payload[$key] = $value;
@@ -114,7 +136,7 @@ final class SessionCookie
     private function defaultPayload(): array
     {
         return [
-            'iss' => 'https://session.firebase.google.com/project-id',
+            'iss' => 'https://securetoken.google.com/project-id',
             'sub' => 'uid',
             'aud' => 'project-id',
         ];
@@ -126,16 +148,59 @@ final class SessionCookie
      */
     private function encode(array $payload, array $headers): string
     {
-        $segments = [];
-        $segments[] = JWT::urlsafeB64Encode(JWT::jsonEncode($headers));
-        $segments[] = JWT::urlsafeB64Encode(JWT::jsonEncode($payload));
-        $signingInput = \implode('.', $segments);
+        $builder = new Builder(new JoseEncoder(), ChainedFormatter::default());
 
-        if ($this->privateKey) {
-            $signature = JWT::sign($signingInput, $this->privateKey, $headers['alg']);
-            $segments[] = JWT::urlsafeB64Encode($signature);
+        foreach ($headers as $name => $value) {
+            $builder = $builder->withHeader($name, $value);
         }
 
-        return \implode('.', $segments);
+        foreach ($payload as $name => $value) {
+            switch ($name) {
+                case 'iss':
+                    $builder = $builder->issuedBy($value);
+
+                    break;
+
+                case 'iat':
+                    $builder = $builder->issuedAt($value);
+
+                    break;
+
+                case 'aud':
+                    $builder = $builder->permittedFor($value);
+
+                    break;
+
+                case 'sub':
+                    $builder = $builder->relatedTo($value);
+
+                    break;
+
+                case 'nbf':
+                    $builder = $builder->canOnlyBeUsedAfter($value);
+
+                    break;
+
+                case 'exp':
+                    $builder = $builder->expiresAt($value);
+
+                    break;
+
+                default:
+                    if ($value instanceof \DateTimeInterface) {
+                        $value = $value->format('U');
+                    }
+
+                    $builder = $builder->withClaim($name, $value);
+
+                    break;
+            }
+        }
+
+        if ($this->privateKey) {
+            return $builder->getToken(new Sha256(), InMemory::plainText($this->privateKey))->toString();
+        }
+
+        return $builder->getToken(new None(), InMemory::empty())->toString();
     }
 }

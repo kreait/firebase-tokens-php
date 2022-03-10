@@ -11,7 +11,7 @@ use Kreait\Firebase\JWT\Action\VerifySessionCookie\Handler;
 use Kreait\Firebase\JWT\Error\SessionCookieVerificationFailed;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
 use Kreait\Firebase\JWT\Tests\Util\KeyPair;
-use Kreait\Firebase\JWT\Tests\Util\SessionCookie;
+use Kreait\Firebase\JWT\Tests\Util\Token;
 
 /**
  * @internal
@@ -24,7 +24,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected FrozenClock $clock;
 
-    private SessionCookie $sessionCookie;
+    private Token $token;
 
     abstract protected function createHandler(): Handler;
 
@@ -36,12 +36,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->clock = FrozenClock::at($now);
 
         $this->keys = StaticKeys::withValues(['kid' => KeyPair::publicKey(), 'invalid' => 'invalid']);
-        $this->sessionCookie = new SessionCookie($this->clock);
+        $this->token = new Token($this->clock);
     }
 
     public function testItWorksWhenEverythingIsFine(): void
     {
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->sessionCookie->build()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->sessionCookie()));
         $this->addToAssertionCount(1);
     }
 
@@ -50,38 +50,38 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->keys = StaticKeys::empty();
 
         $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->sessionCookie->build()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->sessionCookie()));
     }
 
     public function testItRejectsAMalformedToken(): void
     {
         $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie('x'.$this->sessionCookie->build()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie('x'.$this->token->sessionCookie()));
     }
 
     public function testItRejectsAnUnsignedToken(): void
     {
         $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->sessionCookie->withoutSignature()->build()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->withoutSignature()->sessionCookie()));
     }
 
     public function testItRejectsATokenWithoutAKeyId(): void
     {
         $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->sessionCookie->withoutHeader('kid')->build()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->withoutHeader('kid')->sessionCookie()));
     }
 
     public function testItRejectsATokenWithANonMatchingKeyId(): void
     {
         $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->sessionCookie->withChangedHeader('kid', 'unknown')->build()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->withChangedHeader('kid', 'unknown')->sessionCookie()));
     }
 
     public function testItRejectsAnExpiredToken(): void
     {
-        $sessionCookie = $this->sessionCookie
-            ->withClaim('exp', $this->clock->now()->getTimestamp() - 1)
-            ->build()
+        $sessionCookie = $this->token
+            ->withClaim('exp', $this->clock->now()->modify('-1 second'))
+            ->sessionCookie()
         ;
 
         $this->expectException(SessionCookieVerificationFailed::class);
@@ -90,9 +90,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItAcceptsAnExpiredTokenWithLeeway(): void
     {
-        $sessionCookie = $this->sessionCookie
-            ->withClaim('exp', $this->clock->now()->getTimestamp() - 1)
-            ->build()
+        $sessionCookie = $this->token
+            ->withClaim('exp', $this->clock->now()->modify('-1 second'))
+            ->sessionCookie()
         ;
 
         $action = VerifySessionCookie::withSessionCookie($sessionCookie)->withLeewayInSeconds(2);
@@ -103,9 +103,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenThatWasIssuedInTheFuture(): void
     {
-        $sessionCookie = $this->sessionCookie
-            ->withClaim('iat', $this->clock->now()->getTimestamp() + 10)
-            ->build()
+        $sessionCookie = $this->token
+            ->withClaim('iat', $this->clock->now()->modify('+10 seconds'))
+            ->sessionCookie()
         ;
 
         $this->expectException(SessionCookieVerificationFailed::class);
@@ -114,9 +114,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenThatIsToBeUsedInTheFuture(): void
     {
-        $sessionCookie = $this->sessionCookie
-            ->withClaim('nbf', $this->clock->now()->getTimestamp() + 1)
-            ->build()
+        $sessionCookie = $this->token
+            ->withClaim('nbf', $this->clock->now()->modify('+1 second'))
+            ->sessionCookie()
         ;
 
         $this->expectException(SessionCookieVerificationFailed::class);
@@ -125,9 +125,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithoutAnAuthTime(): void
     {
-        $sessionCookie = $this->sessionCookie
+        $sessionCookie = $this->token
             ->withoutClaim('auth_time')
-            ->build()
+            ->sessionCookie()
         ;
 
         $this->expectException(SessionCookieVerificationFailed::class);
@@ -136,9 +136,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithAFutureAuthTime(): void
     {
-        $sessionCookie = $this->sessionCookie
-            ->withClaim('auth_time', $this->clock->now()->getTimestamp() + 1)
-            ->build()
+        $sessionCookie = $this->token
+            ->withClaim('auth_time', $this->clock->now()->modify('+1 second'))
+            ->sessionCookie()
         ;
 
         $this->expectException(SessionCookieVerificationFailed::class);
@@ -147,7 +147,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithTheWrongAudience(): void
     {
-        $sessionCookie = $this->sessionCookie->withClaim('aud', 'wrong-project-id')->build();
+        $sessionCookie = $this->token->withClaim('aud', 'wrong-project-id')->sessionCookie();
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
@@ -155,7 +155,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsATokenWithTheWrongIssuer(): void
     {
-        $sessionCookie = $this->sessionCookie->withClaim('iss', 'wrong')->build();
+        $sessionCookie = $this->token->idToken();
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
@@ -164,11 +164,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function testItVerifiesTheNbfClaimIfAvailable(): void
     {
         $extra = [
-            'nbf' => $this->clock->now()->getTimestamp() + 10,
+            'nbf' => $this->clock->now()->modify('+10 seconds'),
         ];
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->expectExceptionMessageMatches('/yet/');
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->sessionCookie->build($extra)));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->sessionCookie($extra)));
     }
 }
