@@ -11,6 +11,7 @@ use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
 use Kreait\Firebase\JWT\Tests\Util\KeyPair;
 use Kreait\Firebase\JWT\Tests\Util\Token;
+use Kreait\Firebase\JWT\Util;
 use stdClass;
 
 /**
@@ -36,6 +37,18 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->token = new Token($this->clock);
     }
 
+    final protected static function isEmulated(): bool
+    {
+        return Util::authEmulatorHost() !== '';
+    }
+
+    final protected function skipIfEmulated(?string $reason = null): void
+    {
+        if (self::isEmulated()) {
+            $this->markTestSkipped($reason ?? 'Emulated environment');
+        }
+    }
+
     public function testItWorksWhenEverythingIsFine(): void
     {
         $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken()));
@@ -58,18 +71,21 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItRejectsAnUnsignedToken(): void
     {
+        $this->skipIfEmulated();
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withoutSignature()->idToken()));
     }
 
     public function testItRejectsATokenWithoutAKeyId(): void
     {
+        $this->skipIfEmulated();
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withoutHeader('kid')->idToken()));
     }
 
     public function testItRejectsATokenWithANonMatchingKeyId(): void
     {
+        $this->skipIfEmulated();
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withChangedHeader('kid', 'unknown')->idToken()));
     }

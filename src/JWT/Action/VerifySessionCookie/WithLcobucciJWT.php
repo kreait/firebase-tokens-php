@@ -12,10 +12,14 @@ use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\SessionCookieVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
+use Kreait\Firebase\JWT\Util;
 use Lcobucci\Clock\FrozenClock;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\None;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
@@ -23,6 +27,7 @@ use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
+use Lcobucci\JWT\Validation\Validator;
 use Psr\Clock\ClockInterface;
 use Throwable;
 
@@ -32,20 +37,26 @@ use Throwable;
 final class WithLcobucciJWT implements Handler
 {
     private string $projectId;
-
     private Keys $keys;
-
     private ClockInterface $clock;
-
-    private Configuration $config;
+    private Parser $parser;
+    private Signer $signer;
+    private Validator $validator;
 
     public function __construct(string $projectId, Keys $keys, ClockInterface $clock)
     {
         $this->projectId = $projectId;
         $this->keys = $keys;
         $this->clock = $clock;
+        $this->parser = new Parser(new JoseEncoder());
 
-        $this->config = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(''));
+        if (Util::authEmulatorHost() !== '') {
+            $this->signer = new None();
+        } else {
+            $this->signer = new Sha256();
+        }
+
+        $this->validator = new Validator();
     }
 
     public function handle(VerifySessionCookie $action): Token
@@ -53,7 +64,7 @@ final class WithLcobucciJWT implements Handler
         $cookieString = $action->sessionCookie();
 
         try {
-            $token = $this->config->parser()->parse($cookieString);
+            $token = $this->parser->parse($cookieString);
             \assert($token instanceof UnencryptedToken);
         } catch (Throwable $e) {
             throw SessionCookieVerificationFailed::withSessionCookieAndReasons($cookieString, ['The token is invalid', $e->getMessage()]);
@@ -63,18 +74,18 @@ final class WithLcobucciJWT implements Handler
         $clock = new FrozenClock($this->clock->now());
         $leeway = new DateInterval('PT'.$action->leewayInSeconds().'S');
         $errors = [];
+        $constraints = [
+            new LooseValidAt($clock, $leeway),
+            new IssuedBy(...["https://session.firebase.google.com/{$this->projectId}"]),
+            new PermittedFor($this->projectId),
+        ];
+
+        if ($key !== '' && Util::authEmulatorHost() === '') {
+            $constraints[] = new SignedWith($this->signer, InMemory::plainText($key));
+        }
 
         try {
-            $this->config->validator()->assert(
-                $token,
-                new LooseValidAt($clock, $leeway),
-                new IssuedBy(...["https://session.firebase.google.com/{$this->projectId}"]),
-                new PermittedFor($this->projectId),
-                new SignedWith(
-                    $this->config->signer(),
-                    InMemory::plainText($key)
-                )
-            );
+            $this->validator->assert($token, ...$constraints);
 
             $this->assertUserAuthedAt($token, $clock->now()->add($leeway));
 
@@ -122,6 +133,10 @@ final class WithLcobucciJWT implements Handler
 
         if ($key = $keys[$keyId] ?? null) {
             return $key;
+        }
+
+        if ($this->signer instanceof None) {
+            return '';
         }
 
         throw SessionCookieVerificationFailed::withSessionCookieAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this session cookie."]);

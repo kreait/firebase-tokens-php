@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Removed `firebase/php-jwt` dev dependency and simplified test token generation.
+* Added support for verifying tokens returned from the Auth Emulator.
 
 ## 2.2.0 - 2022-01-28
 

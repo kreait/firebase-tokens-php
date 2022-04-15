@@ -54,14 +54,14 @@ final class WithGuzzle implements Handler
 
     /**
      * @return array{
-     *                keys: array<string, string>,
-     *                ttl: int
-     *                }
+     *     keys: array<string, string>,
+     *     ttl: int
+     * }
      */
     private function fetchKeysFromUrl(string $url): array
     {
         try {
-            $response = $this->client->request('GET', $url, [
+            $response = $this->client->request(RequestMethod::METHOD_GET, $url, [
                 'http_errors' => false,
                 'headers' => [
                     'Content-Type' => 'Content-Type: application/json; charset=UTF-8',
@@ -72,15 +72,10 @@ final class WithGuzzle implements Handler
         }
 
         if (($statusCode = $response->getStatusCode()) !== 200) {
-            throw FetchingGooglePublicKeysFailed::because("Unexpected status code {$statusCode}");
+            throw FetchingGooglePublicKeysFailed::because(
+                "Unexpected status code {$statusCode} when trying to fetch public keys from {$url}"
+            );
         }
-
-        $response = $this->client->request(RequestMethod::METHOD_GET, $url, [
-            'http_errors' => false,
-            'headers' => [
-                'Content-Type' => 'Content-Type: application/json; charset=UTF-8',
-            ],
-        ]);
 
         $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)
             ? (int) $matches[1]
