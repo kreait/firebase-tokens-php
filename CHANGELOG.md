@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.0
+
 Implemented forward compatible Clock-Interface
   
 The [stella-maris/clock](https://packagist.org/packages/stella-maris/clock) package provides an interface based on the 
