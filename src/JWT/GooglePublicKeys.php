@@ -11,7 +11,7 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle;
 use Kreait\Firebase\JWT\Contract\Expirable;
 use Kreait\Firebase\JWT\Contract\Keys;
-use Psr\Clock\ClockInterface;
+use StellaMaris\Clock\ClockInterface;
 
 final class GooglePublicKeys implements Keys
 {

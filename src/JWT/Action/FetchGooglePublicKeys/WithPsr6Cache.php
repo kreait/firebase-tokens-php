@@ -9,7 +9,7 @@ use Kreait\Firebase\JWT\Contract\Expirable;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Clock\ClockInterface;
+use StellaMaris\Clock\ClockInterface;
 
 /**
  * @internal
