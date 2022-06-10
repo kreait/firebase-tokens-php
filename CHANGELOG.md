@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Raise minimum version of Guzzle to address [CVE-2022-31042](https://github.com/advisories/GHSA-f2wf-25xc-69c9)
+
 ## 3.0
 
 Implemented forward compatible Clock-Interface
