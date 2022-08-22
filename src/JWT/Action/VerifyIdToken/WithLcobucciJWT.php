@@ -42,7 +42,7 @@ final class WithLcobucciJWT implements Handler
         $this->keys = $keys;
         $this->clock = $clock;
 
-        $this->config = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(''));
+        $this->config = Configuration::forSymmetricSigner(new Sha256(), InMemory::empty());
     }
 
     public function handle(VerifyIdToken $action): Token
