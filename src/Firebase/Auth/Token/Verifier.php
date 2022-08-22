@@ -45,7 +45,7 @@ final class Verifier implements Domain\Verifier
     {
         $this->projectId = $projectId;
         $this->keys = $keys ?? new HttpKeyStore();
-        $this->config = Configuration::forSymmetricSigner($signer ?? new Sha256(), InMemory::plainText(''));
+        $this->config = Configuration::forSymmetricSigner($signer ?? new Sha256(), InMemory::empty());
     }
 
     public function verifyIdToken($token): Token
