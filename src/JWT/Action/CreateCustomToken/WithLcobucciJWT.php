@@ -26,6 +26,10 @@ final class WithLcobucciJWT implements Handler
 
     private Configuration $config;
 
+    /**
+     * @param non-empty-string $clientEmail
+     * @param non-empty-string $privateKey
+     */
     public function __construct(string $clientEmail, string $privateKey, ClockInterface $clock)
     {
         $this->clientEmail = $clientEmail;

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+Ensure (PHPStan) compatibility with `lcobucci/jwt` ^4.2
+
 ## 2.3.0 - 2022-04-16
 
 * Removed `firebase/php-jwt` dev dependency and simplified test token generation.
