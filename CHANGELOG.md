@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 1.17.0 - 2022-08-22
 
 Dropped support for `lcobucci/jwt` 3.x
 
