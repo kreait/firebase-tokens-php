@@ -24,6 +24,10 @@ final class CustomTokenGenerator
         $this->handler = $handler;
     }
 
+    /**
+     * @param non-empty-string $clientEmail
+     * @param non-empty-string $privateKey
+     */
     public static function withClientEmailAndPrivateKey(string $clientEmail, string $privateKey): self
     {
         $handler = new WithLcobucciJWT($clientEmail, $privateKey, SystemClock::create());

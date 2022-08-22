@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Ensured (PHPStan) compatibility with `lcobucci/jwt` ^4.2
+
 ## 3.0.2 - 2022-06-22
 
 * Raised minimum version of Guzzle to address [CVE-2022-31090](https://github.com/advisories/GHSA-25mq-v84q-4j7r)

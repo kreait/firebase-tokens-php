@@ -9,6 +9,9 @@ namespace Kreait\Firebase\JWT\Tests\Util;
  */
 final class KeyPair
 {
+    /**
+     * @return non-empty-string
+     */
     public static function privateKey(): string
     {
         return <<<'PRIVATE_KEY'
@@ -43,6 +46,9 @@ MjWLxp+hp7CV4l+OrM66UL5v
 PRIVATE_KEY;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public static function publicKey(): string
     {
         return <<<'PUBLIC_KEY'
