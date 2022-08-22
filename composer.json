@@ -30,15 +30,15 @@
         "psr/simple-cache-implementation": "to cache fetched remote public keys"
     },
     "require-dev": {
-        "firebase/php-jwt": "^5.3",
-        "friendsofphp/php-cs-fixer": "^3.0",
+        "firebase/php-jwt": "^5.5.1",
+        "friendsofphp/php-cs-fixer": "^3.10",
         "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "^0.12.88",
-        "phpstan/phpstan-phpunit": "^0.12.19",
-        "phpunit/phpunit": "^9.5",
-        "rector/rector": "^0.11.16",
-        "symfony/cache": "^5.3",
-        "symfony/var-dumper": "^5.3"
+        "phpstan/phpstan": "^0.12.99",
+        "phpstan/phpstan-phpunit": "^0.12.22",
+        "phpunit/phpunit": "^9.5.23",
+        "rector/rector": "^0.11.60",
+        "symfony/cache": "^5.4.11",
+        "symfony/var-dumper": "^5.4.11"
     },
     "autoload": {
         "psr-4": {
@@ -53,7 +53,10 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     },
     "funding": [
         {
