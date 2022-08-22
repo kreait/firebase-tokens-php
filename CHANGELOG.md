@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 2.3.1 - 2022-08-22
 
 Ensure (PHPStan) compatibility with `lcobucci/jwt` ^4.2
 
