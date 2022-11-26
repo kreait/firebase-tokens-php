@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         verbose="true"
-         colors="true">
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    beStrictAboutOutputDuringTests="true"
+    cacheResultFile="tools/.phpunit.result.cache"
+    convertDeprecationsToExceptions="true"
+    colors="true"
+>
 
     <testsuites>
         <testsuite name="Firebase JWT Tests">
@@ -10,7 +14,7 @@
         </testsuite>
     </testsuites>
 
-    <coverage processUncoveredFiles="true">
+    <coverage ignoreDeprecatedCodeUnits="true" processUncoveredFiles="true" cacheDirectory=".build/coverage-cache">
         <include>
             <directory suffix=".php">src</directory>
         </include>

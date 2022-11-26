@@ -1,12 +1,12 @@
 *.php diff=php
 
 /.editorconfig export-ignore
+/.git-blame-ignore-revs export-ignore
 /.gitattributes export-ignore
 /.github export-ignore
 /.gitignore export-ignore
 /.php-cs-fixer.dist.php export-ignore
 /.travis.yml export-ignore
-/Makefile export-ignore
 /MIGRATE-1.x-to-2.0.md export-ignore
 /phpstan.neon.dist export-ignore
 /phpunit.xml.dist export-ignore

@@ -1,31 +1,29 @@
 <?php
 
+/** @noinspection DevelopmentDependenciesUsageInspection */
+
 declare(strict_types=1);
 
-use Rector\Core\Configuration\Option;
-use Rector\Core\ValueObject\PhpVersion;
-use Rector\Php74\Rector\Property\TypedPropertyRector;
-use Rector\PostRector\Rector\NameImportingPostRector;
+use Rector\Config\RectorConfig;
+use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    // get parameters
-    $parameters = $containerConfigurator->parameters();
-
-    $parameters->set(Option::PATHS, [
+return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->paths([
         __DIR__.'/src',
         __DIR__.'/tests',
     ]);
-    $parameters->set(Option::PHP_VERSION_FEATURES, PhpVersion::PHP_74);
-    $parameters->set(Option::AUTO_IMPORT_NAMES, true);
 
-    // Define what rule sets will be applied
-    $containerConfigurator->import(SetList::DEAD_CODE);
+    $rectorConfig->cacheDirectory(__DIR__.'/tools/.rector-cache');
 
-    // get services (needed for register a single rule)
-    $services = $containerConfigurator->services();
+    $rectorConfig->importNames();
 
     // register a single rule
-    $services->set(TypedPropertyRector::class);
+    // $rectorConfig->rule(InlineConstructorDefaultToPropertyRector::class);
+
+    // define sets of rules
+    $rectorConfig->sets([
+        SetList::EARLY_RETURN,
+        LevelSetList::UP_TO_PHP_74,
+    ]);
 };
