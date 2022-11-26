@@ -12,7 +12,7 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\None;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token\Builder;
-use StellaMaris\Clock\ClockInterface;
+use Psr\Clock\ClockInterface;
 
 final class Token
 {

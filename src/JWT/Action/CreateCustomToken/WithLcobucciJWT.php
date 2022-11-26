@@ -12,7 +12,7 @@ use Kreait\Firebase\JWT\Token as TokenInstance;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
-use StellaMaris\Clock\ClockInterface;
+use Psr\Clock\ClockInterface;
 use Throwable;
 
 /**

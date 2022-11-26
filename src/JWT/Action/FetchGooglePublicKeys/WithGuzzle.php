@@ -12,7 +12,7 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
-use StellaMaris\Clock\ClockInterface;
+use Psr\Clock\ClockInterface;
 
 use const JSON_THROW_ON_ERROR;
 

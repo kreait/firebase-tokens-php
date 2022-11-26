@@ -28,7 +28,7 @@ use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 use Lcobucci\JWT\Validation\Validator;
-use StellaMaris\Clock\ClockInterface;
+use Psr\Clock\ClockInterface;
 use Throwable;
 
 use function assert;
