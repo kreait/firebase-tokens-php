@@ -1,40 +1,43 @@
 name: Tests
 
 on:
-    pull_request:
-    push:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-    tests:
-        name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
-        runs-on: "ubuntu-20.04"
+  tests:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                php: ["7.4", "8.0", "8.1"]
-                stability: ["prefer-lowest", "prefer-stable"]
+    strategy:
+      matrix:
+        php:
+          - "8.1"
+          - "8.2"
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php }}
-                  coverage: none
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer, pecl
+          coverage: xdebug
 
-            - name: Install dependencies
-              uses: "ramsey/composer-install@v2"
+      - name: Install dependencies
+        uses: "ramsey/composer-install@v2"
 
-            - name: Setup problem matchers for PHP
-              run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+      - name: Setup problem matchers for PHP
+        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
 
-            - name: Setup Problem Matchers for PHPUnit
-              run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress
 
-            - name: Run PHPStan
-              run: vendor/bin/phpstan
+      - name: Setup Problem Matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-            - name: Run PHPUnit
-              run: vendor/bin/phpunit
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
