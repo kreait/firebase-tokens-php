@@ -14,10 +14,7 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    abstract protected function createHandler(): Handler;
-
     protected FrozenClock $clock;
-
     protected FetchGooglePublicKeys $action;
 
     protected function setUp(): void
@@ -34,4 +31,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->createHandler()->handle($this->action);
         $this->addToAssertionCount(1);
     }
+
+    abstract protected function createHandler(): Handler;
 }

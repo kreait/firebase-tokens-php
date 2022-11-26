@@ -19,7 +19,6 @@ use Psr\Cache\CacheItemPoolInterface;
 final class SessionCookieVerifier
 {
     private Handler $handler;
-
     private ?string $expectedTenantId = null;
 
     public function __construct(Handler $handler)

@@ -18,7 +18,6 @@ use Psr\Cache\CacheItemPoolInterface;
 final class SessionCookieVerifierTest extends TestCase
 {
     private Handler $handler;
-
     private SessionCookieVerifier $verifier;
 
     protected function setUp(): void

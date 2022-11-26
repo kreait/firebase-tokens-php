@@ -9,9 +9,7 @@ use InvalidArgumentException;
 final class VerifyIdToken
 {
     private string $token = '';
-
     private int $leewayInSeconds = 0;
-
     private ?string $expectedTenantId = null;
 
     private function __construct()

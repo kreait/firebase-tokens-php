@@ -21,9 +21,7 @@ use Throwable;
 final class WithLcobucciJWT implements Handler
 {
     private string $clientEmail;
-
     private ClockInterface $clock;
-
     private Configuration $config;
 
     /**
@@ -37,7 +35,7 @@ final class WithLcobucciJWT implements Handler
 
         $this->config = Configuration::forSymmetricSigner(
             new Sha256(),
-            InMemory::plainText($privateKey)
+            InMemory::plainText($privateKey),
         );
     }
 
@@ -51,8 +49,7 @@ final class WithLcobucciJWT implements Handler
             ->expiresAt($now->add($action->timeToLive()->value()))
             ->relatedTo($this->clientEmail)
             ->permittedFor('https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit')
-            ->withClaim('uid', $action->uid())
-        ;
+            ->withClaim('uid', $action->uid());
 
         if ($tenantId = $action->tenantId()) {
             $builder = $builder->withClaim('tenant_id', $tenantId);
@@ -69,6 +66,7 @@ final class WithLcobucciJWT implements Handler
         }
 
         $claims = $token->claims()->all();
+
         foreach ($claims as &$claim) {
             if ($claim instanceof DateTimeInterface) {
                 $claim = $claim->getTimestamp();
@@ -77,6 +75,7 @@ final class WithLcobucciJWT implements Handler
         unset($claim);
 
         $headers = $token->headers()->all();
+
         foreach ($headers as &$header) {
             if ($header instanceof DateTimeInterface) {
                 $header = $header->getTimestamp();

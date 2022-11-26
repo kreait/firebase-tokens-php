@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
 final class CustomTokenGeneratorTest extends TestCase
 {
     private Handler $handler;
-
     private CustomTokenGenerator $generator;
 
     protected function setUp(): void

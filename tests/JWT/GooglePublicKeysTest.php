@@ -21,13 +21,9 @@ final class GooglePublicKeysTest extends TestCase
 {
     /** @var Handler|MockObject */
     private $handler;
-
     private FrozenClock $clock;
-
     private GooglePublicKeys $keys;
-
     private ExpiringKeys $expiringResult;
-
     private StaticKeys $staticResult;
 
     protected function setUp(): void

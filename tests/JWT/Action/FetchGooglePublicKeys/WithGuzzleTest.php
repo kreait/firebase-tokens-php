@@ -28,11 +28,6 @@ final class WithGuzzleTest extends TestCase
         $this->mockHandler = new MockHandler();
     }
 
-    protected function createHandler(): Handler
-    {
-        return new WithGuzzle(new Client(['handler' => $this->mockHandler]), $this->clock);
-    }
-
     public function testItReturnsKeys(): void
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
@@ -70,5 +65,10 @@ final class WithGuzzleTest extends TestCase
 
         $this->expectException(FetchingGooglePublicKeysFailed::class);
         $this->createHandler()->handle($this->action);
+    }
+
+    protected function createHandler(): Handler
+    {
+        return new WithGuzzle(new Client(['handler' => $this->mockHandler]), $this->clock);
     }
 }

@@ -22,7 +22,7 @@ final class FetchGooglePublicKeysTest extends TestCase
     {
         $this->assertSame(
             ['https://domain.tld'],
-            FetchGooglePublicKeys::fromUrl('https://domain.tld')->urls()
+            FetchGooglePublicKeys::fromUrl('https://domain.tld')->urls(),
         );
     }
 

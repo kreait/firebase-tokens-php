@@ -25,6 +25,11 @@ final class Token implements Contract\Token
         $this->payload = $payload;
     }
 
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
+
     /**
      * @param array<string, mixed> $headers
      * @param array<string, mixed> $payload
@@ -53,10 +58,5 @@ final class Token implements Contract\Token
     public function toString(): string
     {
         return $this->encodedString;
-    }
-
-    public function __toString(): string
-    {
-        return $this->toString();
     }
 }

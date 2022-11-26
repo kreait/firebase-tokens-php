@@ -15,12 +15,7 @@ use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    abstract protected static function createHandler(): Handler;
-
-    abstract protected static function createHandlerWithInvalidPrivateKey(): Handler;
-
     protected static FrozenClock $clock;
-
     private Handler $handler;
 
     protected function setUp(): void
@@ -36,8 +31,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $action = CreateCustomToken::forUid($uid = 'uid')
             ->withCustomClaims($claims = ['first_claim' => 'first_value', 'second_claim' => 'second_value'])
-            ->withTimeToLive($expirationTime = 13)
-        ;
+            ->withTimeToLive($expirationTime = 13);
 
         $token = $this->handler->handle($action);
 
@@ -93,6 +87,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $tokenString = (string) $token;
 
         // lazy test, I know
-        $this->assertSame(2, \mb_substr_count($tokenString, '.'));
+        $this->assertSame(2, mb_substr_count($tokenString, '.'));
     }
+
+    abstract protected static function createHandler(): Handler;
+
+    abstract protected static function createHandlerWithInvalidPrivateKey(): Handler;
 }

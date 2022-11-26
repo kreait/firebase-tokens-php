@@ -14,13 +14,14 @@ use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use StellaMaris\Clock\ClockInterface;
 
+use const JSON_THROW_ON_ERROR;
+
 /**
  * @internal
  */
 final class WithGuzzle implements Handler
 {
     private ClientInterface $client;
-
     private ClockInterface $clock;
 
     public function __construct(ClientInterface $client, ClockInterface $clock)
@@ -41,8 +42,8 @@ final class WithGuzzle implements Handler
             $ttls[] = $result['ttl'];
         }
 
-        $keys = \array_merge(...$keys);
-        $ttl = \min($ttls);
+        $keys = array_merge(...$keys);
+        $ttl = min($ttls);
         $now = $this->clock->now();
 
         $expiresAt = $ttl > 0
@@ -73,16 +74,16 @@ final class WithGuzzle implements Handler
 
         if (($statusCode = $response->getStatusCode()) !== 200) {
             throw FetchingGooglePublicKeysFailed::because(
-                "Unexpected status code {$statusCode} when trying to fetch public keys from {$url}"
+                "Unexpected status code {$statusCode} when trying to fetch public keys from {$url}",
             );
         }
 
-        $ttl = \preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)
+        $ttl = preg_match('/max-age=(\d+)/i', $response->getHeaderLine('Cache-Control'), $matches)
             ? (int) $matches[1]
             : 0;
 
         try {
-            $keys = \json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            $keys = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw FetchingGooglePublicKeysFailed::because('Unexpected response: '.$e->getMessage());
         }

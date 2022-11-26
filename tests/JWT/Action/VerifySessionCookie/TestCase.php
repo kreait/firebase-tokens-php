@@ -20,14 +20,9 @@ use Kreait\Firebase\JWT\Util;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected string $projectId = 'project-id';
-
     protected StaticKeys $keys;
-
     protected FrozenClock $clock;
-
     private Token $token;
-
-    abstract protected function createHandler(): Handler;
 
     final protected function setUp(): void
     {
@@ -38,18 +33,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->keys = StaticKeys::withValues(['kid' => KeyPair::publicKey(), 'invalid' => 'invalid']);
         $this->token = new Token($this->clock);
-    }
-
-    final protected static function isEmulated(): bool
-    {
-        return Util::authEmulatorHost() !== '';
-    }
-
-    final protected function skipIfEmulated(?string $reason = null): void
-    {
-        if (self::isEmulated()) {
-            $this->markTestSkipped($reason ?? 'Emulated environment');
-        }
     }
 
     public function testItWorksWhenEverythingIsFine(): void
@@ -97,8 +80,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $sessionCookie = $this->token
             ->withClaim('exp', $this->clock->now()->modify('-1 second'))
-            ->sessionCookie()
-        ;
+            ->sessionCookie();
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
@@ -108,8 +90,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $sessionCookie = $this->token
             ->withClaim('exp', $this->clock->now()->modify('-1 second'))
-            ->sessionCookie()
-        ;
+            ->sessionCookie();
 
         $action = VerifySessionCookie::withSessionCookie($sessionCookie)->withLeewayInSeconds(2);
 
@@ -121,8 +102,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $sessionCookie = $this->token
             ->withClaim('iat', $this->clock->now()->modify('+10 seconds'))
-            ->sessionCookie()
-        ;
+            ->sessionCookie();
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
@@ -132,8 +112,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $sessionCookie = $this->token
             ->withClaim('nbf', $this->clock->now()->modify('+1 second'))
-            ->sessionCookie()
-        ;
+            ->sessionCookie();
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
@@ -143,8 +122,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $sessionCookie = $this->token
             ->withoutClaim('auth_time')
-            ->sessionCookie()
-        ;
+            ->sessionCookie();
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
@@ -154,8 +132,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $sessionCookie = $this->token
             ->withClaim('auth_time', $this->clock->now()->modify('+1 second'))
-            ->sessionCookie()
-        ;
+            ->sessionCookie();
 
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
@@ -186,5 +163,19 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->expectExceptionMessageMatches('/yet/');
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->sessionCookie($extra)));
+    }
+
+    abstract protected function createHandler(): Handler;
+
+    final protected static function isEmulated(): bool
+    {
+        return Util::authEmulatorHost() !== '';
+    }
+
+    final protected function skipIfEmulated(?string $reason = null): void
+    {
+        if (self::isEmulated()) {
+            $this->markTestSkipped($reason ?? 'Emulated environment');
+        }
     }
 }

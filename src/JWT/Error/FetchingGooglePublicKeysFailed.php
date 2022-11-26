@@ -9,7 +9,7 @@ use Throwable;
 
 final class FetchingGooglePublicKeysFailed extends RuntimeException
 {
-    public static function because(string $reason, int $code = null, Throwable $previous = null): self
+    public static function because(string $reason, ?int $code = null, ?Throwable $previous = null): self
     {
         $code = $code ?: 0;
 

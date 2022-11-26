@@ -14,12 +14,10 @@ final class FetchGooglePublicKeys
         'https://www.googleapis.com/oauth2/v1/certs',
         'https://www.googleapis.com/identitytoolkit/v3/relyingparty/publicKeys',
     ];
-
     public const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
 
     /** @var array<int, string> */
     private array $urls;
-
     private Duration $fallbackCacheDuration;
 
     /**
@@ -27,7 +25,7 @@ final class FetchGooglePublicKeys
      */
     private function __construct(array $urls, Duration $fallbackCacheDuration)
     {
-        $this->urls = \array_values($urls);
+        $this->urls = array_values($urls);
         $this->fallbackCacheDuration = $fallbackCacheDuration;
     }
 

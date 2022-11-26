@@ -45,8 +45,7 @@ final class CreateCustomTokenTest extends TestCase
         $action = CreateCustomToken::forUid('uid')
             ->withCustomClaims(['a' => 'b', 'c' => 'd'])
             ->withCustomClaim('c', 'x')
-            ->withCustomClaim('e', 'f')
-        ;
+            ->withCustomClaim('e', 'f');
 
         $this->assertEquals(['a' => 'b', 'c' => 'x', 'e' => 'f'], $action->customClaims());
     }
@@ -55,8 +54,7 @@ final class CreateCustomTokenTest extends TestCase
     {
         $action = CreateCustomToken::forUid('uid')
             ->withCustomClaims(['a' => 'b'])
-            ->withAddedCustomClaims(['c' => 'd'])
-        ;
+            ->withAddedCustomClaims(['c' => 'd']);
 
         $this->assertEquals(['a' => 'b', 'c' => 'd'], $action->customClaims());
     }

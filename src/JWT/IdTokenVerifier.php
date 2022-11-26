@@ -19,7 +19,6 @@ use Psr\Cache\CacheItemPoolInterface;
 final class IdTokenVerifier
 {
     private Handler $handler;
-
     private ?string $expectedTenantId = null;
 
     public function __construct(Handler $handler)
@@ -77,8 +76,8 @@ final class IdTokenVerifier
     }
 
     /**
-     * @throws InvalidArgumentException on invalid leeway
      * @throws IdTokenVerificationFailed
+     * @throws InvalidArgumentException on invalid leeway
      */
     public function verifyIdTokenWithLeeway(string $token, int $leewayInSeconds): Token
     {

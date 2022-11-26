@@ -9,9 +9,7 @@ use InvalidArgumentException;
 final class VerifySessionCookie
 {
     private string $sessionCookie = '';
-
     private int $leewayInSeconds = 0;
-
     private ?string $expectedTenantId = null;
 
     private function __construct()

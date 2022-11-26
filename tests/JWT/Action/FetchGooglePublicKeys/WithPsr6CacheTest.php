@@ -27,11 +27,8 @@ final class WithPsr6CacheTest extends TestCase
 
     /** @var Handler|MockObject */
     private $inner;
-
     private ExpiringKeys $expiringKeys;
-
     private ExpiringKeys $expiredKeys;
-
     private StaticKeys $nonExpiringKeys;
 
     protected function setUp(): void
@@ -47,11 +44,6 @@ final class WithPsr6CacheTest extends TestCase
         $this->expiringKeys = ExpiringKeys::withValuesAndExpirationTime(['ir' => 'relevant'], $this->clock->now()->modify('+1 hour'));
         $this->expiredKeys = $this->expiringKeys->withExpirationTime($this->clock->now()->modify('-1 hour'));
         $this->nonExpiringKeys = StaticKeys::withValues(['ir' => 'relevant']);
-    }
-
-    protected function createHandler(): Handler
-    {
-        return new WithPsr6Cache($this->inner, $this->cache, $this->clock);
     }
 
     public function testItCachesFreshKeys(): void
@@ -112,5 +104,10 @@ final class WithPsr6CacheTest extends TestCase
             $this->assertNotSame($innerError, $e);
             $this->assertSame($innerError, $e->getPrevious());
         }
+    }
+
+    protected function createHandler(): Handler
+    {
+        return new WithPsr6Cache($this->inner, $this->cache, $this->clock);
     }
 }

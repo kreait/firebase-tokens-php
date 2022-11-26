@@ -16,7 +16,6 @@ use Kreait\Firebase\JWT\Value\Duration;
 final class CustomTokenGenerator
 {
     private Handler $handler;
-
     private ?string $tenantId = null;
 
     public function __construct(Handler $handler)
@@ -58,7 +57,7 @@ final class CustomTokenGenerator
      *
      * @throws CustomTokenCreationFailed
      */
-    public function createCustomToken(string $uid, array $claims = null, $timeToLive = null): Token
+    public function createCustomToken(string $uid, ?array $claims = null, $timeToLive = null): Token
     {
         $action = CreateCustomToken::forUid($uid);
 

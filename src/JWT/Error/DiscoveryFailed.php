@@ -12,7 +12,7 @@ use Throwable;
  */
 final class DiscoveryFailed extends LogicException
 {
-    public static function because(string $reason, int $code = null, Throwable $previous = null): self
+    public static function because(string $reason, ?int $code = null, ?Throwable $previous = null): self
     {
         $code = $code ?: 0;
 

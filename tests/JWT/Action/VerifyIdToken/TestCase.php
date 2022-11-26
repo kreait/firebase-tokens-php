@@ -20,14 +20,9 @@ use stdClass;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected string $projectId = 'project-id';
-
     protected StaticKeys $keys;
-
     protected FrozenClock $clock;
-
     private Token $token;
-
-    abstract protected function createHandler(): Handler;
 
     final protected function setUp(): void
     {
@@ -35,18 +30,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->keys = StaticKeys::withValues(['kid' => KeyPair::publicKey(), 'invalid' => 'invalid']);
         $this->token = new Token($this->clock);
-    }
-
-    final protected static function isEmulated(): bool
-    {
-        return Util::authEmulatorHost() !== '';
-    }
-
-    final protected function skipIfEmulated(?string $reason = null): void
-    {
-        if (self::isEmulated()) {
-            $this->markTestSkipped($reason ?? 'Emulated environment');
-        }
     }
 
     public function testItWorksWhenEverythingIsFine(): void
@@ -94,8 +77,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $idToken = $this->token
             ->withClaim('exp', $this->clock->now()->modify('-1 second'))
-            ->idToken()
-        ;
+            ->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
@@ -105,8 +87,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $idToken = $this->token
             ->withClaim('exp', $this->clock->now()->modify('-1 second'))
-            ->idToken()
-        ;
+            ->idToken();
 
         $action = VerifyIdToken::withToken($idToken)->withLeewayInSeconds(2);
 
@@ -118,8 +99,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $idToken = $this->token
             ->withClaim('iat', $this->clock->now()->modify('+10 seconds'))
-            ->idToken()
-        ;
+            ->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
@@ -129,8 +109,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $idToken = $this->token
             ->withClaim('nbf', $this->clock->now()->modify('+1 second'))
-            ->idToken()
-        ;
+            ->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
@@ -140,8 +119,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $idToken = $this->token
             ->withoutClaim('auth_time')
-            ->idToken()
-        ;
+            ->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
@@ -151,8 +129,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $idToken = $this->token
             ->withClaim('auth_time', $this->clock->now()->modify('+1 second'))
-            ->idToken()
-        ;
+            ->idToken();
 
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
@@ -212,5 +189,19 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->expectException(IdTokenVerificationFailed::class);
         $this->expectExceptionMessageMatches('/yet/');
         $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken($extra)));
+    }
+
+    abstract protected function createHandler(): Handler;
+
+    final protected static function isEmulated(): bool
+    {
+        return Util::authEmulatorHost() !== '';
+    }
+
+    final protected function skipIfEmulated(?string $reason = null): void
+    {
+        if (self::isEmulated()) {
+            $this->markTestSkipped($reason ?? 'Emulated environment');
+        }
     }
 }

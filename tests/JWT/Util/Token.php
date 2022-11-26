@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kreait\Firebase\JWT\Tests\Util;
 
 use Beste\Clock\SystemClock;
+use DateTimeInterface;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -17,7 +18,6 @@ final class Token
 {
     private const ID_TOKEN_ISSUER = 'https://securetoken.google.com/project-id';
     private const SESSION_COOKIE_ISSUER = 'https://session.firebase.google.com/project-id';
-
     private ClockInterface $clock;
 
     /** @var array<string, string> */
@@ -31,7 +31,6 @@ final class Token
 
     /** @var string[] */
     private array $headersToDelete = [];
-
     private ?string $privateKey;
 
     public function __construct(?ClockInterface $clock = null)
@@ -115,9 +114,9 @@ final class Token
 
         $payload = $this->payload;
         $payload['iss'] = $issuer;
-        $payload['iat'] = $payload['iat'] ?? $now;
-        $payload['auth_time'] = $payload['auth_time'] ?? $now->modify('-1 second');
-        $payload['exp'] = $payload['exp'] ?? $now->modify('+1 hour');
+        $payload['iat'] ??= $now;
+        $payload['auth_time'] ??= $now->modify('-1 second');
+        $payload['exp'] ??= $now->modify('+1 hour');
 
         foreach ($extra as $key => $value) {
             $payload[$key] = $value;
@@ -187,7 +186,7 @@ final class Token
                     break;
 
                 default:
-                    if ($value instanceof \DateTimeInterface) {
+                    if ($value instanceof DateTimeInterface) {
                         $value = $value->format('U');
                     }
 

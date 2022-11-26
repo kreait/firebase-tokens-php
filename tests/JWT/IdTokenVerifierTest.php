@@ -18,7 +18,6 @@ use Psr\Cache\CacheItemPoolInterface;
 final class IdTokenVerifierTest extends TestCase
 {
     private Handler $handler;
-
     private IdTokenVerifier $verifier;
 
     protected function setUp(): void
