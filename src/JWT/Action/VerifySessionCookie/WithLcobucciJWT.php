@@ -39,17 +39,13 @@ use function is_string;
  */
 final class WithLcobucciJWT implements Handler
 {
-    private string $projectId;
-    private Keys $keys;
-    private ClockInterface $clock;
-    private Parser $parser;
+    private readonly ClockInterface $clock;
+    private readonly Parser $parser;
     private Signer $signer;
-    private Validator $validator;
+    private readonly Validator $validator;
 
-    public function __construct(string $projectId, Keys $keys, ClockInterface $clock)
+    public function __construct(private readonly string $projectId, private readonly Keys $keys, ClockInterface $clock)
     {
-        $this->projectId = $projectId;
-        $this->keys = $keys;
         $this->clock = $clock;
         $this->parser = new Parser(new JoseEncoder());
 

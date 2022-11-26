@@ -11,20 +11,16 @@ use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Psr\Cache\CacheItemPoolInterface;
 use StellaMaris\Clock\ClockInterface;
 
-use function get_class;
-
 /**
  * @internal
  */
 final class WithPsr6Cache implements Handler
 {
-    private Handler $handler;
-    private CacheItemPoolInterface $cache;
-    private ClockInterface $clock;
+    private readonly CacheItemPoolInterface $cache;
+    private readonly ClockInterface $clock;
 
-    public function __construct(Handler $handler, CacheItemPoolInterface $cache, ClockInterface $clock)
+    public function __construct(private readonly Handler $handler, CacheItemPoolInterface $cache, ClockInterface $clock)
     {
-        $this->handler = $handler;
         $this->cache = $cache;
         $this->clock = $clock;
     }
@@ -61,7 +57,7 @@ final class WithPsr6Cache implements Handler
             $reason = sprintf(
                 'The inner handler of %s (%s) failed in fetching keys: %s',
                 self::class,
-                get_class($this->handler),
+                $this->handler::class,
                 $e->getMessage(),
             );
 

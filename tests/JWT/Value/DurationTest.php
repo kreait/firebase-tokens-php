@@ -23,11 +23,8 @@ class DurationTest extends TestCase
 
     /**
      * @dataProvider validValues
-     *
-     * @param mixed $value
-     * @param mixed $expectedSpec
      */
-    public function testItParsesAValue($value, $expectedSpec): void
+    public function testItParsesAValue(mixed $value, mixed $expectedSpec): void
     {
         $this->assertSame($expectedSpec, (string) Duration::make($value));
     }
@@ -47,10 +44,8 @@ class DurationTest extends TestCase
 
     /**
      * @dataProvider invalidValues
-     *
-     * @param DateInterval|int|string $value
      */
-    public function testItRejectsInvalidValues($value): void
+    public function testItRejectsInvalidValues(DateInterval|int|string $value): void
     {
         $this->expectException(InvalidArgumentException::class);
         Duration::make($value);

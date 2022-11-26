@@ -4,25 +4,16 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT;
 
-final class Token implements Contract\Token
+use Stringable;
+
+final class Token implements Contract\Token, Stringable
 {
-    private string $encodedString;
-
-    /** @var array<string, mixed> */
-    private array $headers;
-
-    /** @var array<string, mixed> */
-    private array $payload;
-
     /**
      * @param array<string, mixed> $headers
      * @param array<string, mixed> $payload
      */
-    private function __construct(string $encodedString, array $headers, array $payload)
+    private function __construct(private readonly string $encodedString, private readonly array $headers, private readonly array $payload)
     {
-        $this->encodedString = $encodedString;
-        $this->headers = $headers;
-        $this->payload = $payload;
     }
 
     public function __toString(): string

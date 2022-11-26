@@ -20,17 +20,15 @@ use Throwable;
  */
 final class WithLcobucciJWT implements Handler
 {
-    private string $clientEmail;
-    private ClockInterface $clock;
-    private Configuration $config;
+    private readonly ClockInterface $clock;
+    private readonly Configuration $config;
 
     /**
      * @param non-empty-string $clientEmail
      * @param non-empty-string $privateKey
      */
-    public function __construct(string $clientEmail, string $privateKey, ClockInterface $clock)
+    public function __construct(private readonly string $clientEmail, string $privateKey, ClockInterface $clock)
     {
-        $this->clientEmail = $clientEmail;
         $this->clock = $clock;
 
         $this->config = Configuration::forSymmetricSigner(

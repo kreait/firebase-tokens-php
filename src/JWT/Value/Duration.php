@@ -7,6 +7,7 @@ namespace Kreait\Firebase\JWT\Value;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Stringable;
 use Throwable;
 
 use function is_int;
@@ -16,14 +17,12 @@ use function is_int;
  *
  * @see https://github.com/jeromegamez/duration-php
  */
-final class Duration
+final class Duration implements Stringable
 {
     public const NONE = 'PT0S';
-    private DateInterval $value;
 
-    private function __construct(DateInterval $value)
+    private function __construct(private readonly DateInterval $value)
     {
-        $this->value = $value;
     }
 
     public function __toString(): string
@@ -31,10 +30,7 @@ final class Duration
         return $this->toString();
     }
 
-    /**
-     * @param self|DateInterval|int|string $value
-     */
-    public static function make($value): self
+    public static function make(self|DateInterval|int|string $value): self
     {
         if ($value instanceof self) {
             return $value;
@@ -54,7 +50,7 @@ final class Duration
 
         try {
             $interval = DateInterval::createFromDateString($value);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
         }
 
@@ -91,7 +87,7 @@ final class Duration
     {
         try {
             $interval = new DateInterval($spec);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new InvalidArgumentException("'{$spec}' is not a valid DateInterval specification");
         }
 
@@ -120,34 +116,22 @@ final class Duration
         return $this->value;
     }
 
-    /**
-     * @param self|DateInterval|int|string $other
-     */
-    public function isLargerThan($other): bool
+    public function isLargerThan(self|DateInterval|int|string $other): bool
     {
         return 1 === $this->compareTo($other);
     }
 
-    /**
-     * @param self|DateInterval|int|string $other
-     */
-    public function equals($other): bool
+    public function equals(self|DateInterval|int|string $other): bool
     {
         return 0 === $this->compareTo($other);
     }
 
-    /**
-     * @param self|DateInterval|int|string $other
-     */
-    public function isSmallerThan($other): bool
+    public function isSmallerThan(self|DateInterval|int|string $other): bool
     {
         return -1 === $this->compareTo($other);
     }
 
-    /**
-     * @param self|DateInterval|int|string $other
-     */
-    public function compareTo($other): int
+    public function compareTo(self|DateInterval|int|string $other): int
     {
         $other = self::make($other);
 

@@ -18,7 +18,7 @@ final class Token
 {
     private const ID_TOKEN_ISSUER = 'https://securetoken.google.com/project-id';
     private const SESSION_COOKIE_ISSUER = 'https://session.firebase.google.com/project-id';
-    private ClockInterface $clock;
+    private readonly ClockInterface $clock;
 
     /** @var array<string, string> */
     private array $headers = ['typ' => 'JWT', 'alg' => 'RS256', 'kid' => 'kid'];
@@ -40,10 +40,7 @@ final class Token
         $this->privateKey = KeyPair::privateKey();
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function withClaim(string $name, $value): self
+    public function withClaim(string $name, mixed $value): self
     {
         $builder = clone $this;
         $builder->payload[$name] = $value;

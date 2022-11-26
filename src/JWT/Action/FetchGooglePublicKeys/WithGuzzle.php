@@ -21,8 +21,8 @@ use const JSON_THROW_ON_ERROR;
  */
 final class WithGuzzle implements Handler
 {
-    private ClientInterface $client;
-    private ClockInterface $clock;
+    private readonly ClientInterface $client;
+    private readonly ClockInterface $clock;
 
     public function __construct(ClientInterface $client, ClockInterface $clock)
     {

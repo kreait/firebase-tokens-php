@@ -13,16 +13,14 @@ final class CreateCustomToken
     public const MINIMUM_TTL = 'PT1S';
     public const MAXIMUM_TTL = 'PT1H';
     public const DEFAULT_TTL = self::MAXIMUM_TTL;
-    private string $uid;
     private ?string $tenantId = null;
 
     /** @var array<string, mixed> */
     private array $customClaims = [];
     private Duration $ttl;
 
-    private function __construct(string $uid)
+    private function __construct(private string $uid)
     {
-        $this->uid = $uid;
         $this->ttl = Duration::fromDateIntervalSpec(self::DEFAULT_TTL);
     }
 
@@ -47,10 +45,7 @@ final class CreateCustomToken
         return $action;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function withCustomClaim(string $name, $value): self
+    public function withCustomClaim(string $name, mixed $value): self
     {
         $action = clone $this;
         $action->customClaims[$name] = $value;
@@ -75,15 +70,12 @@ final class CreateCustomToken
     public function withAddedCustomClaims(array $claims): self
     {
         $action = clone $this;
-        $action->customClaims = array_merge($action->customClaims, $claims);
+        $action->customClaims = [...$action->customClaims, ...$claims];
 
         return $action;
     }
 
-    /**
-     * @param Duration|DateInterval|string|int $ttl
-     */
-    public function withTimeToLive($ttl): self
+    public function withTimeToLive(Duration|DateInterval|string|int $ttl): self
     {
         $ttl = Duration::make($ttl);
 
