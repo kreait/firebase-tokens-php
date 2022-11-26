@@ -1,0 +1,9 @@
+# See
+# - https://www.git-scm.com/docs/git-blame#Documentation/git-blame.txt---ignore-revs-fileltfilegt
+# - https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view
+
+# Migrate to the CS Standard from beste/php-cs-fixer-config
+a079c970f2f204b539a4eb54d83edea5b50fccee
+
+# Older code style applications before introducing .git-blame-ignore-revs
+03855768594d305db2de53e1a8cabef14358df8a
