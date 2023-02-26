@@ -16,6 +16,8 @@ final class VerifySessionCookieTest extends TestCase
     public function testItRejectsANegativeLeeway(): void
     {
         $this->expectException(InvalidArgumentException::class);
+
+        // @phpstan-ignore-next-line
         VerifySessionCookie::withSessionCookie('cookie')->withLeewayInSeconds(-1);
     }
 }

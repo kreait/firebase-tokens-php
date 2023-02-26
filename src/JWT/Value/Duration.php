@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use Stringable;
 use Throwable;
 
+use function assert;
 use function is_int;
 
 /**
@@ -50,6 +51,7 @@ final class Duration implements Stringable
 
         try {
             $interval = DateInterval::createFromDateString($value);
+            assert($interval instanceof DateInterval);
         } catch (Throwable) {
             throw new InvalidArgumentException("Unable to determine a duration from '{$value}'");
         }

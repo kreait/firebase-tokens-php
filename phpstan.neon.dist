@@ -16,5 +16,7 @@ parameters:
 	            - tests/JWT/IdTokenVerifierTest.php
 	            - tests/JWT/SessionCookieVerifierTest.php
 
+	reportUnmatchedIgnoredErrors: false
+
 includes:
 	- vendor/phpstan/phpstan/conf/bleedingEdge.neon

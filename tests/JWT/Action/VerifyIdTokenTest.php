@@ -16,6 +16,8 @@ final class VerifyIdTokenTest extends TestCase
     public function testItRejectsANegativeLeeway(): void
     {
         $this->expectException(InvalidArgumentException::class);
+
+        // @phpstan-ignore-next-line
         VerifyIdToken::withToken('token')->withLeewayInSeconds(-1);
     }
 }

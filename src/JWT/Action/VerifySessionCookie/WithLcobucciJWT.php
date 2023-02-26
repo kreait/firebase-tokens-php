@@ -11,13 +11,13 @@ use Kreait\Firebase\JWT\Action\VerifySessionCookie;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\SessionCookieVerificationFailed;
+use Kreait\Firebase\JWT\Signer\None;
 use Kreait\Firebase\JWT\Token as TokenInstance;
 use Kreait\Firebase\JWT\Util;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\None;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\UnencryptedToken;
@@ -44,8 +44,14 @@ final class WithLcobucciJWT implements Handler
     private Signer $signer;
     private readonly Validator $validator;
 
-    public function __construct(private readonly string $projectId, private readonly Keys $keys, ClockInterface $clock)
-    {
+    /**
+     * @param non-empty-string $projectId
+     */
+    public function __construct(
+        private readonly string $projectId,
+        private readonly Keys $keys,
+        ClockInterface $clock,
+    ) {
         $this->clock = $clock;
         $this->parser = new Parser(new JoseEncoder());
 

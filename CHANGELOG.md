@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+* Added support for `lcobucci/jwt` 5.*
+
 ## 4.0.0 - 2022-11-26
 
 The most notable change is that you need PHP 8.1/8.2 to use the new version. The language migration to

@@ -19,6 +19,9 @@ use Kreait\Firebase\JWT\Util;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var non-empty-string
+     */
     protected string $projectId = 'project-id';
     protected StaticKeys $keys;
     protected FrozenClock $clock;

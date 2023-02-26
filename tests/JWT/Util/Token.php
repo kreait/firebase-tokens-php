@@ -6,10 +6,10 @@ namespace Kreait\Firebase\JWT\Tests\Util;
 
 use Beste\Clock\SystemClock;
 use DateTimeInterface;
+use Kreait\Firebase\JWT\Signer\None;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\None;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token\Builder;
 use Psr\Clock\ClockInterface;
@@ -20,10 +20,10 @@ final class Token
     private const SESSION_COOKIE_ISSUER = 'https://session.firebase.google.com/project-id';
     private readonly ClockInterface $clock;
 
-    /** @var array<string, string> */
+    /** @var array<non-empty-string, string> */
     private array $headers = ['typ' => 'JWT', 'alg' => 'RS256', 'kid' => 'kid'];
 
-    /** @var array<string, mixed> */
+    /** @var array<non-empty-string, mixed> */
     private array $payload;
 
     /** @var string[] */
@@ -40,6 +40,9 @@ final class Token
         $this->privateKey = KeyPair::privateKey();
     }
 
+    /**
+     * @param non-empty-string $name
+     */
     public function withClaim(string $name, mixed $value): self
     {
         $builder = clone $this;
@@ -48,6 +51,9 @@ final class Token
         return $builder;
     }
 
+    /**
+     * @param non-empty-string $name
+     */
     public function withoutClaim(string $name): self
     {
         $builder = clone $this;
@@ -56,6 +62,9 @@ final class Token
         return $builder;
     }
 
+    /**
+     * @param non-empty-string $name
+     */
     public function withChangedHeader(string $name, string $value): self
     {
         $builder = clone $this;
@@ -64,6 +73,9 @@ final class Token
         return $builder;
     }
 
+    /**
+     * @param non-empty-string $name
+     */
     public function withoutHeader(string $name): self
     {
         $builder = clone $this;
@@ -81,7 +93,9 @@ final class Token
     }
 
     /**
-     * @param array<string, mixed> $extra
+     * @param array<non-empty-string, mixed> $extra
+     *
+     * @return non-empty-string
      */
     public function idToken(array $extra = []): string
     {
@@ -89,7 +103,9 @@ final class Token
     }
 
     /**
-     * @param array<string, mixed> $extra
+     * @param array<non-empty-string, mixed> $extra
+     *
+     * @return non-empty-string
      */
     public function sessionCookie(array $extra = []): string
     {
@@ -97,7 +113,10 @@ final class Token
     }
 
     /**
-     * @param array<string, scalar> $extra
+     * @param non-empty-string $issuer
+     * @param array<non-empty-string, scalar> $extra
+     *
+     * @return non-empty-string
      */
     private function build(string $issuer, array $extra = []): string
     {
@@ -139,8 +158,10 @@ final class Token
     }
 
     /**
-     * @param array<string, mixed> $payload
-     * @param array<string, string> $headers
+     * @param array<non-empty-string, mixed> $payload
+     * @param array<non-empty-string, mixed> $headers
+     *
+     * @return non-empty-string
      */
     private function encode(array $payload, array $headers): string
     {
@@ -194,9 +215,11 @@ final class Token
         }
 
         if ($this->privateKey) {
+            // @phpstan-ignore-next-line
             return $builder->getToken(new Sha256(), InMemory::plainText($this->privateKey))->toString();
         }
 
-        return $builder->getToken(new None(), InMemory::empty())->toString();
+        // @phpstan-ignore-next-line
+        return $builder->getToken(new None(), new EmptyKey())->toString();
     }
 }

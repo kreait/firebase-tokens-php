@@ -7,7 +7,7 @@ on:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} - lcobucci/jwt ${{ matrix.lcobucci-jwt }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,6 +15,9 @@ jobs:
         php:
           - "8.1"
           - "8.2"
+        lcobucci-jwt:
+          - "4"
+          - "5"
 
     steps:
       - name: Checkout code
@@ -28,16 +31,16 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies
-        uses: "ramsey/composer-install@v2"
+        run: |
+          composer require -W "lcobucci/jwt:^${{ matrix.lcobucci-jwt }}.0"
 
-      - name: Setup problem matchers for PHP
-        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+      - name: Setup Problem Matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse --no-progress
 
-      - name: Setup Problem Matchers for PHPUnit
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
       - name: Run PHPUnit
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --testdox

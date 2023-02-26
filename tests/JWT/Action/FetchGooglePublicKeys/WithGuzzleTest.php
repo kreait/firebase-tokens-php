@@ -41,7 +41,6 @@ final class WithGuzzleTest extends TestCase
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));
 
-        /** @var ExpiringKeys $keys */
         $keys = $this->createHandler()->handle($this->action);
 
         $this->assertInstanceOf(ExpiringKeys::class, $keys);
