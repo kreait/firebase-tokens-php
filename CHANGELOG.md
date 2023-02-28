@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 4.1.0 - 2023-02-28
+
 * Added support for `lcobucci/jwt` 5.*
 
 ## 4.0.0 - 2022-11-26
