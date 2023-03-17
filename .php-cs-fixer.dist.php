@@ -25,6 +25,4 @@ $config = Config\Factory::fromRuleSet(new Php81(), [
 
 $config->getFinder()->in(__DIR__);
 
-$config->setCacheFile(__DIR__ . '/tools/.php-cs-fixer.cache');
-
 return $config;

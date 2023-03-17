@@ -32,7 +32,7 @@
         "psr/cache-implementation": "to cache fetched remote public keys"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.13",
+        "beste/php-cs-fixer-config": "^1.2",
         "phpstan/extension-installer": "^1.2",
         "phpstan/phpstan": "^1.9.2",
         "phpstan/phpstan-phpunit": "^1.2.2",
@@ -59,26 +59,14 @@
         }
     },
     "scripts": {
-        "install-tools": [
-            "@install-php-cs-fixer",
-            "@install-rector"
-        ],
-        "install-php-cs-fixer": [
-            "mkdir --parents tools/php-cs-fixer",
-            "composer require --dev --working-dir=tools/php-cs-fixer beste/php-cs-fixer-config"
-        ],
-        "install-rector": [
-            "mkdir --parents tools/rector",
-            "composer require --working-dir=tools/rector rector/rector"
-        ],
         "cs": [
-            "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff"
+            "vendor/bin/php-cs-fixer fix --diff"
         ],
         "rector": [
-            "tools/rector/vendor/bin/rector --dry-run"
+            "vendor/bin/rector --dry-run"
         ],
         "rector-fix": [
-            "tools/rector/vendor/bin/rector"
+            "vendor/bin/rector"
         ],
         "test": [
             "vendor/bin/phpstan",
