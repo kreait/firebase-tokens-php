@@ -7,8 +7,8 @@ namespace Kreait\Firebase\JWT\Tests;
 use Kreait\Firebase\JWT\Action\VerifySessionCookie;
 use Kreait\Firebase\JWT\Action\VerifySessionCookie\Handler;
 use Kreait\Firebase\JWT\Contract\Token;
+use Kreait\Firebase\JWT\SecureToken;
 use Kreait\Firebase\JWT\SessionCookieVerifier;
-use Kreait\Firebase\JWT\Token as TokenInstance;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -29,7 +29,7 @@ final class SessionCookieVerifierTest extends TestCase
             {
                 $this->action = $action;
 
-                return TokenInstance::withValues('', [], []);
+                return SecureToken::withValues('', [], []);
             }
         };
 

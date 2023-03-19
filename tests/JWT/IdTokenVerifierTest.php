@@ -8,7 +8,7 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\IdTokenVerifier;
-use Kreait\Firebase\JWT\Token as TokenInstance;
+use Kreait\Firebase\JWT\SecureToken;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -29,7 +29,7 @@ final class IdTokenVerifierTest extends TestCase
             {
                 $this->action = $action;
 
-                return TokenInstance::withValues('', [], []);
+                return SecureToken::withValues('', [], []);
             }
         };
 

@@ -6,7 +6,7 @@ namespace Kreait\Firebase\JWT;
 
 use Stringable;
 
-final class Token implements Contract\Token, Stringable
+final class SecureToken implements Contract\Token, Stringable
 {
     /**
      * @param array<string, mixed> $headers

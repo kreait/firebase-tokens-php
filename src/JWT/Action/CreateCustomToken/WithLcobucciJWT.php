@@ -8,7 +8,7 @@ use DateTimeInterface;
 use Kreait\Firebase\JWT\Action\CreateCustomToken;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
-use Kreait\Firebase\JWT\Token as TokenInstance;
+use Kreait\Firebase\JWT\SecureToken;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -81,6 +81,6 @@ final class WithLcobucciJWT implements Handler
         }
         unset($header);
 
-        return TokenInstance::withValues($token->toString(), $headers, $claims);
+        return SecureToken::withValues($token->toString(), $headers, $claims);
     }
 }

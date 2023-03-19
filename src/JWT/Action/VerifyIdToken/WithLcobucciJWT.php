@@ -11,8 +11,8 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\SecureToken;
 use Kreait\Firebase\JWT\Signer\None;
-use Kreait\Firebase\JWT\Token as TokenInstance;
 use Kreait\Firebase\JWT\Util;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\JWT\Encoding\JoseEncoder;
@@ -127,7 +127,7 @@ final class WithLcobucciJWT implements Handler
         }
         unset($header);
 
-        return TokenInstance::withValues($tokenString, $headers, $claims);
+        return SecureToken::withValues($tokenString, $headers, $claims);
     }
 
     private function getKey(UnencryptedToken $token): string
