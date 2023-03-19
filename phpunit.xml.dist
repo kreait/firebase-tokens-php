@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
     beStrictAboutOutputDuringTests="true"
-    cacheResultFile="tools/.phpunit.result.cache"
+    cacheResultFile=".build/.phpunit.result.cache"
     convertDeprecationsToExceptions="true"
     colors="true"
 >

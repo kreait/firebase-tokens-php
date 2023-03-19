@@ -25,9 +25,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected string $projectId = 'project-id';
     protected StaticKeys $keys;
     protected FrozenClock $clock;
-    private Token $token;
+    protected Token $token;
 
-    final protected function setUp(): void
+    protected function setUp(): void
     {
         $now = new DateTimeImmutable();
         $now = $now->setTimestamp($now->getTimestamp()); // Trim microseconds, just to be sure
@@ -56,27 +56,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(SessionCookieVerificationFailed::class);
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie('x'.$this->token->sessionCookie()));
-    }
-
-    public function testItRejectsAnUnsignedToken(): void
-    {
-        $this->skipIfEmulated();
-        $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->withoutSignature()->sessionCookie()));
-    }
-
-    public function testItRejectsATokenWithoutAKeyId(): void
-    {
-        $this->skipIfEmulated();
-        $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->withoutHeader('kid')->sessionCookie()));
-    }
-
-    public function testItRejectsATokenWithANonMatchingKeyId(): void
-    {
-        $this->skipIfEmulated();
-        $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->withChangedHeader('kid', 'unknown')->sessionCookie()));
     }
 
     public function testItRejectsAnExpiredToken(): void
@@ -178,7 +157,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     final protected function skipIfEmulated(?string $reason = null): void
     {
         if (self::isEmulated()) {
-            $this->markTestSkipped($reason ?? 'Emulated environment');
+            $this->markTestSkipped($reason ?? 'Environment is emulated');
+        }
+    }
+
+    final protected function skipIfNotEmulated(?string $reason = null): void
+    {
+        if (!self::isEmulated()) {
+            $this->markTestSkipped($reason ?? 'Environment is not emulated');
         }
     }
 }

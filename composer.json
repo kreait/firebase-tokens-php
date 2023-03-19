@@ -70,11 +70,8 @@
         ],
         "test": [
             "vendor/bin/phpstan",
-            "vendor/bin/phpunit"
-        ],
-        "test-coverage": [
-            "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html=.build/coverage"
+            "vendor/bin/phpunit --exclude-group=emulator --testdox",
+            "FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 vendor/bin/phpunit --group=emulator --testdox"
         ]
     }
 }

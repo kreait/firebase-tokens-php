@@ -39,8 +39,11 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-      - name: Run PHPStan
+      - name: Lint code
         run: vendor/bin/phpstan analyse --no-progress
 
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit --testdox
+      - name: Run Tests
+        run: vendor/bin/phpunit --exclude-group=emulator --testdox
+
+      - name: Run Emulator Tests
+        run: vendor/bin/phpunit --group=emulator --testdox

@@ -123,7 +123,7 @@ try {
 
 ### Tokens
 
-Tokens returned from the Generator and Verifier are instances of `Kreait\Firebase\JWT\Token` and
+Tokens returned from the Generator and Verifier are instances of `\Kreait\Firebase\JWT\Contract\Token` and
 represent a [JWT](https://jwt.io/). The displayed outputs are examples and vary depending on
 the information associated with the given user in your project's auth database.
 

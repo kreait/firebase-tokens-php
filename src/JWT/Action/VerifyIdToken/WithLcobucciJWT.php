@@ -11,15 +11,16 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\InsecureToken;
 use Kreait\Firebase\JWT\SecureToken;
 use Kreait\Firebase\JWT\Signer\None;
+use Kreait\Firebase\JWT\Token\Parser;
 use Kreait\Firebase\JWT\Util;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
-use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
@@ -126,6 +127,10 @@ final class WithLcobucciJWT implements Handler
             }
         }
         unset($header);
+
+        if (Util::authEmulatorHost() !== '') {
+            return InsecureToken::withValues($tokenString, $headers, $claims);
+        }
 
         return SecureToken::withValues($tokenString, $headers, $claims);
     }
