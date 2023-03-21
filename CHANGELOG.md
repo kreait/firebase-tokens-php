@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 4.2.0 - 2023-03-21
+
 * Added support for the Firebase Auth Emulator when using `lcobucci/jwt` 5.*
 
 Note: The `Kreait\Firebase\JWT\Token` class has been renamed to `\Kreait\Firebase\JWT\SecureToken`. This is technically
