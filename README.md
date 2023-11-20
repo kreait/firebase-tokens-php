@@ -239,13 +239,18 @@ $verifier = IdTokenVerifier::createWithProjectIdAndCache($projectId, $cache);
 
 ## Supported Versions
 
-| Version | Initial Release | Supported PHP Versions   | Support       |
-|---------|-----------------|--------------------------|---------------|
-| `5.x`   | (tbd)           | `~8.1.0, ~8.2.0, ~8.3.0` | Active        |
-| `4.x`   | 26 Nov 2022     | `~8.1.0, ~8.2.0`         | Bugfixes only |
-| `3.x`   | 25 Apr 2022     | `^7.4, ^8.0`             | End of life   |
-| `2.x`   | 03 Jan 2022     | `^7.4, ^8.0`             | End of life   |
-| `1.x`   | 06 Feb 2017     | `>=5.5`                  | End of life   |
+**Only the latest version is actively supported.**
+
+Earlier versions will receive security fixes as long as their **lowest** PHP requirement receives security fixes. For
+example, when a version supports PHP 7.4 and PHP 8.0, security support will end when security support for PHP 7.4 ends.
+
+| Version | Initial Release | Supported PHP Versions | Status           |
+|---------|-----------------|------------------------|------------------|
+| `5.x`   | (tbd)           | `~8.2.0, ~8.3.0`       | Active           |
+| `4.x`   | 26 Nov 2022     | `~8.1.0, ~8.2.0`       | Security Support |
+| `3.x`   | 25 Apr 2022     | `^7.4, ^8.0`           | End of life      |
+| `2.x`   | 03 Jan 2022     | `^7.4, ^8.0`           | End of life      |
+| `1.x`   | 06 Feb 2017     | `>=5.5`                | End of life      |
 
 ## License
 
