@@ -43,7 +43,7 @@ final class WithGuzzle implements Handler
         }
 
         $keys = array_merge(...$keys);
-        $ttl = min($ttls);
+        $ttl = $ttls !== [] ? min($ttls) : 0;
         $now = $this->clock->now();
 
         $expiresAt = $ttl > 0
