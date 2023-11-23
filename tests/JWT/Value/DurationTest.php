@@ -32,7 +32,7 @@ class DurationTest extends TestCase
     /**
      * @return array<string, array<array-key, string|DateInterval|Duration>>
      */
-    public function validValues(): array
+    public static function validValues(): array
     {
         return [
             'DateInterval Spec ("P1DT1H")' => ['P1DT1H', 'P1DT1H'],
@@ -54,7 +54,7 @@ class DurationTest extends TestCase
     /**
      * @return array<string, array<int, DateInterval|int|string>>
      */
-    public function invalidValues(): array
+    public static function invalidValues(): array
     {
         $negativeInterval = new DateInterval('PT1H');
         $negativeInterval->invert = 1;

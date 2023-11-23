@@ -25,7 +25,7 @@ final class CreateCustomTokenTest extends TestCase
     /**
      * @return array<string, array<array-key, int>>
      */
-    public function invalidExpirationTimesInSeconds(): array
+    public static function invalidExpirationTimesInSeconds(): array
     {
         return [
             'zero' => [0],
