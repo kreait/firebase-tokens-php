@@ -14,9 +14,7 @@ final class StaticKeys implements Keys
 {
     use KeysTrait;
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     public static function empty(): self
     {

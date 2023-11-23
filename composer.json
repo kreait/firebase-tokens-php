@@ -32,7 +32,7 @@
         "psr/cache-implementation": "to cache fetched remote public keys"
     },
     "require-dev": {
-        "beste/php-cs-fixer-config": "^1.2",
+        "friendsofphp/php-cs-fixer": "~3.39.0",
         "phpstan/extension-installer": "^1.2",
         "phpstan/phpstan": "^1.9.2",
         "phpstan/phpstan-phpunit": "^1.2.2",

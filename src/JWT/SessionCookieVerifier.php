@@ -23,9 +23,7 @@ final class SessionCookieVerifier
      */
     private ?string $expectedTenantId = null;
 
-    public function __construct(private readonly Handler $handler)
-    {
-    }
+    public function __construct(private readonly Handler $handler) {}
 
     /**
      * @param non-empty-string $projectId

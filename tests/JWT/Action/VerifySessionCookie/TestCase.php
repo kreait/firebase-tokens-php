@@ -55,7 +55,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function testItRejectsAMalformedToken(): void
     {
         $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie('x'.$this->token->sessionCookie()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie('x' . $this->token->sessionCookie()));
     }
 
     public function testItRejectsAnExpiredToken(): void

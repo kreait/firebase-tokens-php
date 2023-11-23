@@ -69,7 +69,7 @@ final class WithGuzzle implements Handler
                 ],
             ]);
         } catch (GuzzleException $e) {
-            throw FetchingGooglePublicKeysFailed::because("The connection to {$url} failed: ".$e->getMessage(), $e->getCode(), $e);
+            throw FetchingGooglePublicKeysFailed::because("The connection to {$url} failed: " . $e->getMessage(), $e->getCode(), $e);
         }
 
         if (($statusCode = $response->getStatusCode()) !== 200) {
@@ -85,7 +85,7 @@ final class WithGuzzle implements Handler
         try {
             $keys = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw FetchingGooglePublicKeysFailed::because('Unexpected response: '.$e->getMessage());
+            throw FetchingGooglePublicKeysFailed::because('Unexpected response: ' . $e->getMessage());
         }
 
         return [

@@ -12,9 +12,7 @@ final class SecureToken implements Contract\Token, Stringable
      * @param array<string, mixed> $headers
      * @param array<string, mixed> $payload
      */
-    private function __construct(private readonly string $encodedString, private readonly array $headers, private readonly array $payload)
-    {
-    }
+    private function __construct(private readonly string $encodedString, private readonly array $headers, private readonly array $payload) {}
 
     public function __toString(): string
     {

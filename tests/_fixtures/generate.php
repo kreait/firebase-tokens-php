@@ -11,8 +11,8 @@ function generate(string $name): void
     ]);
 
     openssl_pkey_export($key, $private);
-    file_put_contents(__DIR__."/{$name}.key", $private);
-    file_put_contents(__DIR__."/{$name}.pub", openssl_pkey_get_details($key)['key']);
+    file_put_contents(__DIR__ . "/{$name}.key", $private);
+    file_put_contents(__DIR__ . "/{$name}.pub", openssl_pkey_get_details($key)['key']);
 }
 
 generate('one');

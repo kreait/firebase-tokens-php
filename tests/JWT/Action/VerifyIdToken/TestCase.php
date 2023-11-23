@@ -52,7 +52,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function testItRejectsAMalformedToken(): void
     {
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken('x'.$this->token->idToken()));
+        $this->createHandler()->handle(VerifyIdToken::withToken('x' . $this->token->idToken()));
     }
 
     public function testItRejectsAnExpiredToken(): void

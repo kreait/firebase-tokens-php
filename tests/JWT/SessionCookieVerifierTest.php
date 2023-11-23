@@ -22,7 +22,7 @@ final class SessionCookieVerifierTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->handler = new class() implements Handler {
+        $this->handler = new class () implements Handler {
             public ?VerifySessionCookie $action = null;
 
             public function handle(VerifySessionCookie $action): Token

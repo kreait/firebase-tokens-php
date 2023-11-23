@@ -22,7 +22,7 @@ final class IdTokenVerifierTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->handler = new class() implements Handler {
+        $this->handler = new class () implements Handler {
             public ?VerifyIdToken $action = null;
 
             public function handle(VerifyIdToken $action): Token
