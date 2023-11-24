@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kreait\Firebase\JWT\Tests\Util;
 
 use Beste\Clock\SystemClock;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Kreait\Firebase\JWT\Signer\None;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
@@ -114,7 +115,7 @@ final class Token
 
     /**
      * @param non-empty-string $issuer
-     * @param array<non-empty-string, scalar> $extra
+     * @param array<non-empty-string, mixed> $extra
      *
      * @return non-empty-string
      */
@@ -172,46 +173,41 @@ final class Token
         }
 
         foreach ($payload as $name => $value) {
-            switch ($name) {
-                case 'iss':
-                    $builder = $builder->issuedBy($value);
-
-                    break;
-
-                case 'iat':
-                    $builder = $builder->issuedAt($value);
-
-                    break;
-
-                case 'aud':
-                    $builder = $builder->permittedFor($value);
-
-                    break;
-
-                case 'sub':
-                    $builder = $builder->relatedTo($value);
-
-                    break;
-
-                case 'nbf':
-                    $builder = $builder->canOnlyBeUsedAfter($value);
-
-                    break;
-
-                case 'exp':
-                    $builder = $builder->expiresAt($value);
-
-                    break;
-
-                default:
-                    if ($value instanceof DateTimeInterface) {
-                        $value = $value->format('U');
-                    }
-
-                    $builder = $builder->withClaim($name, $value);
-
-                    break;
+            if ($name === 'iss' && is_string($value) && $value !== '') {
+                $builder = $builder->issuedBy($value);
+                continue;
             }
+
+            if ($name === 'iat' && ($value instanceof DateTimeImmutable)) {
+                $builder = $builder->issuedAt($value);
+                continue;
+            }
+
+            if ($name === 'aud' && is_string($value) && $value !== '') {
+                $builder = $builder->permittedFor($value);
+                continue;
+            }
+
+            if ($name === 'sub' && is_string($value) && $value !== '') {
+                $builder = $builder->relatedTo($value);
+                continue;
+            }
+
+            if ($name === 'nbf' && ($value instanceof DateTimeImmutable)) {
+                $builder = $builder->canOnlyBeUsedAfter($value);
+                continue;
+            }
+
+            if ($name === 'exp' && ($value instanceof DateTimeImmutable)) {
+                $builder = $builder->expiresAt($value);
+                continue;
+            }
+
+            if ($value instanceof DateTimeInterface) {
+                $value = $value->format('U');
+            }
+
+            $builder = $builder->withClaim($name, $value);
         }
 
         if ($this->privateKey) {

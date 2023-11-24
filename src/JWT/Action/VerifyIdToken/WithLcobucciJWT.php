@@ -73,7 +73,7 @@ final class WithLcobucciJWT implements Handler
             $token = $this->parser->parse($tokenString);
             assert($token instanceof UnencryptedToken);
         } catch (Throwable $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid', $e->getMessage()]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid' . $e->getMessage()]);
         }
 
         $key = $this->getKey($token);
@@ -137,11 +137,17 @@ final class WithLcobucciJWT implements Handler
 
     private function getKey(UnencryptedToken $token): string
     {
-        if (empty($keys = $this->keys->all())) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No keys are available to verify the token's signature."]);
+        $keys = $this->keys->all();
+
+        if ($keys === []) {
+            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No keys are available to verify the tokens signature.']);
         }
 
         $keyId = $token->headers()->get('kid');
+
+        if (!is_string($keyId) || $keyId === '') {
+            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No key ID was found to verify the signature of this token.']);
+        }
 
         if ($key = $keys[$keyId] ?? null) {
             return $key;

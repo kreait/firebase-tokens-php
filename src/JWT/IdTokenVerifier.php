@@ -19,7 +19,7 @@ use Psr\Cache\CacheItemPoolInterface;
 final class IdTokenVerifier
 {
     /**
-     * @var non-empty-string
+     * @var non-empty-string|null
      */
     private ?string $expectedTenantId = null;
 

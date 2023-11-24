@@ -9,19 +9,24 @@ use Stringable;
 final class InsecureToken implements Contract\Token, Stringable
 {
     /**
-     * @param array<string, mixed> $headers
-     * @param array<string, mixed> $payload
+     * @param non-empty-string $encodedString
+     * @param array<non-empty-string, mixed> $headers
+     * @param array<non-empty-string, mixed> $payload
      */
     private function __construct(private readonly string $encodedString, private readonly array $headers, private readonly array $payload) {}
 
+    /**
+     * @return non-empty-string
+     */
     public function __toString(): string
     {
         return $this->toString();
     }
 
     /**
-     * @param array<string, mixed> $headers
-     * @param array<string, mixed> $payload
+     * @param non-empty-string $encodedString
+     * @param array<non-empty-string, mixed> $headers
+     * @param array<non-empty-string, mixed> $payload
      */
     public static function withValues(string $encodedString, array $headers, array $payload): self
     {
@@ -29,7 +34,7 @@ final class InsecureToken implements Contract\Token, Stringable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<non-empty-string, mixed>
      */
     public function headers(): array
     {
@@ -37,13 +42,16 @@ final class InsecureToken implements Contract\Token, Stringable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<non-empty-string, mixed>
      */
     public function payload(): array
     {
         return $this->payload;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function toString(): string
     {
         return $this->encodedString;

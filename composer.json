@@ -59,6 +59,10 @@
         }
     },
     "scripts": {
+        "analyse": [
+            "XDEBUG_MODE=off vendor/bin/phpstan"
+        ],
+        "analyze": "@analyse",
         "cs": [
             "vendor/bin/php-cs-fixer fix --diff"
         ],
@@ -69,7 +73,7 @@
             "vendor/bin/rector"
         ],
         "test": [
-            "vendor/bin/phpstan",
+            "@analyze",
             "vendor/bin/phpunit --exclude-group=emulator --testdox",
             "FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 vendor/bin/phpunit --group=emulator --testdox"
         ]

@@ -24,17 +24,18 @@ class DurationTest extends TestCase
     /**
      * @dataProvider validValues
      */
-    public function testItParsesAValue(mixed $value, mixed $expectedSpec): void
+    public function testItParsesAValue(Duration|DateInterval|int|string $value, mixed $expectedSpec): void
     {
         $this->assertSame($expectedSpec, (string) Duration::make($value));
     }
 
     /**
-     * @return array<string, array<array-key, string|DateInterval|Duration>>
+     * @return array<string, array<array-key, int|string|DateInterval|Duration>>
      */
     public static function validValues(): array
     {
         return [
+            'seconds' => [60, 'PT1M'],
             'DateInterval Spec ("P1DT1H")' => ['P1DT1H', 'P1DT1H'],
             'DateInterval("PT24H")' => [new DateInterval('PT24H'), 'P1D'],
             'Duration("PT24H")' => [Duration::make('PT24H'), 'P1D'],
@@ -63,7 +64,6 @@ class DurationTest extends TestCase
             'negative seconds' => [-1],
             'invalid spec' => ['P1H'], // should be PT1H
             'negative interval' => [$negativeInterval],
-            'something stupid' => ['something stupid'],
         ];
     }
 

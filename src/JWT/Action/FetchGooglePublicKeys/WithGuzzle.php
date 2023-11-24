@@ -55,7 +55,7 @@ final class WithGuzzle implements Handler
 
     /**
      * @return array{
-     *     keys: array<string, string>,
+     *     keys: array<non-empty-string, non-empty-string>,
      *     ttl: int
      * }
      */
@@ -87,6 +87,14 @@ final class WithGuzzle implements Handler
         } catch (JsonException $e) {
             throw FetchingGooglePublicKeysFailed::because('Unexpected response: ' . $e->getMessage());
         }
+
+        if (!is_array($keys)) {
+            $keys = [];
+        }
+
+        $keys = array_filter($keys, fn(mixed $key) => is_string($key));
+        $keys = array_map(fn(string $key) => trim($key), $keys);
+        $keys = array_filter($keys, fn(string $key) => $key !== '');
 
         return [
             'keys' => $keys,

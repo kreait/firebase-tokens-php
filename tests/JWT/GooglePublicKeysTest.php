@@ -19,8 +19,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class GooglePublicKeysTest extends TestCase
 {
-    /** @var Handler|MockObject */
-    private $handler;
+    private Handler&MockObject $handler;
     private FrozenClock $clock;
     private GooglePublicKeys $keys;
     private ExpiringKeys $expiringResult;

@@ -19,14 +19,9 @@ use stdClass;
  */
 final class WithPsr6CacheTest extends TestCase
 {
-    /** @var CacheItemPoolInterface|MockObject */
-    private $cache;
-
-    /** @var CacheItemInterface|MockObject */
-    private $cacheItem;
-
-    /** @var Handler|MockObject */
-    private $inner;
+    private CacheItemPoolInterface&MockObject $cache;
+    private CacheItemInterface&MockObject $cacheItem;
+    private Handler&MockObject $inner;
     private ExpiringKeys $expiringKeys;
     private ExpiringKeys $expiredKeys;
     private StaticKeys $nonExpiringKeys;

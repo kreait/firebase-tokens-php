@@ -150,7 +150,11 @@ final class WithLcobucciJWT implements Handler
             return '';
         }
 
-        throw SessionCookieVerificationFailed::withSessionCookieAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this session cookie."]);
+        if (is_string($keyId)) {
+            throw SessionCookieVerificationFailed::withSessionCookieAndReasons($token->toString(), ["No public key matching the key ID `{$keyId}` was found to verify the signature of this session cookie."]);
+        }
+
+        throw SessionCookieVerificationFailed::withSessionCookieAndReasons($token->toString(), ["The session cookie doesn't include a `kid` header."]);
     }
 
     private function assertUserAuthedAt(UnencryptedToken $token, DateTimeInterface $now): void

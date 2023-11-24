@@ -11,7 +11,7 @@ use const PHP_EOL;
 final class IdTokenVerificationFailed extends RuntimeException
 {
     /**
-     * @param array<int|string, string> $reasons
+     * @param array<non-empty-string> $reasons
      */
     public static function withTokenAndReasons(string $token, array $reasons): self
     {

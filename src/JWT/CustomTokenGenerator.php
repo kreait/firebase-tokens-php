@@ -30,6 +30,9 @@ final class CustomTokenGenerator
         return new self($handler);
     }
 
+    /**
+     * @param non-empty-string $tenantId
+     */
     public function withTenantId(string $tenantId): self
     {
         $generator = clone $this;
@@ -48,7 +51,8 @@ final class CustomTokenGenerator
     }
 
     /**
-     * @param array<string, mixed> $claims
+     * @param non-empty-string $uid
+     * @param array<non-empty-string, mixed> $claims
      *
      * @throws CustomTokenCreationFailed
      */
