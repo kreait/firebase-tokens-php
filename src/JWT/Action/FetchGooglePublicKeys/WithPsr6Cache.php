@@ -14,16 +14,9 @@ use Psr\Clock\ClockInterface;
 /**
  * @internal
  */
-final class WithPsr6Cache implements Handler
+final readonly class WithPsr6Cache implements Handler
 {
-    private readonly CacheItemPoolInterface $cache;
-    private readonly ClockInterface $clock;
-
-    public function __construct(private readonly Handler $handler, CacheItemPoolInterface $cache, ClockInterface $clock)
-    {
-        $this->cache = $cache;
-        $this->clock = $clock;
-    }
+    public function __construct(private Handler $handler, private CacheItemPoolInterface $cache, private ClockInterface $clock) {}
 
     public function handle(FetchGooglePublicKeys $action): Keys
     {

@@ -6,7 +6,7 @@ namespace Kreait\Firebase\JWT\Action;
 
 use InvalidArgumentException;
 
-final class VerifyIdToken
+final readonly class VerifyIdToken
 {
     /**
      * @param non-empty-string $token

@@ -18,11 +18,11 @@ use function is_int;
  *
  * @see https://github.com/jeromegamez/duration-php
  */
-final class Duration implements Stringable
+final readonly class Duration implements Stringable
 {
     public const NONE = 'PT0S';
 
-    private function __construct(private readonly DateInterval $value) {}
+    private function __construct(private DateInterval $value) {}
 
     public function __toString(): string
     {

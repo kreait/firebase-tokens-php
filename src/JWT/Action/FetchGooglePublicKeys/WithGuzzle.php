@@ -19,16 +19,9 @@ use const JSON_THROW_ON_ERROR;
 /**
  * @internal
  */
-final class WithGuzzle implements Handler
+final readonly class WithGuzzle implements Handler
 {
-    private readonly ClientInterface $client;
-    private readonly ClockInterface $clock;
-
-    public function __construct(ClientInterface $client, ClockInterface $clock)
-    {
-        $this->client = $client;
-        $this->clock = $clock;
-    }
+    public function __construct(private ClientInterface $client, private ClockInterface $clock) {}
 
     public function handle(FetchGooglePublicKeys $action): Keys
     {

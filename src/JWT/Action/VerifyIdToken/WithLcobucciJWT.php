@@ -40,7 +40,6 @@ use function is_string;
  */
 final class WithLcobucciJWT implements Handler
 {
-    private readonly ClockInterface $clock;
     private readonly Parser $parser;
     private Signer $signer;
     private readonly Validator $validator;
@@ -51,9 +50,8 @@ final class WithLcobucciJWT implements Handler
     public function __construct(
         private readonly string $projectId,
         private readonly Keys $keys,
-        ClockInterface $clock,
+        private readonly ClockInterface $clock,
     ) {
-        $this->clock = $clock;
         $this->parser = new Parser(new JoseEncoder());
 
         if (Util::authEmulatorHost() !== '') {

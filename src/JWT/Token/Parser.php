@@ -10,7 +10,7 @@ use Lcobucci\JWT\Parser as ParserInterface;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser as SecureParser;
 
-final class Parser implements ParserInterface
+final readonly class Parser implements ParserInterface
 {
     private ParserInterface $parser;
 
