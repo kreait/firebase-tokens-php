@@ -1,4 +1,4 @@
-name: Tests
+name: Emulator Tests
 
 on:
   pull_request:
@@ -40,13 +40,25 @@ jobs:
 
       - uses: "ramsey/composer-install@v2"
 
+      - name: Set Up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
+
+
       - name: Setup Problem Matchers
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-      - name: Lint code
-        run: vendor/bin/phpstan analyse --no-progress
+      - name: Run emulated Tests
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+          FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
+        run: firebase emulators:exec --only auth --project demo-project 'vendor/bin/phpunit --group=emulator --testdox'
 
-      - name: Run Tests
-        run: vendor/bin/phpunit --exclude-group=emulator --testdox
+      - name: Run Emulator Tests
+        run: vendor/bin/phpunit --group=emulator --testdox
