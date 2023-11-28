@@ -73,8 +73,15 @@
         ],
         "test": [
             "@analyze",
-            "vendor/bin/phpunit --exclude-group=emulator --testdox",
-            "FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 vendor/bin/phpunit --group=emulator --testdox"
+            "@test-units",
+            "@test-emulator"
+        ],
+        "test-emulator": [
+            "FIREBASE_DATABASE_EMULATOR_HOST=localhost:9100",
+            "firebase emulators:exec --only auth --project demo-project 'vendor/bin/phpunit --group=emulator --testdox'"
+        ],
+        "test-units": [
+            "vendor/bin/phpunit --exclude-group=emulator --testdox"
         ]
     }
 }
