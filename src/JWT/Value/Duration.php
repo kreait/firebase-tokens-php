@@ -10,7 +10,6 @@ use InvalidArgumentException;
 use Stringable;
 use Throwable;
 
-use function assert;
 use function is_int;
 
 /**
