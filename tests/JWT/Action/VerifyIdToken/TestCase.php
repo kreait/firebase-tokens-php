@@ -41,14 +41,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItFailsWithEmptyKeys(): void
-    {
-        $this->keys = StaticKeys::empty();
-
-        $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken()));
-    }
-
     public function testItRejectsAMalformedToken(): void
     {
         $this->expectException(IdTokenVerificationFailed::class);

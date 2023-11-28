@@ -8,6 +8,7 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\WithLcobucciJWT;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\Keys\StaticKeys;
 
 /**
  * @internal
@@ -37,6 +38,14 @@ final class WithLcobucciJWTTest extends TestCase
     {
         $this->expectException(IdTokenVerificationFailed::class);
         $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withChangedHeader('kid', 'unknown')->idToken()));
+    }
+
+    public function testItFailsWithEmptyKeys(): void
+    {
+        $this->keys = StaticKeys::empty();
+
+        $this->expectException(IdTokenVerificationFailed::class);
+        $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken()));
     }
 
     protected function createHandler(): Handler

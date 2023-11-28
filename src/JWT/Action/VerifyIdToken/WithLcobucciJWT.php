@@ -43,6 +43,7 @@ final class WithLcobucciJWT implements Handler
     private readonly Parser $parser;
     private Signer $signer;
     private readonly Validator $validator;
+    private readonly bool $isRunOnEmulator;
 
     /**
      * @param non-empty-string $projectId
@@ -54,12 +55,9 @@ final class WithLcobucciJWT implements Handler
     ) {
         $this->parser = new Parser(new JoseEncoder());
 
-        if (Util::authEmulatorHost() !== '') {
-            $this->signer = new None();
-        } else {
-            $this->signer = new Sha256();
-        }
+        $this->isRunOnEmulator = Util::authEmulatorHost() !== '';
 
+        $this->signer = $this->isRunOnEmulator ? new None() : new Sha256();
         $this->validator = new Validator();
     }
 
@@ -85,7 +83,7 @@ final class WithLcobucciJWT implements Handler
             new PermittedFor($this->projectId),
         ];
 
-        if ($key !== '' && Util::authEmulatorHost() === '') {
+        if ($key !== '' && $this->isRunOnEmulator) {
             $constraints[] = new SignedWith($this->signer, InMemory::plainText($key));
         }
 
@@ -98,10 +96,10 @@ final class WithLcobucciJWT implements Handler
                 $this->assertTenantId($token, $tenantId);
             }
         } catch (RequiredConstraintsViolated $e) {
-            $errors = array_map(
-                static fn(ConstraintViolation $violation): string => '- ' . $violation->getMessage(),
+            $errors = array_filter(array_map(
+                static fn(ConstraintViolation $violation): string => $violation->getMessage(),
                 $e->violations(),
-            );
+            ));
         }
 
         if (!empty($errors)) {
@@ -126,7 +124,7 @@ final class WithLcobucciJWT implements Handler
         }
         unset($header);
 
-        if (Util::authEmulatorHost() !== '') {
+        if ($this->isRunOnEmulator) {
             return InsecureToken::withValues($tokenString, $headers, $claims);
         }
 
@@ -135,24 +133,28 @@ final class WithLcobucciJWT implements Handler
 
     private function getKey(UnencryptedToken $token): string
     {
+        if ($this->isRunOnEmulator && ($this->signer instanceof None)) {
+            return '';
+        }
+
+        $keyId = $token->headers()->get('kid');
         $keys = $this->keys->all();
+        $key = $keys[$keyId] ?? null;
+
+        if ($key !== null) {
+            return $key;
+        }
+
+        if ($this->isRunOnEmulator) {
+            return '';
+        }
 
         if ($keys === []) {
             throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No keys are available to verify the tokens signature.']);
         }
 
-        $keyId = $token->headers()->get('kid');
-
         if (!is_string($keyId) || $keyId === '') {
             throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No key ID was found to verify the signature of this token.']);
-        }
-
-        if ($key = $keys[$keyId] ?? null) {
-            return $key;
-        }
-
-        if ($this->signer instanceof None) {
-            return '';
         }
 
         throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
