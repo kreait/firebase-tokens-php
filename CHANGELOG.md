@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Added support for PHP 8.3
+
 ## 4.2.0 - 2023-03-21
 
 * Added support for the Firebase Auth Emulator when using `lcobucci/jwt` 5.*
