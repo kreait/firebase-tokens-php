@@ -100,7 +100,7 @@ final class WithLcobucciJWT implements Handler
             }
         } catch (RequiredConstraintsViolated $e) {
             $errors = array_map(
-                static fn (ConstraintViolation $violation): string => '- '.$violation->getMessage(),
+                static fn(ConstraintViolation $violation): string => '- '.$violation->getMessage(),
                 $e->violations(),
             );
         }
