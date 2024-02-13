@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Restored support for PHP 8.1
+
 ## [5.0.1] - 2023-11-29
 
 * Fixed ID Token verification when run in emulated environments.
