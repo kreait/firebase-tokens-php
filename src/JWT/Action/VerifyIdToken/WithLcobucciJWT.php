@@ -83,7 +83,7 @@ final class WithLcobucciJWT implements Handler
             new PermittedFor($this->projectId),
         ];
 
-        if ($key !== '' && $this->isRunOnEmulator) {
+        if ($key !== '' && !$this->isRunOnEmulator) {
             $constraints[] = new SignedWith($this->signer, InMemory::plainText($key));
         }
 
