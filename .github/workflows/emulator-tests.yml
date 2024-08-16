@@ -18,7 +18,7 @@ on:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}
+    name: "PHP ${{ matrix.php }}, ${{ matrix.dependencies }} deps"
     runs-on: ubuntu-latest
 
     strategy:
@@ -27,6 +27,13 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+        dependencies:
+          - "lowest"
+          - "highest"
+        include:
+          - php: "8.4"
+            composer-options: "--ignore-platform-reqs"
+            dependencies: "highest"
 
     steps:
       - name: Checkout code
@@ -40,6 +47,9 @@ jobs:
           coverage: xdebug
 
       - uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: "${{ matrix.composer-options }}"
+          dependency-versions: "${{ matrix.dependencies }}"
 
       - name: Set Up Node
         uses: actions/setup-node@v4
