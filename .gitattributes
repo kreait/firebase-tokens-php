@@ -6,7 +6,7 @@
 /.github export-ignore
 /.gitignore export-ignore
 /.php-cs-fixer.dist.php export-ignore
-/.travis.yml export-ignore
+/.tool-versions export-ignore
 /firebase.json export-ignore
 /phpstan.neon.dist export-ignore
 /phpunit.xml.dist export-ignore
