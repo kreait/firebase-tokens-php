@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 5.2.0 - 2024-08-17
 
 * Added support for PHP 8.4
   ([#61](https://github.com/kreait/firebase-tokens-php/pull/61))
