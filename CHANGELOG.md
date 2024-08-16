@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* Added support for PHP 8.4
+  ([#61](https://github.com/kreait/firebase-tokens-php/pull/61))
+
 ## 5.1.0 - 2024-05-10
 
 * Restored support for PHP 8.1
