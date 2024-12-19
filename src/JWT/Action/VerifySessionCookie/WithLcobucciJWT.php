@@ -40,11 +40,11 @@ use function is_string;
  */
 final class WithLcobucciJWT implements Handler
 {
-    private Parser $parser;
+    private readonly Parser $parser;
 
     private Signer $signer;
 
-    private Validator $validator;
+    private readonly Validator $validator;
 
     /**
      * @param non-empty-string $projectId
