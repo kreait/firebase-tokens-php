@@ -27,13 +27,10 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         dependencies:
           - "lowest"
           - "highest"
-        include:
-          - php: "8.4"
-            composer-options: "--ignore-platform-reqs"
-            dependencies: "highest"
 
     steps:
       - name: Checkout code
