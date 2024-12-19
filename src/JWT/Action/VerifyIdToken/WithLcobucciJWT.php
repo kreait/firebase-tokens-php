@@ -41,8 +41,11 @@ use function is_string;
 final class WithLcobucciJWT implements Handler
 {
     private readonly Parser $parser;
+
     private readonly Signer $signer;
+
     private readonly Validator $validator;
+
     private readonly bool $isRunOnEmulator;
 
     /**
@@ -69,12 +72,12 @@ final class WithLcobucciJWT implements Handler
             $token = $this->parser->parse($tokenString);
             assert($token instanceof UnencryptedToken);
         } catch (Throwable $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid' . $e->getMessage()]);
+            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid'.$e->getMessage()]);
         }
 
         $key = $this->getKey($token);
         $clock = FrozenClock::at($this->clock->now());
-        $leeway = new DateInterval('PT' . $action->leewayInSeconds() . 'S');
+        $leeway = new DateInterval('PT'.$action->leewayInSeconds().'S');
         $errors = [];
 
         $constraints = [
@@ -172,7 +175,7 @@ final class WithLcobucciJWT implements Handler
         }
 
         if (is_numeric($authTime)) {
-            $authTime = new DateTimeImmutable('@' . ((int) $authTime));
+            $authTime = new DateTimeImmutable('@'.((int) $authTime));
         }
 
         if ($now < $authTime) {

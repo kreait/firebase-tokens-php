@@ -16,7 +16,9 @@ use Psr\Clock\ClockInterface;
 final class GooglePublicKeys implements Keys
 {
     private readonly ClockInterface $clock;
+
     private readonly Handler $handler;
+
     private ?Keys $keys = null;
 
     public function __construct(?Handler $handler = null, ?ClockInterface $clock = null)

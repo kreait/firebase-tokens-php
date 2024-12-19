@@ -23,8 +23,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      * @var non-empty-string
      */
     protected string $projectId = 'project-id';
+
     protected StaticKeys $keys;
+
     protected FrozenClock $clock;
+
     protected Token $token;
 
     protected function setUp(): void
@@ -44,7 +47,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function testItRejectsAMalformedToken(): void
     {
         $this->expectException(IdTokenVerificationFailed::class);
-        $this->createHandler()->handle(VerifyIdToken::withToken('x' . $this->token->idToken()));
+        $this->createHandler()->handle(VerifyIdToken::withToken('x'.$this->token->idToken()));
     }
 
     public function testItRejectsAnExpiredToken(): void

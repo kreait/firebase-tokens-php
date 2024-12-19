@@ -20,7 +20,8 @@ final class WithPsr6Cache implements Handler
         private readonly Handler $handler,
         private readonly CacheItemPoolInterface $cache,
         private readonly ClockInterface $clock,
-    ) {}
+    ) {
+    }
 
     public function handle(FetchGooglePublicKeys $action): Keys
     {

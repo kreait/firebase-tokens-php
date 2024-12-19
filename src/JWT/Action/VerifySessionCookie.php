@@ -17,7 +17,8 @@ final class VerifySessionCookie
         private readonly string $sessionCookie,
         private readonly int $leewayInSeconds,
         private readonly ?string $expectedTenantId,
-    ) {}
+    ) {
+    }
 
     /**
      * @param non-empty-string $sessionCookie

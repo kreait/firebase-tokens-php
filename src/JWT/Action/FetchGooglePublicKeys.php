@@ -14,6 +14,7 @@ final class FetchGooglePublicKeys
         'https://www.googleapis.com/oauth2/v1/certs',
         'https://www.googleapis.com/identitytoolkit/v3/relyingparty/publicKeys',
     ];
+
     public const DEFAULT_FALLBACK_CACHE_DURATION = 'PT1H';
 
     /** @var array<int, non-empty-string> */

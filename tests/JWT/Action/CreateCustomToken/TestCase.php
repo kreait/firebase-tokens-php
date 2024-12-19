@@ -16,6 +16,7 @@ use Kreait\Firebase\JWT\Error\CustomTokenCreationFailed;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected static FrozenClock $clock;
+
     private Handler $handler;
 
     protected function setUp(): void
@@ -43,7 +44,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->assertSame($uid, $payload['uid']);
         $this->assertSame(self::$clock->now()->getTimestamp(), $payload['iat']);
-        $this->assertSame(self::$clock->now()->modify('+' . $expirationTime . ' seconds')->getTimestamp(), $payload['exp']);
+        $this->assertSame(self::$clock->now()->modify('+'.$expirationTime.' seconds')->getTimestamp(), $payload['exp']);
         $this->assertEquals($claims, (array) $payload['claims']);
     }
 

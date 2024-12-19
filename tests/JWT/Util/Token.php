@@ -18,7 +18,9 @@ use Psr\Clock\ClockInterface;
 final class Token
 {
     private const ID_TOKEN_ISSUER = 'https://securetoken.google.com/project-id';
+
     private const SESSION_COOKIE_ISSUER = 'https://session.firebase.google.com/project-id';
+
     private readonly ClockInterface $clock;
 
     /** @var array<non-empty-string, string> */
@@ -32,6 +34,7 @@ final class Token
 
     /** @var string[] */
     private array $headersToDelete = [];
+
     private ?string $privateKey;
 
     public function __construct(?ClockInterface $clock = null)

@@ -41,7 +41,9 @@ use function is_string;
 final class WithLcobucciJWT implements Handler
 {
     private Parser $parser;
+
     private Signer $signer;
+
     private Validator $validator;
 
     /**
@@ -76,7 +78,7 @@ final class WithLcobucciJWT implements Handler
 
         $key = $this->getKey($token);
         $clock = FrozenClock::at($this->clock->now());
-        $leeway = new DateInterval('PT' . $action->leewayInSeconds() . 'S');
+        $leeway = new DateInterval('PT'.$action->leewayInSeconds().'S');
         $errors = [];
         $constraints = [
             new LooseValidAt($clock, $leeway),
@@ -98,7 +100,7 @@ final class WithLcobucciJWT implements Handler
             }
         } catch (RequiredConstraintsViolated $e) {
             $errors = array_map(
-                static fn(ConstraintViolation $violation): string => '- ' . $violation->getMessage(),
+                static fn(ConstraintViolation $violation): string => '- '.$violation->getMessage(),
                 $e->violations(),
             );
         }
@@ -167,7 +169,7 @@ final class WithLcobucciJWT implements Handler
         }
 
         if (is_numeric($authTime)) {
-            $authTime = new DateTimeImmutable('@' . ((int) $authTime));
+            $authTime = new DateTimeImmutable('@'.((int) $authTime));
         }
 
         if ($now < $authTime) {

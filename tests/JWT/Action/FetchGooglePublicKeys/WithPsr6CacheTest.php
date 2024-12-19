@@ -20,10 +20,15 @@ use stdClass;
 final class WithPsr6CacheTest extends TestCase
 {
     private CacheItemPoolInterface&MockObject $cache;
+
     private CacheItemInterface&MockObject $cacheItem;
+
     private Handler&MockObject $inner;
+
     private ExpiringKeys $expiringKeys;
+
     private ExpiringKeys $expiredKeys;
+
     private StaticKeys $nonExpiringKeys;
 
     protected function setUp(): void

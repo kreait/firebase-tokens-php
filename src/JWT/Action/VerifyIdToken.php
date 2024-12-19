@@ -17,7 +17,8 @@ final class VerifyIdToken
         private readonly string $token,
         private readonly int $leewayInSeconds,
         private readonly ?string $expectedTenantId,
-    ) {}
+    ) {
+    }
 
     /**
      * @param non-empty-string $token

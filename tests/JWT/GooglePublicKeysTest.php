@@ -20,9 +20,13 @@ use PHPUnit\Framework\TestCase;
 final class GooglePublicKeysTest extends TestCase
 {
     private Handler&MockObject $handler;
+
     private FrozenClock $clock;
+
     private GooglePublicKeys $keys;
+
     private ExpiringKeys $expiringResult;
+
     private StaticKeys $staticResult;
 
     protected function setUp(): void

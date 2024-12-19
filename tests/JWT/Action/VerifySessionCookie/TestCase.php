@@ -23,8 +23,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      * @var non-empty-string
      */
     protected string $projectId = 'project-id';
+
     protected StaticKeys $keys;
+
     protected FrozenClock $clock;
+
     protected Token $token;
 
     protected function setUp(): void
@@ -55,7 +58,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function testItRejectsAMalformedToken(): void
     {
         $this->expectException(SessionCookieVerificationFailed::class);
-        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie('x' . $this->token->sessionCookie()));
+        $this->createHandler()->handle(VerifySessionCookie::withSessionCookie('x'.$this->token->sessionCookie()));
     }
 
     public function testItRejectsAnExpiredToken(): void

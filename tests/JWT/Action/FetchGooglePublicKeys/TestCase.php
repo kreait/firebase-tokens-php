@@ -15,6 +15,7 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected FrozenClock $clock;
+
     protected FetchGooglePublicKeys $action;
 
     protected function setUp(): void

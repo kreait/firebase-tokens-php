@@ -18,7 +18,8 @@ final class InsecureToken implements Token, Stringable
         private readonly string $encodedString,
         private readonly array $headers,
         private readonly array $payload,
-    ) {}
+    ) {
+    }
 
     /**
      * @return non-empty-string
