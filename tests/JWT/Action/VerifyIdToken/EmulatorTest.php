@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JWT\Action\VerifyIdToken;
+namespace Kreait\Firebase\JWT\Tests\Action\VerifyIdToken;
 
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;

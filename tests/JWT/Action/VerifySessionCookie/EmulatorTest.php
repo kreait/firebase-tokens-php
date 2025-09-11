@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JWT\Action\VerifySessionCookie;
+namespace Kreait\Firebase\JWT\Tests\Action\VerifySessionCookie;
 
 use Kreait\Firebase\JWT\Action\VerifySessionCookie;
 use Kreait\Firebase\JWT\Action\VerifySessionCookie\Handler;
 use Kreait\Firebase\JWT\Action\VerifySessionCookie\WithLcobucciJWT;
 use Kreait\Firebase\JWT\InsecureToken;
-use Kreait\Firebase\JWT\Tests\Action\VerifySessionCookie\TestCase;
 
 /**
  * @internal
