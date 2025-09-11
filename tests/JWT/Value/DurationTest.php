@@ -30,17 +30,15 @@ class DurationTest extends TestCase
     }
 
     /**
-     * @return array<string, array<array-key, int|string|DateInterval|Duration>>
+     * @return \Iterator<string, array<(\DateInterval | int | Duration | string)>>
      */
-    public static function validValues(): array
+    public static function validValues(): \Iterator
     {
-        return [
-            'seconds' => [60, 'PT1M'],
-            'DateInterval Spec ("P1DT1H")' => ['P1DT1H', 'P1DT1H'],
-            'DateInterval("PT24H")' => [new DateInterval('PT24H'), 'P1D'],
-            'Duration("PT24H")' => [Duration::make('PT24H'), 'P1D'],
-            'too verbose' => [Duration::make('P0Y0M0DT0H0M3600S'), 'PT1H'],
-        ];
+        yield 'seconds' => [60, 'PT1M'];
+        yield 'DateInterval Spec ("P1DT1H")' => ['P1DT1H', 'P1DT1H'];
+        yield 'DateInterval("PT24H")' => [new DateInterval('PT24H'), 'P1D'];
+        yield 'Duration("PT24H")' => [Duration::make('PT24H'), 'P1D'];
+        yield 'too verbose' => [Duration::make('P0Y0M0DT0H0M3600S'), 'PT1H'];
     }
 
     /**
@@ -53,18 +51,16 @@ class DurationTest extends TestCase
     }
 
     /**
-     * @return array<string, array<int, DateInterval|int|string>>
+     * @return \Iterator<string, array<int, (\DateInterval | int | string)>>
      */
-    public static function invalidValues(): array
+    public static function invalidValues(): \Iterator
     {
         $negativeInterval = new DateInterval('PT1H');
         $negativeInterval->invert = 1;
-
-        return [
-            'negative seconds' => [-1],
-            'invalid spec' => ['P1H'], // should be PT1H
-            'negative interval' => [$negativeInterval],
-        ];
+        yield 'negative seconds' => [-1];
+        yield 'invalid spec' => ['P1H'];
+        // should be PT1H
+        yield 'negative interval' => [$negativeInterval];
     }
 
     public function testItOptimizesTheDateIntervalSpec(): void

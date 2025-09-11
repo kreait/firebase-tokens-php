@@ -23,14 +23,12 @@ final class CreateCustomTokenTest extends TestCase
     }
 
     /**
-     * @return array<string, array<array-key, int>>
+     * @return \Iterator<string, array<int>>
      */
-    public static function invalidExpirationTimesInSeconds(): array
+    public static function invalidExpirationTimesInSeconds(): \Iterator
     {
-        return [
-            'zero' => [0],
-            'more than 1 hour' => [3601],
-        ];
+        yield 'zero' => [0];
+        yield 'more than 1 hour' => [3601];
     }
 
     public function testTheUidCanBeChanged(): void
@@ -47,7 +45,7 @@ final class CreateCustomTokenTest extends TestCase
             ->withCustomClaim('c', 'x')
             ->withCustomClaim('e', 'f');
 
-        $this->assertEquals(['a' => 'b', 'c' => 'x', 'e' => 'f'], $action->customClaims());
+        $this->assertSame(['a' => 'b', 'c' => 'x', 'e' => 'f'], $action->customClaims());
     }
 
     public function testCustomClaimsCanBeAdded(): void
@@ -56,6 +54,6 @@ final class CreateCustomTokenTest extends TestCase
             ->withCustomClaims(['a' => 'b'])
             ->withAddedCustomClaims(['c' => 'd']);
 
-        $this->assertEquals(['a' => 'b', 'c' => 'd'], $action->customClaims());
+        $this->assertSame(['a' => 'b', 'c' => 'd'], $action->customClaims());
     }
 }

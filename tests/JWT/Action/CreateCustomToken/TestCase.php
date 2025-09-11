@@ -45,7 +45,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertSame($uid, $payload['uid']);
         $this->assertSame(self::$clock->now()->getTimestamp(), $payload['iat']);
         $this->assertSame(self::$clock->now()->modify('+'.$expirationTime.' seconds')->getTimestamp(), $payload['exp']);
-        $this->assertEquals($claims, (array) $payload['claims']);
+        $this->assertSame($claims, (array) $payload['claims']);
     }
 
     public function testItCreatesACustomTokenWithADefaultExpirationTimeOfOneHour(): void

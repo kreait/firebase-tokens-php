@@ -36,7 +36,7 @@
         "phpstan/phpstan": "^1.11.10",
         "phpstan/phpstan-phpunit": "^1.4.0",
         "phpunit/phpunit": "^10.5.30",
-        "rector/rector": "^1.2.3",
+        "rector/rector": "^2.1",
         "symfony/cache": "^6.4.3 || ^7.1.3",
         "symfony/var-dumper": "^6.4.3 || ^7.1.3"
     },
@@ -68,7 +68,8 @@
             "vendor/bin/rector --dry-run"
         ],
         "rector-fix": [
-            "vendor/bin/rector"
+            "vendor/bin/rector",
+            "@cs"
         ],
         "test": [
             "@analyze",

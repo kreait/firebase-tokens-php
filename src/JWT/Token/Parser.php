@@ -14,7 +14,7 @@ final class Parser implements ParserInterface
 {
     private ParserInterface $parser;
 
-    public function __construct(readonly Decoder $decoder)
+    public function __construct(public readonly Decoder $decoder)
     {
         if (Util::authEmulatorHost() !== '') {
             $this->parser = new InsecureParser($decoder);
