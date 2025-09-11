@@ -31,6 +31,10 @@ jobs:
         dependencies:
           - "lowest"
           - "highest"
+        include:
+          - php: "8.5"
+            composer-options: "--ignore-platform-reqs"
+            dependencies: "highest"
 
     steps:
       - name: Checkout code
