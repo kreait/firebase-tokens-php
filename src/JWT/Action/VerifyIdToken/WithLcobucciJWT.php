@@ -12,6 +12,7 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\Error\SessionCookieVerificationFailed;
 use Kreait\Firebase\JWT\InsecureToken;
 use Kreait\Firebase\JWT\SecureToken;
 use Kreait\Firebase\JWT\Signer\None;
@@ -136,31 +137,27 @@ final class WithLcobucciJWT implements Handler
 
     private function getKey(UnencryptedToken $token): string
     {
+        $keys = $this->keys->all();
+        if ($keys === []) {
+            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No keys are available to verify the tokens signature.']);
+        }
+
         if ($this->isRunOnEmulator && ($this->signer instanceof None)) {
             return '';
         }
 
         $keyId = $token->headers()->get('kid');
-        $keys = $this->keys->all();
-        $key = $keys[$keyId] ?? null;
-
-        if ($key !== null) {
-            return $key;
-        }
-
-        if ($this->isRunOnEmulator) {
-            return '';
-        }
-
-        if ($keys === []) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No keys are available to verify the tokens signature.']);
-        }
-
         if (!is_string($keyId) || $keyId === '') {
             throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No key ID was found to verify the signature of this token.']);
         }
 
-        throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
+        $key = $keys[$keyId] ?? null;
+
+        if ($key === null) {
+            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
+        }
+
+        return $key;
     }
 
     private function assertUserAuthedAt(UnencryptedToken $token, DateTimeInterface $now): void

@@ -39,14 +39,6 @@ final class EmulatorTest extends TestCase
         $this->assertInstanceOf(InsecureToken::class, $token);
     }
 
-    public function testItAcceptsEmptyKeys(): void
-    {
-        $this->keys = StaticKeys::empty();
-
-        $token = $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken()));
-        $this->assertInstanceOf(InsecureToken::class, $token);
-    }
-
     protected function createHandler(): Handler
     {
         return new WithLcobucciJWT($this->projectId, $this->keys, $this->clock);
