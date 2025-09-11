@@ -8,6 +8,7 @@ use Beste\Clock\FrozenClock;
 use DateTimeImmutable;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 /**
  * @internal
@@ -27,10 +28,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->action = FetchGooglePublicKeys::fromUrl('bogus');
     }
 
+    #[DoesNotPerformAssertions]
     public function testItReturnsKeys(): void
     {
         $this->createHandler()->handle($this->action);
-        $this->addToAssertionCount(1);
     }
 
     abstract protected function createHandler(): Handler;

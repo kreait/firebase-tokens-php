@@ -13,6 +13,7 @@ use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 /**
  * @internal
@@ -28,6 +29,7 @@ final class WithGuzzleTest extends TestCase
         $this->mockHandler = new MockHandler();
     }
 
+    #[DoesNotPerformAssertions]
     public function testItReturnsKeys(): void
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));

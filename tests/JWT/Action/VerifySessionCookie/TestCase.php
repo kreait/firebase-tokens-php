@@ -13,6 +13,7 @@ use Kreait\Firebase\JWT\Keys\StaticKeys;
 use Kreait\Firebase\JWT\Tests\Util\KeyPair;
 use Kreait\Firebase\JWT\Tests\Util\Token;
 use Kreait\Firebase\JWT\Util;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 /**
  * @internal
@@ -41,10 +42,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->token = new Token($this->clock);
     }
 
+    #[DoesNotPerformAssertions]
     public function testItWorksWhenEverythingIsFine(): void
     {
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($this->token->sessionCookie()));
-        $this->addToAssertionCount(1);
     }
 
     public function testItFailsWithEmptyKeys(): void
@@ -71,6 +72,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->createHandler()->handle(VerifySessionCookie::withSessionCookie($sessionCookie));
     }
 
+    #[DoesNotPerformAssertions]
     public function testItAcceptsAnExpiredTokenWithLeeway(): void
     {
         $sessionCookie = $this->token
@@ -80,7 +82,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $action = VerifySessionCookie::withSessionCookie($sessionCookie)->withLeewayInSeconds(2);
 
         $this->createHandler()->handle($action);
-        $this->addToAssertionCount(1);
     }
 
     public function testItRejectsATokenThatWasIssuedInTheFuture(): void

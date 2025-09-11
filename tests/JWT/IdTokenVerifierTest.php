@@ -9,6 +9,7 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\IdTokenVerifier;
 use Kreait\Firebase\JWT\SecureToken;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -37,16 +38,16 @@ final class IdTokenVerifierTest extends TestCase
         $this->verifier = new IdTokenVerifier($this->handler);
     }
 
+    #[DoesNotPerformAssertions]
     public function testItCanBeCreatedWithAProjectId(): void
     {
         IdTokenVerifier::createWithProjectId('project-id');
-        $this->addToAssertionCount(1);
     }
 
+    #[DoesNotPerformAssertions]
     public function testItCanBeCreatedWithAProjectIdAndCustomCache(): void
     {
         IdTokenVerifier::createWithProjectIdAndCache('project-id', $this->createMock(CacheItemPoolInterface::class));
-        $this->addToAssertionCount(1);
     }
 
     public function testItVerifiesAToken(): void

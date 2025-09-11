@@ -9,6 +9,7 @@ use Kreait\Firebase\JWT\Action\VerifySessionCookie\Handler;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\SecureToken;
 use Kreait\Firebase\JWT\SessionCookieVerifier;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -37,16 +38,16 @@ final class SessionCookieVerifierTest extends TestCase
         $this->verifier = new SessionCookieVerifier($this->handler);
     }
 
+    #[DoesNotPerformAssertions]
     public function testItCanBeCreatedWithAProjectId(): void
     {
         SessionCookieVerifier::createWithProjectId('project-id');
-        $this->addToAssertionCount(1);
     }
 
+    #[DoesNotPerformAssertions]
     public function testItCanBeCreatedWithAProjectIdAndCustomCache(): void
     {
         SessionCookieVerifier::createWithProjectIdAndCache('project-id', $this->createMock(CacheItemPoolInterface::class));
-        $this->addToAssertionCount(1);
     }
 
     public function testItVerifiesAToken(): void

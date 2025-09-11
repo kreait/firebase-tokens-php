@@ -12,6 +12,7 @@ use Kreait\Firebase\JWT\Keys\StaticKeys;
 use Kreait\Firebase\JWT\Tests\Util\KeyPair;
 use Kreait\Firebase\JWT\Tests\Util\Token;
 use Kreait\Firebase\JWT\Util;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use stdClass;
 
 /**
@@ -38,10 +39,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->token = new Token($this->clock);
     }
 
+    #[DoesNotPerformAssertions]
     public function testItWorksWhenEverythingIsFine(): void
     {
         $this->createHandler()->handle(VerifyIdToken::withToken($this->token->idToken()));
-        $this->addToAssertionCount(1);
     }
 
     public function testItRejectsAMalformedToken(): void
@@ -60,6 +61,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
 
+    #[DoesNotPerformAssertions]
     public function testItAcceptsAnExpiredTokenWithLeeway(): void
     {
         $idToken = $this->token
@@ -69,7 +71,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $action = VerifyIdToken::withToken($idToken)->withLeewayInSeconds(2);
 
         $this->createHandler()->handle($action);
-        $this->addToAssertionCount(1);
     }
 
     public function testItRejectsATokenThatWasIssuedInTheFuture(): void
@@ -128,6 +129,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken));
     }
 
+    #[DoesNotPerformAssertions]
     public function testItVerifiesATokenWithAnExpectedTenantId(): void
     {
         $firebaseClaim = new stdClass();
@@ -135,7 +137,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $idToken = $this->token->withClaim('firebase', $firebaseClaim)->idToken();
 
         $this->createHandler()->handle(VerifyIdToken::withToken($idToken)->withExpectedTenantId($firebaseClaim->tenant));
-        $this->addToAssertionCount(1);
     }
 
     public function testItVerifiesATokenWithAMismatchingTenantId(): void

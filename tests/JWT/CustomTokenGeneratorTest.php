@@ -10,6 +10,7 @@ use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\CustomTokenGenerator;
 use Kreait\Firebase\JWT\SecureToken;
 use Kreait\Firebase\JWT\Value\Duration;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,10 +38,10 @@ final class CustomTokenGeneratorTest extends TestCase
         $this->generator = new CustomTokenGenerator($this->handler);
     }
 
+    #[DoesNotPerformAssertions]
     public function testItCanBeCreatedWithCredentials(): void
     {
         CustomTokenGenerator::withClientEmailAndPrivateKey('email@domain.tld', 'some-private-key');
-        $this->addToAssertionCount(1);
     }
 
     public function testItDelegatesASimpleAction(): void
