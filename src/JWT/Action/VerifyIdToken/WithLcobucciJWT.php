@@ -12,7 +12,6 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
-use Kreait\Firebase\JWT\Error\SessionCookieVerificationFailed;
 use Kreait\Firebase\JWT\InsecureToken;
 use Kreait\Firebase\JWT\SecureToken;
 use Kreait\Firebase\JWT\Signer\None;

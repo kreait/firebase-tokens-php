@@ -8,8 +8,6 @@ use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\WithLcobucciJWT;
 use Kreait\Firebase\JWT\InsecureToken;
-use Kreait\Firebase\JWT\Keys\StaticKeys;
-use Kreait\Firebase\JWT\Tests\Action\VerifyIdToken\TestCase;
 
 /**
  * @internal

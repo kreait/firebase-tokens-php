@@ -42,7 +42,7 @@ final class WithLcobucciJWT implements Handler
 {
     private readonly Parser $parser;
 
-    private Signer $signer;
+    private readonly Signer $signer;
 
     private readonly Validator $validator;
 

@@ -8,7 +8,7 @@ return (new PhpCsFixer\Config())
     ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRiskyAllowed(true)
     ->setRules([
-        '@PER-CS2.0' => true,
+        '@PER-CS3x0' => true,
         'class_attributes_separation' => true,
         'class_definition' => [
             'single_line' => true,
