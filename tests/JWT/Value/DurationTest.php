@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @internal
  */
-class DurationTest extends TestCase
+final class DurationTest extends TestCase
 {
     public function testItCanBeNone(): void
     {

@@ -6,6 +6,9 @@ namespace Kreait\Firebase\JWT\Tests\Util;
 
 use Lcobucci\JWT\Signer\Key;
 
+/**
+ * @internal
+ */
 final class EmptyKey implements Key
 {
     public function contents(): string

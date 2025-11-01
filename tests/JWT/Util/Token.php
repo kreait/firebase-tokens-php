@@ -15,6 +15,9 @@ use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token\Builder;
 use Psr\Clock\ClockInterface;
 
+/**
+ * @internal
+ */
 final class Token
 {
     private const ID_TOKEN_ISSUER = 'https://securetoken.google.com/project-id';
