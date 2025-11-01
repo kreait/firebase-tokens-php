@@ -14,12 +14,18 @@ final class None implements Signer
         return 'none';
     }
 
+    /**
+     * @throws void
+     */
     public function sign(string $payload, Key $key): string
     {
         // @phpstan-ignore-next-line
         return '';
     }
 
+    /**
+     * @throws void
+     */
     public function verify(string $expected, string $payload, Key $key): bool
     {
         // @phpstan-ignore-next-line
