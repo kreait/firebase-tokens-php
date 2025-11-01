@@ -89,8 +89,8 @@ final class WithGuzzle implements Handler
             $keys = [];
         }
 
-        $keys = array_filter($keys, fn(mixed $key): bool => is_string($key));
-        $keys = array_map(fn(string $key): string => trim($key), $keys);
+        $keys = array_filter($keys, is_string(...));
+        $keys = array_map(trim(...), $keys);
         $keys = array_filter($keys, fn(string $key): bool => $key !== '');
 
         return [
