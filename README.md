@@ -4,21 +4,25 @@ A library to work with [Google Firebase](https://firebase.google.com) tokens. Yo
 [create custom tokens](https://firebase.google.com/docs/auth/admin/create-custom-tokens) and 
 [verify ID Tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
 
-Achieve more with the [Firebase Admin SDK](https://github.com/kreait/firebase-php) for PHP (which uses this library).
+Achieve more with the [Firebase Admin SDK](https://packagist.org/packages/kreait/firebase-php) for PHP (which uses this library).
 
-[![Current version](https://img.shields.io/packagist/v/kreait/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens)
+[![Current version](https://img.shields.io/packagist/v/kreait/firebase-tokens/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens)
 [![Supported PHP version](https://img.shields.io/packagist/php-v/kreait/firebase-tokens.svg)]()
 [![Monthly Downloads](https://img.shields.io/packagist/dm/kreait/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens/stats)
 [![Total Downloads](https://img.shields.io/packagist/dt/kreait/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens/stats)
-[![Tests](https://github.com/kreait/firebase-tokens-php/workflows/Tests/badge.svg)](https://github.com/kreait/firebase-tokens-php/actions)
+[![Tests](https://github.com/beste/firebase-tokens-php/workflows/Tests/badge.svg)](https://github.com/beste/firebase-tokens-php/actions)
 [![Sponsor](https://img.shields.io/static/v1?logo=GitHub&label=Sponsor&message=%E2%9D%A4&color=ff69b4)](https://github.com/sponsors/jeromegamez)
 
----
 
-## The future of the Firebase Admin PHP SDK
+> [!IMPORTANT]
+> **Support the project:** This library is downloaded 1M+ times monthly and powers thousands of applications.
+> If it saves you or your team time, please consider
+> [sponsoring its development](https://github.com/sponsors/jeromegamez).
 
-Please read about the future of the Firebase Admin PHP SDK on the
-[SDK's GitHub Repository](https://github.com/kreait/firebase-php).
+> [!NOTE]
+> The project moved from the `kreait` to the `beste` GitHub Organization in January 2026.
+> The namespace remains `Kreait\Firebase\JWT` and the package name remains `kreait/firebase-tokens`.
+> Please update your remote URL if you have forked or cloned the repository.
 
 ---
 

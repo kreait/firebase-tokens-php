@@ -3,7 +3,7 @@
     "description": "A library to work with Firebase tokens",
     "type": "library",
     "keywords": ["firebase", "google", "token", "authentication", "auth"],
-    "homepage": "https://github.com/kreait/firebase-token-php",
+    "homepage": "https://github.com/beste/firebase-token-php",
     "license": "MIT",
     "authors": [
         {
