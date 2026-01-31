@@ -6,7 +6,7 @@ A library to work with [Google Firebase](https://firebase.google.com) tokens. Yo
 
 Achieve more with the [Firebase Admin SDK](https://packagist.org/packages/kreait/firebase-php) for PHP (which uses this library).
 
-[![Current version](https://img.shields.io/packagist/v/kreait/firebase-tokens/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens)
+[![Current version](https://img.shields.io/packagist/v/kreait/firebase-tokens.svg?logo=composer)](https://packagist.org/packages/kreait/firebase-tokens)
 [![Supported PHP version](https://img.shields.io/packagist/php-v/kreait/firebase-tokens.svg)]()
 [![Monthly Downloads](https://img.shields.io/packagist/dm/kreait/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens/stats)
 [![Total Downloads](https://img.shields.io/packagist/dt/kreait/firebase-tokens.svg)](https://packagist.org/packages/kreait/firebase-tokens/stats)
