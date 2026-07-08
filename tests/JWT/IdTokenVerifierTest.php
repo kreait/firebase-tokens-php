@@ -47,7 +47,7 @@ final class IdTokenVerifierTest extends TestCase
     #[DoesNotPerformAssertions]
     public function testItCanBeCreatedWithAProjectIdAndCustomCache(): void
     {
-        IdTokenVerifier::createWithProjectIdAndCache('project-id', $this->createMock(CacheItemPoolInterface::class));
+        IdTokenVerifier::createWithProjectIdAndCache('project-id', $this->createStub(CacheItemPoolInterface::class));
     }
 
     public function testItVerifiesAToken(): void

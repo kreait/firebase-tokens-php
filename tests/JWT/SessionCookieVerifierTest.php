@@ -47,7 +47,7 @@ final class SessionCookieVerifierTest extends TestCase
     #[DoesNotPerformAssertions]
     public function testItCanBeCreatedWithAProjectIdAndCustomCache(): void
     {
-        SessionCookieVerifier::createWithProjectIdAndCache('project-id', $this->createMock(CacheItemPoolInterface::class));
+        SessionCookieVerifier::createWithProjectIdAndCache('project-id', $this->createStub(CacheItemPoolInterface::class));
     }
 
     public function testItVerifiesAToken(): void
