@@ -31,6 +31,7 @@
         "psr/cache-implementation": "to cache fetched remote public keys"
     },
     "require-dev": {
+        "beste/in-memory-cache": "^1.5",
         "friendsofphp/php-cs-fixer": "^3.88.2",
         "phpstan/extension-installer": "^1.4.3",
         "phpstan/phpstan": "^2.1.30",
