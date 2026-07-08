@@ -5,14 +5,14 @@ on:
     paths:
       - 'src/**'
       - 'tests/**'
-      - '.github/workflows/tests.yml'
+      - '.github/workflows/emulator-tests.yml'
       - 'composer.json'
   push:
     branches: ['5.x']
     paths:
       - 'src/**'
       - 'tests/**'
-      - '.github/workflows/tests.yml'
+      - '.github/workflows/emulator-tests.yml'
       - 'composer.json'
   workflow_dispatch:
 
@@ -22,18 +22,8 @@ concurrency:
 
 jobs:
   tests:
-    name: "PHP ${{ matrix.php }}, ${{ matrix.dependencies }} deps"
+    name: "PHP 8.5, highest deps"
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        php:
-          - "8.3"
-          - "8.4"
-          - "8.5"
-        dependencies:
-          - "lowest"
-          - "highest"
 
     steps:
       - name: Checkout code
@@ -42,14 +32,13 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: "8.5"
           tools: composer, pecl
           coverage: xdebug
 
       - uses: "ramsey/composer-install@v3"
         with:
-          composer-options: "${{ matrix.composer-options }}"
-          dependency-versions: "${{ matrix.dependencies }}"
+          dependency-versions: "highest"
 
       - name: Set Up Node
         uses: actions/setup-node@v6
