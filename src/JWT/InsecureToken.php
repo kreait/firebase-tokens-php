@@ -7,7 +7,7 @@ namespace Kreait\Firebase\JWT;
 use Kreait\Firebase\JWT\Contract\Token;
 use Stringable;
 
-final class InsecureToken implements Token, Stringable
+final readonly class InsecureToken implements Token, Stringable
 {
     /**
      * @param non-empty-string $encodedString
@@ -15,9 +15,9 @@ final class InsecureToken implements Token, Stringable
      * @param array<non-empty-string, mixed> $payload
      */
     private function __construct(
-        private readonly string $encodedString,
-        private readonly array $headers,
-        private readonly array $payload,
+        private string $encodedString,
+        private array $headers,
+        private array $payload,
     ) {
     }
 

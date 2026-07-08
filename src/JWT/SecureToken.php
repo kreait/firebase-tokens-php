@@ -7,16 +7,16 @@ namespace Kreait\Firebase\JWT;
 use Kreait\Firebase\JWT\Contract\Token;
 use Stringable;
 
-final class SecureToken implements Token, Stringable
+final readonly class SecureToken implements Token, Stringable
 {
     /**
      * @param array<string, mixed> $headers
      * @param array<string, mixed> $payload
      */
     private function __construct(
-        private readonly string $encodedString,
-        private readonly array $headers,
-        private readonly array $payload,
+        private string $encodedString,
+        private array $headers,
+        private array $payload,
     ) {
     }
 

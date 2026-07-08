@@ -24,11 +24,11 @@ use function is_array;
  *
  * @internal
  */
-final class InsecureParser implements ParserInterface
+final readonly class InsecureParser implements ParserInterface
 {
-    private const MICROSECOND_PRECISION = 6;
+    private const int MICROSECOND_PRECISION = 6;
 
-    public function __construct(private readonly Decoder $decoder)
+    public function __construct(private Decoder $decoder)
     {
     }
 
