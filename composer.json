@@ -32,12 +32,12 @@
     },
     "require-dev": {
         "beste/in-memory-cache": "^1.5",
-        "friendsofphp/php-cs-fixer": "^3.88.2",
+        "friendsofphp/php-cs-fixer": "^3.95.12",
         "phpstan/extension-installer": "^1.4.3",
-        "phpstan/phpstan": "^2.1.30",
-        "phpstan/phpstan-phpunit": "^2.0.7",
-        "phpunit/phpunit": "^10.5.58",
-        "rector/rector": "^2.2.1",
+        "phpstan/phpstan": "^2.2.5",
+        "phpstan/phpstan-phpunit": "^2.0.18",
+        "phpunit/phpunit": "^10.5.64",
+        "rector/rector": "^2.5.4",
         "symfony/var-dumper": "^6.4.3 || ^7.3.4 || ^8.1.1"
     },
     "autoload": {
