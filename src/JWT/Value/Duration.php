@@ -61,7 +61,7 @@ final class Duration implements Stringable
         $duration = self::fromDateInterval($interval);
         // If the string doesn't contain a zero, but the result equals to zero
         // the value must be invalid.
-        if (mb_strpos($value, '0') !== false) {
+        if (str_contains($value, '0')) {
             return $duration;
         }
 
