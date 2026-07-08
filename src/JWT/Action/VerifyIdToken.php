@@ -6,7 +6,7 @@ namespace Kreait\Firebase\JWT\Action;
 
 use InvalidArgumentException;
 
-final class VerifyIdToken
+final readonly class VerifyIdToken
 {
     /**
      * @param non-empty-string $token
@@ -14,9 +14,9 @@ final class VerifyIdToken
      * @param non-empty-string|null $expectedTenantId
      */
     private function __construct(
-        private readonly string $token,
-        private readonly int $leewayInSeconds,
-        private readonly ?string $expectedTenantId,
+        private string $token,
+        private int $leewayInSeconds,
+        private ?string $expectedTenantId,
     ) {
     }
 

@@ -14,12 +14,12 @@ use Psr\Clock\ClockInterface;
 /**
  * @internal
  */
-final class WithPsr6Cache implements Handler
+final readonly class WithPsr6Cache implements Handler
 {
     public function __construct(
-        private readonly Handler $handler,
-        private readonly CacheItemPoolInterface $cache,
-        private readonly ClockInterface $clock,
+        private Handler $handler,
+        private CacheItemPoolInterface $cache,
+        private ClockInterface $clock,
     ) {
     }
 

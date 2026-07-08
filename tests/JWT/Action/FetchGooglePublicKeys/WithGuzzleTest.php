@@ -30,6 +30,7 @@ final class WithGuzzleTest extends TestCase
     }
 
     #[DoesNotPerformAssertions]
+    #[\Override]
     public function testItReturnsKeys(): void
     {
         $this->mockHandler->append(new Response(200, ['Cache-Control' => 'max-age=1'], '{}'));

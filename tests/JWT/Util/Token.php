@@ -20,9 +20,9 @@ use Psr\Clock\ClockInterface;
  */
 final class Token
 {
-    private const ID_TOKEN_ISSUER = 'https://securetoken.google.com/project-id';
+    private const string ID_TOKEN_ISSUER = 'https://securetoken.google.com/project-id';
 
-    private const SESSION_COOKIE_ISSUER = 'https://session.firebase.google.com/project-id';
+    private const string SESSION_COOKIE_ISSUER = 'https://session.firebase.google.com/project-id';
 
     private readonly ClockInterface $clock;
 

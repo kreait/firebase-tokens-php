@@ -19,11 +19,11 @@ use const JSON_THROW_ON_ERROR;
 /**
  * @internal
  */
-final class WithGuzzle implements Handler
+final readonly class WithGuzzle implements Handler
 {
     public function __construct(
-        private readonly ClientInterface $client,
-        private readonly ClockInterface $clock,
+        private ClientInterface $client,
+        private ClockInterface $clock,
     ) {
     }
 
