@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 * Dropped support for PHP <8.3
+* Changed the verifier key cache to store key values instead of `Keys` objects
 
 ## 5.3.0 - 2025-09-12
 
