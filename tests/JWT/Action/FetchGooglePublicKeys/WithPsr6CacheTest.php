@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Kreait\Firebase\JWT\Tests\Action\FetchGooglePublicKeys;
 
+use Beste\Cache\InMemoryCache;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr6Cache;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use stdClass;
 
@@ -19,9 +19,7 @@ use stdClass;
  */
 final class WithPsr6CacheTest extends TestCase
 {
-    private CacheItemPoolInterface&MockObject $cache;
-
-    private CacheItemInterface&MockObject $cacheItem;
+    private CacheItemPoolInterface $cache;
 
     private Handler&MockObject $inner;
 
@@ -35,10 +33,7 @@ final class WithPsr6CacheTest extends TestCase
     {
         parent::setUp();
 
-        $this->cacheItem = $this->createMock(CacheItemInterface::class);
-        $this->cache = $this->createMock(CacheItemPoolInterface::class);
-        $this->cache->method('getItem')->willReturn($this->cacheItem);
-
+        $this->cache = new InMemoryCache($this->clock);
         $this->inner = $this->createMock(Handler::class);
 
         $this->expiringKeys = ExpiringKeys::withValuesAndExpirationTime(['ir' => 'relevant'], $this->clock->now()->modify('+1 hour'));
@@ -48,17 +43,30 @@ final class WithPsr6CacheTest extends TestCase
 
     public function testItCachesFreshKeys(): void
     {
-        $this->cacheItem->method('isHit')->willReturn(false);
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
-        $this->cache->expects($this->once())->method('save');
 
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
+        $this->assertSame($this->expiringKeys, $this->cachedValue());
+    }
+
+    public function testItCachesNonExpiringKeysWithFallbackExpiration(): void
+    {
+        $this->inner->expects($this->once())->method('handle')->willReturn($this->nonExpiringKeys);
+
+        $this->assertSame($this->nonExpiringKeys, $this->createHandler()->handle($this->action));
+        $this->assertSame($this->nonExpiringKeys, $this->cachedValue());
+
+        $this->clock->setTo($this->clock->now()->modify('+59 minutes'));
+        $this->assertTrue($this->cache->getItem($this->cacheKey())->isHit());
+
+        $this->clock->setTo($this->clock->now()->modify('+2 minutes'));
+        $this->assertFalse($this->cache->getItem($this->cacheKey())->isHit());
     }
 
     public function testItReturnsCachedNonExpiredKeys(): void
     {
-        $this->cacheItem->method('isHit')->willReturn(true);
-        $this->cacheItem->method('get')->willReturn($this->expiringKeys);
+        $this->storeCachedValue($this->expiringKeys);
+
         $this->inner->expects($this->never())->method($this->anything());
 
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
@@ -66,8 +74,8 @@ final class WithPsr6CacheTest extends TestCase
 
     public function testItReturnsCachedNonExpiringKeys(): void
     {
-        $this->cacheItem->method('isHit')->willReturn(true);
-        $this->cacheItem->method('get')->willReturn($this->nonExpiringKeys);
+        $this->storeCachedValue($this->nonExpiringKeys);
+
         $this->inner->expects($this->never())->method($this->anything());
 
         $this->assertSame($this->nonExpiringKeys, $this->createHandler()->handle($this->action));
@@ -75,8 +83,8 @@ final class WithPsr6CacheTest extends TestCase
 
     public function testItRefreshesExpiredKeys(): void
     {
-        $this->cacheItem->method('isHit')->willReturn(true);
-        $this->cacheItem->method('get')->willReturn($this->expiredKeys);
+        $this->storeCachedValue($this->expiredKeys);
+
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
 
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
@@ -84,8 +92,7 @@ final class WithPsr6CacheTest extends TestCase
 
     public function testItHandlesInvalidCacheContents(): void
     {
-        $this->cacheItem->method('isHit')->willReturn(true);
-        $this->cacheItem->method('get')->willReturn(new stdClass());
+        $this->storeCachedValue(new stdClass());
 
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
 
@@ -109,5 +116,23 @@ final class WithPsr6CacheTest extends TestCase
     protected function createHandler(): Handler
     {
         return new WithPsr6Cache($this->inner, $this->cache, $this->clock);
+    }
+
+    private function cachedValue(): mixed
+    {
+        return $this->cache->getItem($this->cacheKey())->get();
+    }
+
+    private function storeCachedValue(mixed $value): void
+    {
+        $item = $this->cache->getItem($this->cacheKey());
+        $item->set($value);
+
+        $this->cache->save($item);
+    }
+
+    private function cacheKey(): string
+    {
+        return md5($this->action::class);
     }
 }
