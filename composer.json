@@ -23,7 +23,7 @@
         "ext-openssl": "*",
         "beste/clock": "^3.0",
         "fig/http-message-util": "^1.1.5",
-        "guzzlehttp/guzzle": "^7.8",
+        "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
         "lcobucci/jwt": "^5.2",
         "psr/cache": "^1.0|^2.0|^3.0"
     },
