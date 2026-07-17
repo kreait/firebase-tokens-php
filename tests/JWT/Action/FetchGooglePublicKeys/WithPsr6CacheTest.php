@@ -7,6 +7,7 @@ namespace Kreait\Firebase\JWT\Tests\Action\FetchGooglePublicKeys;
 use Beste\Cache\InMemoryCache;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\Handler;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr6Cache;
+use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Error\FetchingGooglePublicKeysFailed;
 use Kreait\Firebase\JWT\Keys\ExpiringKeys;
 use Kreait\Firebase\JWT\Keys\StaticKeys;
@@ -46,7 +47,13 @@ final class WithPsr6CacheTest extends TestCase
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
 
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
-        $this->assertSame($this->expiringKeys, $this->cachedValue());
+
+        $payload = $this->cachedValue();
+
+        $this->assertNotInstanceOf(Keys::class, $payload);
+        $this->assertIsArray($payload);
+        $this->assertSame(['ir' => 'relevant'], $payload['values'] ?? null);
+        $this->assertSame($this->expiringKeys->expiresAt()->format(DATE_ATOM), $payload['expiresAt'] ?? null);
     }
 
     public function testItCachesNonExpiringKeysWithFallbackExpiration(): void
@@ -54,7 +61,13 @@ final class WithPsr6CacheTest extends TestCase
         $this->inner->expects($this->once())->method('handle')->willReturn($this->nonExpiringKeys);
 
         $this->assertSame($this->nonExpiringKeys, $this->createHandler()->handle($this->action));
-        $this->assertSame($this->nonExpiringKeys, $this->cachedValue());
+
+        $payload = $this->cachedValue();
+
+        $this->assertNotInstanceOf(Keys::class, $payload);
+        $this->assertIsArray($payload);
+        $this->assertSame(['ir' => 'relevant'], $payload['values'] ?? null);
+        $this->assertSame($this->clock->now()->modify('+1 hour')->format(DATE_ATOM), $payload['expiresAt'] ?? null);
 
         $this->clock->setTo($this->clock->now()->modify('+59 minutes'));
         $this->assertTrue($this->cache->getItem($this->cacheKey())->isHit());
@@ -72,6 +85,22 @@ final class WithPsr6CacheTest extends TestCase
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
     }
 
+    public function testItReturnsCachedNonExpiredKeysFromArrayPayload(): void
+    {
+        $this->storeCachedValue([
+            'version' => 1,
+            'values' => ['ir' => 'relevant'],
+            'expiresAt' => $this->expiringKeys->expiresAt()->format(DATE_ATOM),
+        ]);
+        $this->inner->expects($this->never())->method($this->anything());
+
+        $keys = $this->createHandler()->handle($this->action);
+
+        $this->assertInstanceOf(ExpiringKeys::class, $keys);
+        $this->assertSame(['ir' => 'relevant'], $keys->all());
+        $this->assertEquals($this->expiringKeys->expiresAt(), $keys->expiresAt());
+    }
+
     public function testItReturnsCachedNonExpiringKeys(): void
     {
         $this->storeCachedValue($this->nonExpiringKeys);
@@ -85,6 +114,18 @@ final class WithPsr6CacheTest extends TestCase
     {
         $this->storeCachedValue($this->expiredKeys);
 
+        $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
+
+        $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
+    }
+
+    public function testItRefreshesExpiredKeysFromArrayPayload(): void
+    {
+        $this->storeCachedValue([
+            'version' => 1,
+            'values' => ['ir' => 'relevant'],
+            'expiresAt' => $this->expiredKeys->expiresAt()->format(DATE_ATOM),
+        ]);
         $this->inner->expects($this->once())->method('handle')->willReturn($this->expiringKeys);
 
         $this->assertSame($this->expiringKeys, $this->createHandler()->handle($this->action));
