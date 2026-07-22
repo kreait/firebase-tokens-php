@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+* Added support for Guzzle 8
+
 ## 5.4.0 - 2026-07-18
 
 * Dropped support for PHP <8.3
