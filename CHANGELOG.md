@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 5.5.0 - 2026-07-23
+
 * Added support for Guzzle 8
 
 ## 5.4.0 - 2026-07-18
