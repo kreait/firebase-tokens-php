@@ -46,7 +46,7 @@ jobs:
           tools: composer, pecl
           coverage: xdebug
 
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@v4"
         with:
           composer-options: "${{ matrix.composer-options }}"
           dependency-versions: "${{ matrix.dependencies }}"
